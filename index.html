@@ -3,109 +3,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FoodShare Seychelles</title>
+    <title>FoodShare Seychelles | Nourishing Communities</title>
     
-    <link rel="icon" type="image/png" href="YOUR_DIRECT_FAVICON_LINK.png">
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            green: '#16a34a', // Corporate FoodShare Green
+                            darkgreen: '#15803d',
+                            slate: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans flex flex-col min-h-screen">
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-x-hidden" id="body">
 
-    <nav class="bg-white flex items-center justify-between p-6 shadow-sm z-10 relative">
-        <a href="/">
-            <img 
-                src="YOUR_DIRECT_LOGO_LINK.png" 
-                alt="FoodShare Seychelles Logo" 
-                class="h-12 w-auto"
-            />
-        </a>
-        
-        <div class="space-x-6 font-medium hidden md:block">
-            <a href="/about/" class="text-gray-600 hover:text-green-600 transition">About Us</a>
-            <a href="/find-food/" class="text-gray-600 hover:text-green-600 transition">Find Food</a>
-            <a href="/donate/" class="text-gray-600 hover:text-green-600 transition">Donate</a>
-            <a href="/contact/" class="text-gray-600 hover:text-green-600 transition">Contact</a>
-            <a href="/login/" class="px-5 py-2.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition">Login</a>
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading FoodShare</p>
         </div>
-    </nav>
+    </div>
 
-    <header class="w-full h-[60vh] bg-black">
-        <img 
-            src="https://i.ibb.co/Gfp5TMhD/header-bg.jpg" 
-            alt="FoodShare Seychelles Community"
-            class="w-full h-full object-cover"
-            onerror="this.src='https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&q=80';"
-            />
-    </header>
+    <div id="dynamic-announcement" class="hidden bg-brand-green text-white py-2.5 px-4 text-center text-sm font-semibold tracking-wide">
+    </div>
 
-    <main class="flex-grow py-16 px-6">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-10 text-gray-800">Our Impact in Seychelles</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                    <h3 id="stat-meals" class="text-5xl font-extrabold text-green-600 mb-2">...</h3>
-                    <p class="text-gray-500 uppercase tracking-wide text-sm font-semibold">Meals Shared</p>
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand-green rounded-lg flex items-center justify-center text-white shadow-md">
+                        <i class="fa-solid fa-leaf text-xl"></i>
+                    </div>
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                    <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
                 </div>
 
-                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                    <h3 id="stat-volunteers" class="text-5xl font-extrabold text-green-600 mb-2">...</h3>
-                    <p class="text-gray-500 uppercase tracking-wide text-sm font-semibold">Active Volunteers</p>
-                </div>
-
-                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                    <h3 id="stat-pounds" class="text-5xl font-extrabold text-green-600 mb-2">...</h3>
-                    <p class="text-gray-500 uppercase tracking-wide text-sm font-semibold">Lbs of Food Saved</p>
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
                 </div>
             </div>
         </div>
-    </main>
+    </nav>
 
-    <footer class="bg-gray-900 text-white py-8 text-center">
-        <p class="text-gray-400 text-sm">&copy; 2026 FoodShare Seychelles. All rights reserved.</p>
-        <div class="mt-4 space-x-4 text-sm text-gray-500">
-            <a href="/legal/terms/" class="hover:text-white">Terms of Service</a>
-            <a href="/legal/privacy/" class="hover:text-white">Privacy Policy</a>
+    <header class="w-full h-[60vh] md:h-[70vh] bg-cover bg-center bg-no-repeat shadow-inner" 
+            style="background-image: url('https://images.unsplash.com/photo-1593113563332-ce147df26864?q=80&w=2070&auto=format&fit=crop');">
+    </header>
+
+    <section class="bg-white py-24 border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-sm font-bold tracking-widest text-brand-green uppercase mb-3">Our Work</h2>
+            <h3 class="text-3xl md:text-5xl font-black text-brand-slate tracking-tight mb-8">Connecting Surplus to Need</h3>
+            <p class="text-lg md:text-xl text-gray-600 leading-relaxed font-medium">
+                FoodShare Seychelles is a centralized digital logistics platform dedicated to eliminating food waste and combating food insecurity. We partner with local businesses, supermarkets, and individuals to redirect high-quality, surplus food directly to the communities and families that need it most.
+            </p>
+        </div>
+    </section>
+
+    <section class="bg-brand-slate py-20 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="dynamic-stats" class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-gray-700/50">
+                <div class="col-span-full text-gray-400 py-4 font-mono text-sm">Connecting to metrics database...</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-gray-50 py-24 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-sm font-bold tracking-widest text-brand-green uppercase mb-2">Learn More</h2>
+                <h3 class="text-3xl md:text-4xl font-black text-brand-slate tracking-tight">The Pillars of FoodShare</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <a href="/about/food/" class="group bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-brand-green transition duration-300 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-apple-whole"></i>
+                    </div>
+                    <h4 class="font-bold text-brand-slate text-2xl mb-3 group-hover:text-brand-green transition">Food Safety</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-6">Learn about our strict guidelines for handling, transporting, and distributing surplus food safely to our clients.</p>
+                    <div class="mt-auto text-sm font-bold text-brand-green uppercase tracking-widest group-hover:tracking-[0.2em] transition-all">Explore <i class="fa-solid fa-arrow-right ml-1"></i></div>
+                </a>
+
+                <a href="/about/innovation/" class="group bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-brand-green transition duration-300 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <h4 class="font-bold text-brand-slate text-2xl mb-3 group-hover:text-brand-green transition">Innovation</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-6">Discover the digital logistics platform powering our real-time matching, tracking, and delivery infrastructure.</p>
+                    <div class="mt-auto text-sm font-bold text-brand-green uppercase tracking-widest group-hover:tracking-[0.2em] transition-all">Explore <i class="fa-solid fa-arrow-right ml-1"></i></div>
+                </a>
+
+                <a href="/about/movement/" class="group bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-brand-green transition duration-300 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                    </div>
+                    <h4 class="font-bold text-brand-slate text-2xl mb-3 group-hover:text-brand-green transition">The Movement</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-6">Read about the volunteers, donors, and community leaders driving the fight against food waste in Seychelles.</p>
+                    <div class="mt-auto text-sm font-bold text-brand-green uppercase tracking-widest group-hover:tracking-[0.2em] transition-all">Explore <i class="fa-solid fa-arrow-right ml-1"></i></div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-brand-green py-20 text-white relative overflow-hidden">
+        <i class="fa-solid fa-handshake-angle absolute -right-10 -bottom-10 text-[15rem] text-white/10 pointer-events-none transform -rotate-12"></i>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h3 class="text-3xl md:text-5xl font-black tracking-tight mb-6">Become a Corporate Partner</h3>
+            <p class="text-lg md:text-xl text-green-50 leading-relaxed font-medium max-w-3xl mx-auto mb-10">
+                Are you a hotel, supermarket, restaurant, or farm? Join our network of corporate donors and transform your daily surplus into daily impact. Let's work together to nourish Seychelles.
+            </p>
+            <div class="inline-flex flex-col sm:flex-row items-center justify-center gap-4 bg-white/10 p-2 pl-6 rounded-full border border-white/20 backdrop-blur-sm">
+                <span class="font-mono text-sm md:text-base font-bold">partner@foodshare-seychelles.online</span>
+                <a href="mailto:partner@foodshare-seychelles.online" class="px-8 py-3 bg-white text-brand-green font-black uppercase tracking-wider text-sm rounded-full hover:bg-gray-100 transition shadow-lg">
+                    Email Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white py-24 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 border-b-2 border-brand-slate pb-4">
+                <div>
+                    <h2 class="text-sm font-bold tracking-widest text-brand-green uppercase mb-2">Updates</h2>
+                    <h3 class="text-3xl md:text-4xl font-black text-brand-slate tracking-tight">Latest News</h3>
+                </div>
+                <a href="/news/" class="hidden md:flex items-center text-brand-slate font-bold hover:text-brand-green transition">
+                    View All News <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+
+            <div id="dynamic-news" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-full text-center text-gray-500 py-12 font-mono text-sm bg-gray-50 rounded-xl border border-gray-100">
+                    Loading recent articles...
+                </div>
+            </div>
+
+            <div class="mt-8 text-center md:hidden">
+                <a href="/news/" class="text-brand-slate font-bold hover:text-brand-green transition">View All News &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-gray-50 py-24">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            
+            <div id="newsletter-container">
+                <h3 class="text-3xl font-black text-brand-slate mb-4 tracking-tight">Join Our Mailing List</h3>
+                <p class="text-gray-600 mb-8 text-lg font-medium">Stay updated on our community impact, volunteer opportunities, and operational news.</p>
+                
+                <form id="newsletter-form" class="flex flex-col sm:flex-row gap-0 justify-center shadow-lg rounded-xl overflow-hidden max-w-xl mx-auto border border-gray-200 focus-within:border-brand-green transition-all" onsubmit="handleSubscribe(event)">
+                    <input type="email" id="newsletter-email" placeholder="Enter your email address" class="w-full px-6 py-4 border-none focus:outline-none text-gray-900 bg-white font-medium" required>
+                    <button type="submit" id="newsletter-btn" class="px-10 py-4 bg-brand-slate text-white font-bold hover:bg-gray-800 transition whitespace-nowrap">Sign Up</button>
+                </form>
+            </div>
+
+            <div id="thank-you-message" class="hidden bg-green-50 border border-green-200 p-8 rounded-2xl shadow-sm">
+                <div class="w-16 h-16 mx-auto bg-brand-green text-white rounded-full flex items-center justify-center text-3xl mb-4 shadow-md">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h4 class="text-2xl font-black text-brand-slate mb-2">Thank You!</h4>
+                <p class="text-brand-darkgreen font-medium">Your email has been successfully added to our newsletter. We appreciate your support.</p>
+            </div>
+
+            <p id="newsletter-error" class="mt-4 text-sm font-bold text-red-500 hidden"></p>
+        </div>
+    </section>
+
+    <footer class="bg-brand-slate text-white pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
+                
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="fa-solid fa-leaf text-2xl text-brand-green"></i>
+                        <h4 class="text-2xl font-black tracking-tight text-white">FoodShare Seychelles</h4>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed max-w-sm">A digital logistics platform dedicated to eliminating food waste and ensuring equitable access to nourishment across Seychelles.</p>
+                    
+                    <a href="/about/socials/" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm font-bold transition shadow-sm">
+                        <i class="fa-solid fa-hashtag text-brand-green"></i> View Our Socials
+                    </a>
+                </div>
+
+                <div class="md:col-span-4 lg:col-span-3 lg:col-start-7">
+                    <h5 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">Platform</h5>
+                    <ul class="space-y-4 text-sm text-gray-300 font-medium">
+                        <li><a href="/client/find-food/" class="hover:text-brand-green transition">Find Food</a></li>
+                        <li><a href="/client/donate/" class="hover:text-brand-green transition">Donate Food</a></li>
+                        <li><a href="/client/volunteer/" class="hover:text-brand-green transition">Volunteer Portal</a></li>
+                        <li><a href="/login/" class="hover:text-brand-green transition">Client Login</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-3">
+                    <h5 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">Organization</h5>
+                    <ul class="space-y-4 text-sm text-gray-300 font-medium">
+                        <li><a href="/about/" class="hover:text-brand-green transition">About Us</a></li>
+                        <li><a href="/contact/" class="hover:text-brand-green transition">Contact Directory</a></li>
+                        <li><a href="/terms/" class="hover:text-brand-green transition">Terms & Conditions</a></li>
+                        <li><a href="/privacy/" class="hover:text-brand-green transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 font-medium">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+                <p class="mt-4 md:mt-0">
+                    Member of <a href="https://tylernicholasgroup.com" target="_blank" class="text-gray-300 hover:text-brand-green transition border-b border-gray-600 hover:border-brand-green pb-0.5">The Tyler Nicholas Group</a>
+                </p>
+            </div>
         </div>
     </footer>
 
     <script>
-        // Initialize Supabase with your provided credentials
-        const _supabase = supabase.createClient(
-            'https://vwngymlkjyamueyjdico.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM'
-        );
+        // Supabase Initialization
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Fetch the stats when the page loads
-        async function fetchImpactStats() {
+        // Remove Loading Screen
+        function removeLoader() {
+            const loader = document.getElementById('loader');
+            if(loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }
+        window.addEventListener('load', removeLoader);
+        setTimeout(removeLoader, 1500); // Fail-safe
+
+        // Fetch Data on Load
+        async function initPageData() {
             try {
-                const { data, error } = await _supabase
-                    .from('impact_stats')
-                    .select('meals_shared, active_volunteers, pounds_saved')
-                    .eq('id', 1)
-                    .single();
-
-                if (error) throw error;
-
-                if (data) {
-                    // Update the HTML with the live data from your database
-                    document.getElementById('stat-meals').innerText = data.meals_shared.toLocaleString();
-                    document.getElementById('stat-volunteers').innerText = data.active_volunteers.toLocaleString();
-                    document.getElementById('stat-pounds').innerText = data.pounds_saved.toLocaleString();
+                // 1. Fetch Announcement
+                const { data: annData } = await supabaseClient.from('announcements').select('message').eq('is_active', true).limit(1);
+                if (annData && annData.length > 0) {
+                    const annDiv = document.getElementById('dynamic-announcement');
+                    annDiv.innerHTML = annData[0].message;
+                    annDiv.classList.remove('hidden');
                 }
-            } catch (error) {
-                console.error('Error fetching stats:', error.message);
-                // Fallback text if the database connection fails
-                document.getElementById('stat-meals').innerText = "0";
-                document.getElementById('stat-volunteers').innerText = "0";
-                document.getElementById('stat-pounds').innerText = "0";
+
+                // 2. Fetch Stats
+                const { data: statsData } = await supabaseClient.from('public_stats').select('*').eq('is_active', true).order('display_order', { ascending: true });
+                if (statsData && statsData.length > 0) {
+                    let html = '';
+                    statsData.forEach(stat => {
+                        html += `
+                        <div class="px-4">
+                            <div class="text-4xl md:text-5xl font-black text-white mb-2 drop-shadow-sm">${stat.value}</div>
+                            <div class="text-xs font-bold uppercase tracking-widest text-brand-green">${stat.label}</div>
+                        </div>`;
+                    });
+                    document.getElementById('dynamic-stats').innerHTML = html;
+                } else {
+                    document.getElementById('dynamic-stats').innerHTML = '<div class="col-span-full py-4 text-sm font-mono text-gray-500">Stats currently unavailable.</div>';
+                }
+
+                // 3. Fetch Latest News
+                const { data: newsData } = await supabaseClient.from('news_articles').select('*').eq('is_published', true).order('published_at', { ascending: false }).limit(3);
+                if (newsData && newsData.length > 0) {
+                    let html = '';
+                    newsData.forEach(article => {
+                        const date = new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        // Strip HTML tags for clean snippet
+                        const snippet = article.content ? article.content.replace(/<[^>]*>?/gm, '') : '';
+                        
+                        html += `
+                        <a href="/news/" class="group flex flex-col bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl hover:border-brand-green transition duration-300">
+                            <div class="p-8 flex-grow flex flex-col">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-[10px] font-bold bg-green-50 text-brand-darkgreen px-2.5 py-1 rounded uppercase tracking-wider">${article.category}</span>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">${date}</span>
+                                </div>
+                                <h4 class="text-xl font-black text-brand-slate mb-3 group-hover:text-brand-green transition leading-tight">${article.title}</h4>
+                                <p class="text-sm text-gray-600 line-clamp-3 leading-relaxed mb-6">${snippet}</p>
+                                <div class="mt-auto text-sm font-bold text-brand-slate uppercase tracking-widest group-hover:text-brand-green transition">Read Article <i class="fa-solid fa-arrow-right ml-1"></i></div>
+                            </div>
+                        </a>`;
+                    });
+                    document.getElementById('dynamic-news').innerHTML = html;
+                } else {
+                    document.getElementById('dynamic-news').innerHTML = '<div class="col-span-full text-center text-gray-500 py-12 font-mono text-sm bg-gray-50 rounded-xl border border-gray-100">No news articles published yet.</div>';
+                }
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
             }
         }
 
-        // Run the function
-        fetchImpactStats();
+        // Handle Newsletter Signup
+        async function handleSubscribe(e) {
+            e.preventDefault();
+            const btn = document.getElementById('newsletter-btn');
+            const emailInput = document.getElementById('newsletter-email');
+            const errorEl = document.getElementById('newsletter-error');
+            const email = emailInput.value.trim();
+
+            if(!email) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing';
+            errorEl.classList.add('hidden');
+
+            try {
+                const { error } = await supabaseClient.from('newsletter_subscribers').insert([{ email: email }]);
+                
+                if (error) {
+                    if (error.code === '23505') {
+                        throw new Error("You are already subscribed to our list!");
+                    } else {
+                        throw new Error("A system error occurred. Please try again.");
+                    }
+                }
+
+                // Success: Hide form, show Thank You message
+                document.getElementById('newsletter-container').classList.add('hidden');
+                document.getElementById('thank-you-message').classList.remove('hidden');
+
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+                errorEl.classList.add('block');
+                btn.disabled = false;
+                btn.innerHTML = 'Sign Up';
+            }
+        }
+
+        // Initialize Data
+        document.addEventListener("DOMContentLoaded", initPageData);
     </script>
 </body>
 </html>
