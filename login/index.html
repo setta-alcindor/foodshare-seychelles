@@ -3,241 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Access | FoodShare Seychelles</title>
+    <title>Sign In | FoodShare Seychelles</title>
     
-    <link rel="icon" type="image/png" href="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+        
+        /* Copyright Protection */
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+    </style>
 </head>
-<body>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden h-screen flex flex-col" id="body" oncontextmenu="return false;">
 
-    <div class="loader-wrapper" id="loader"><div class="loader"></div></div>
-
-    <div class="top-bar">
-        <a href="https://sc.linkedin.com/company/foodshare-seychelles" target="_blank"><i class="fab fa-linkedin"></i></a>
-        <a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading Security System</p>
+        </div>
     </div>
 
-    <header>
-        <div class="logo">
-            <a href="../"><img src="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png" alt="FoodShare Seychelles Logo"></a>
-        </div>
-        <div class="menu-toggle" id="mobile-menu">&#9776;</div>
-        <nav>
-            <ul id="nav-list">
-                <li><a href="../about/">ABOUT</a></li>
-                <li><a href="../volunteer/">VOLUNTEER</a></li>
-                <li><a href="../find-food/">FIND FOOD</a></li>
-                <li><a href="../donate/">DONATE</a></li>
-                <li><a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank">BLOG</a></li>
-                <li><a href="../contact/">CONTACT</a></li>
-                <li><a href="../login/" class="staff-login active">STAFF LOGIN</a></li>
-            </ul>
-        </nav>
-    </header>
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <a href="/login/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1 text-sm">Login</a>
+                    <a href="/signup/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Sign Up</a>
+                </div>
 
-    <section class="auth-page-wrapper">
-        <div class="auth-grid">
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex overflow-hidden">
+        
+        <div class="flex-1 overflow-y-auto p-6 md:p-12 lg:p-16 flex items-center justify-center bg-white">
+            <div class="w-full max-w-md">
+                
+                <div class="mb-8">
+                    <h2 class="text-3xl font-black text-brand-slate tracking-tight mb-2">Account Sign In</h2>
+                    <p class="text-gray-500 font-medium text-sm">Enter your registered email identity and security password parameters below to enter the portal framework.</p>
+                </div>
+
+                <form id="login-form" onsubmit="handleAuthLogin(event)" class="space-y-5">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Email Address</label>
+                        <input type="email" id="email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Security Password</label>
+                            <a href="#" class="text-xs font-bold text-brand-green hover:underline">Forgot password?</a>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                            <button type="button" onclick="togglePasswordDisplayVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                <i class="fa-regular fa-eye" id="password-toggle-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" id="submit-btn" class="w-full py-4 bg-brand-slate text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-gray-800 transition shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket"></i> Authenticate Profile
+                        </button>
+                        <p id="error-box" class="text-red-500 text-xs font-bold mt-3 hidden text-center bg-red-50 border border-red-100 p-3 rounded-xl"></p>
+                    </div>
+
+                    <div class="text-center pt-4 border-t border-gray-100 text-sm font-medium text-gray-500">
+                        New to the platform registry? <a href="/signup/" class="text-brand-green font-bold hover:underline">Create an Account</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="hidden lg:flex lg:w-[40%] bg-brand-slate items-center justify-center p-12 relative overflow-hidden border-l-4 border-brand-green">
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 2px, transparent 2px); background-size: 32px 32px;"></div>
             
-            <div class="auth-info-panel">
-                <h2>Account Access</h2>
-                
-                <div class="info-block">
-                    <h3><i class="fas fa-apple-alt"></i> Why sign up to claim food?</h3>
-                    <p>Creating an account gives you direct access to our Digital Pantry. To ensure our rescued food reaches real community members and to prevent spam claims, we require everyone to register. Signing up allows you to securely claim surplus food and gives our volunteer drivers the information they need to coordinate your delivery or pickup.</p>
+            <div class="text-center text-white relative z-10 max-w-sm space-y-6">
+                <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-28 h-28 object-contain mx-auto drop-shadow-xl pointer-events-none select-none mb-4">
+                <h3 class="text-3xl font-black tracking-tight">Role Matrix Routing</h3>
+                <p class="text-gray-400 text-sm leading-relaxed font-medium">
+                    The platform identity matrix automatically determines access tokens, securely dispatching clients, collection staff, and administrative management nodes to their appropriate operational centers.
+                </p>
+                <div class="pt-4 flex justify-center gap-6 text-xs font-bold uppercase tracking-widest font-mono text-gray-400">
+                    <div class="bg-gray-800/50 px-4 py-2 rounded-xl border border-gray-700/40 text-center"><i class="fa-solid fa-users text-white block mb-1 text-sm"></i> Clients</div>
+                    <div class="bg-gray-800/50 px-4 py-2 rounded-xl border border-gray-700/40 text-center"><i class="fa-solid fa-truck-ramp-box text-white block mb-1 text-sm"></i> Staff</div>
+                    <div class="bg-gray-800/50 px-4 py-2 rounded-xl border border-gray-700/40 text-center"><i class="fa-solid fa-user-gear text-white block mb-1 text-sm"></i> Admins</div>
                 </div>
-
-                <div class="info-block" style="margin-top: 20px;">
-                    <h3><i class="fas fa-id-badge"></i> Staff & Volunteers</h3>
-                    <p>If you are an official staff member or volunteer, your credentials are already registered in the system. Please sign in directly on the right to access your management dashboard. <br><br><strong>Note:</strong> If you cannot recover your credentials, please do not create a new account. Connect with an admin directly to reset your access.</p>
-                </div>
-            </div>
-
-            <div class="auth-form-panel">
-                
-                <div id="login-section">
-                    <div class="auth-header">
-                        <h2>Welcome Back</h2>
-                    </div>
-                    <form id="login-form">
-                        <div class="form-group">
-                            <label for="loginEmail">Email Address</label>
-                            <input type="email" id="loginEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="loginPassword">Password</label>
-                            <input type="password" id="loginPassword" required>
-                        </div>
-                        
-                        <div id="login-message" style="margin-bottom: 15px; font-weight: bold; text-align: center;"></div>
-                        
-                        <button type="submit" class="btn btn-primary" id="login-btn" style="width: 100%;">Log In</button>
-                    </form>
-                    <div class="auth-toggle">
-                        Need access to the Digital Pantry? <span onclick="toggleAuth()">Sign Up Here</span>
-                    </div>
-                </div>
-
-                <div id="signup-section" class="hidden-form">
-                    <div class="auth-header">
-                        <h2>Create an Account</h2>
-                    </div>
-                    <form id="signup-form">
-                        <div class="form-group">
-                            <label for="signupName">Full Name</label>
-                            <input type="text" id="signupName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signupPhone">Phone Number</label>
-                            <input type="tel" id="signupPhone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signupEmail">Email Address</label>
-                            <input type="email" id="signupEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signupPassword">Password (Min 6 chars)</label>
-                            <input type="password" id="signupPassword" minlength="6" required>
-                        </div>
-
-                        <div id="signup-message" style="margin-bottom: 15px; font-weight: bold; text-align: center;"></div>
-
-                        <button type="submit" class="btn btn-primary" id="signup-btn" style="width: 100%;">Create Account</button>
-                    </form>
-                    <div class="auth-toggle">
-                        Already registered? <span onclick="toggleAuth()">Log In Here</span>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </section>
 
-    <footer>
-        <p>&copy; 2026 FoodShare Seychelles. All Rights Reserved.</p>
-        <p>Powered by <a href="https://tylernicholasgroup.com" target="_blank">The Tyler Nicholas Group</a> & <a href="https://tyler-nicholas-foundation.online" target="_blank">Tyler Nicholas Foundation</a>.</p>
+    </div>
+
+    <footer class="bg-white border-t border-gray-100 py-4 text-center text-xs text-gray-400 font-medium flex-shrink-0 z-10 relative">
+        <p>&copy; FoodShare Seychelles. Member of The Tyler Nicholas Group.</p>
     </footer>
 
-<script>
-        const supabaseUrl = 'https://czebjuuklhqidukkfjmu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZWJqdXVrbGhxaWR1a2tmam11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjYxOTksImV4cCI6MjA4ODgwMjE5OX0.6LDKvcHt07c-Sg6ZjOGyzrhGVCteSg234ulLpV9iNU4';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navList = document.getElementById('nav-list');
-        if (mobileMenu && navList) mobileMenu.addEventListener('click', () => navList.classList.toggle('active'));
-
+    <script>
+        // Loading Shield Tear-off
         function removeLoader() {
             const loader = document.getElementById('loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500); 
+            if(loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500);
             }
         }
         window.addEventListener('load', removeLoader);
-        if (document.readyState === 'complete') removeLoader();
-        setTimeout(removeLoader, 2500);
+        setTimeout(removeLoader, 2000); // Fail-safe structural unblock
 
-        function toggleAuth() {
-            const loginSec = document.getElementById('login-section');
-            const signupSec = document.getElementById('signup-section');
-            if (loginSec.classList.contains('hidden-form')) {
-                loginSec.classList.remove('hidden-form');
-                signupSec.classList.add('hidden-form');
+        // Input Password Toggle Utilities
+        function togglePasswordDisplayVisibility() {
+            const pwd = document.getElementById('password');
+            const icon = document.getElementById('password-toggle-icon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
             } else {
-                loginSec.classList.add('hidden-form');
-                signupSec.classList.remove('hidden-form');
+                pwd.type = 'password';
+                icon.className = 'fa-regular fa-eye';
             }
         }
 
-        // UPDATED LOG IN LOGIC WITH SMART REDIRECTS
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+        // Supabase Client Configurations
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Core Session Verification Loop
+        async function handleAuthLogin(e) {
             e.preventDefault();
-            const btn = document.getElementById('login-btn');
-            const msg = document.getElementById('login-message');
-            btn.innerText = "Authenticating...";
-            btn.disabled = true;
-            msg.innerText = "";
-
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            // 1. Sign In
-            const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-            if (authError) {
-                msg.innerText = authError.message;
-                msg.style.color = "red";
-                btn.innerText = "Log In";
-                btn.disabled = false;
-                return;
-            }
-
-            // 2. Fetch User Role
-            msg.innerText = "Verifying permissions...";
-            msg.style.color = "#8bc34a"; // Green
+            const btn = document.getElementById('submit-btn');
+            const errBox = document.getElementById('error-box');
             
-            const { data: profile, error: profileError } = await supabaseClient
-                .from('profiles')
-                .select('role')
-                .eq('id', authData.user.id)
-                .single();
-
-            if (profileError || !profile) {
-                msg.innerText = "Error reading profile. Contact Admin.";
-                msg.style.color = "red";
-                btn.innerText = "Log In";
-                btn.disabled = false;
-                return;
-            }
-
-            // 3. Smart Routing based on role
-            msg.innerText = `Welcome! Redirecting to ${profile.role} dashboard...`;
-            setTimeout(() => { 
-                if (profile.role === 'admin') {
-                    window.location.href = '../admin/';
-                } else if (profile.role === 'staff') {
-                    window.location.href = '../staff/'; // We will build this next
-                } else {
-                    window.location.href = '../find-food/';
-                }
-            }, 1000);
-        });
-
-        // SIGN UP LOGIC (Unchanged)
-        document.getElementById('signup-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('signup-btn');
-            const msg = document.getElementById('signup-message');
-            btn.innerText = "Creating Account...";
+            errBox.classList.add('hidden');
             btn.disabled = true;
-            msg.innerText = "";
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking Credentials...';
 
-            const name = document.getElementById('signupName').value;
-            const phone = document.getElementById('signupPhone').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email, password: password,
-                options: { data: { full_name: name, contact_number: phone } }
-            });
+            try {
+                // 1. Authenticate with Supabase Auth Engine
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
 
-            if (error) {
-                msg.innerText = error.message;
-                msg.style.color = "red";
-                btn.innerText = "Create Account";
+                if (authError) throw authError;
+
+                const user = authData.user;
+
+                // 2. Fetch structural role configuration value array parameters from client_profiles
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('client_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profileError) throw profileError;
+
+                // 3. Dynamic Matrix Execution Routing Based on Verified User Data Parameters
+                const userRole = profile.role || 'client';
+
+                if (userRole === 'admin') {
+                    window.location.href = '/admin/';
+                } else if (userRole === 'staff') {
+                    window.location.href = '/staff/dashboard/';
+                } else {
+                    window.location.href = '/client/dashboard/';
+                }
+
+            } catch (err) {
+                console.error("Authentication Processing Failure Context Exception:", err);
+                errBox.textContent = err.message || "Invalid credentials configuration profile state parameter sequence.";
+                errBox.classList.remove('hidden');
                 btn.disabled = false;
-            } else {
-                msg.innerText = "Account created! You can now log in.";
-                msg.style.color = "green";
-                document.getElementById('signup-form').reset();
-                setTimeout(() => { toggleAuth(); }, 1500);
+                btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Authenticate Profile';
             }
-        });
+        }
     </script>
 </body>
 </html>
