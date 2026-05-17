@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsroom | FoodShare Seychelles</title>
+    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            green: '#16a34a', 
+                            darkgreen: '#15803d',
+                            slate: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+        
+        /* Copyright Protection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        input, textarea, button, select {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden" id="body" oncontextmenu="return false;">
+
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading Newsroom</p>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <div id="nav-auth-guest" class="flex items-center gap-6">
+                        <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                        <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                    </div>
+                    <div id="nav-auth-user" class="hidden items-center gap-6">
+                        <a href="/client/dashboard/" class="text-brand-green font-bold text-sm hover:text-brand-darkgreen transition flex items-center gap-2"><i class="fa-solid fa-user-circle text-lg"></i> My Dashboard</a>
+                        <button onclick="handleLogout()" class="text-gray-500 font-bold text-sm hover:text-red-500 transition">Logout</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="w-full py-20 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">Newsroom</h1>
+            <p class="text-xl text-gray-300 font-medium max-w-2xl mx-auto leading-relaxed">
+                Stay informed with the latest updates, community impact stories, and official press releases from FoodShare Seychelles.
+            </p>
+        </div>
+    </header>
+
+    <section class="bg-gray-50 py-16 min-h-[60vh]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6 border-b border-gray-200 pb-6">
+                <div class="text-brand-slate font-black text-xl tracking-tight">
+                    Editorial Feed
+                </div>
+                
+                <div class="flex flex-wrap gap-2 justify-center" id="news-filters">
+                    <button onclick="filterNews('All')" class="filter-btn active px-5 py-2 bg-brand-slate text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-sm transition">All</button>
+                    <button onclick="filterNews('Impact Stories')" class="filter-btn px-5 py-2 bg-white text-gray-600 border border-gray-200 hover:border-brand-green text-xs font-bold uppercase tracking-wider rounded-full transition">Impact Stories</button>
+                    <button onclick="filterNews('Program Updates')" class="filter-btn px-5 py-2 bg-white text-gray-600 border border-gray-200 hover:border-brand-green text-xs font-bold uppercase tracking-wider rounded-full transition">Program Updates</button>
+                    <button onclick="filterNews('Volunteer Voices')" class="filter-btn px-5 py-2 bg-white text-gray-600 border border-gray-200 hover:border-brand-green text-xs font-bold uppercase tracking-wider rounded-full transition">Volunteer Voices</button>
+                    <button onclick="filterNews('Events')" class="filter-btn px-5 py-2 bg-white text-gray-600 border border-gray-200 hover:border-brand-green text-xs font-bold uppercase tracking-wider rounded-full transition">Events</button>
+                    <button onclick="filterNews('Media & Press Release')" class="filter-btn px-5 py-2 bg-white text-gray-600 border border-gray-200 hover:border-brand-green text-xs font-bold uppercase tracking-wider rounded-full transition">Press</button>
+                </div>
+            </div>
+
+            <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                </div>
+
+        </div>
+    </section>
+
+    <section class="bg-brand-green py-24 border-t border-brand-green">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            
+            <div id="newsletter-container">
+                <h3 class="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">Never Miss an Update</h3>
+                <p class="text-green-50 mb-10 text-lg font-medium">Get the latest impact reports and event invitations delivered directly to your inbox.</p>
+                
+                <form id="newsletter-form" class="flex flex-col sm:flex-row gap-0 justify-center shadow-2xl rounded-full overflow-hidden max-w-xl mx-auto border-2 border-white/20 focus-within:border-white transition-all" onsubmit="handleSubscribe(event)">
+                    <input type="email" id="newsletter-email" placeholder="Enter your email address..." class="w-full px-6 py-4 border-none focus:outline-none text-gray-900 bg-white font-medium text-lg" required>
+                    <button type="submit" id="newsletter-btn" class="px-10 py-4 bg-brand-slate text-white font-bold hover:bg-gray-800 transition whitespace-nowrap text-lg">Subscribe</button>
+                </form>
+            </div>
+
+            <div id="thank-you-message" class="hidden bg-white/10 backdrop-blur-sm border border-white/20 p-8 rounded-3xl shadow-xl">
+                <div class="w-20 h-20 mx-auto bg-white text-brand-green rounded-full flex items-center justify-center text-4xl mb-6 shadow-md">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h4 class="text-3xl font-black text-white mb-2">Thank You!</h4>
+                <p class="text-green-50 font-medium text-lg">Your email has been successfully added to our newsletter list.</p>
+            </div>
+
+            <p id="newsletter-error" class="mt-4 text-sm font-bold text-red-200 hidden"></p>
+        </div>
+    </section>
+
+    <footer class="bg-brand-slate text-white pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-4 mb-6">
+                        <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-14 h-14 object-contain drop-shadow-lg pointer-events-none">
+                        <h4 class="text-3xl font-black tracking-tight text-white">FoodShare Seychelles</h4>
+                    </div>
+                    <p class="text-gray-400 text-base mb-8 leading-relaxed max-w-sm">A digital logistics platform dedicated to eliminating food waste and ensuring equitable access to nourishment across Seychelles.</p>
+                    <a href="/about/socials/" class="inline-flex items-center gap-3 px-6 py-3 bg-gray-800 hover:bg-brand-green border border-gray-700 hover:border-brand-green rounded-lg text-sm font-bold transition shadow-md">
+                        <i class="fa-solid fa-hashtag"></i> View Our Socials
+                    </a>
+                </div>
+                <div class="md:col-span-4 lg:col-span-3 lg:col-start-7">
+                    <h5 class="text-xs font-black uppercase tracking-widest text-gray-500 mb-6">Platform</h5>
+                    <ul class="space-y-4 text-base text-gray-300 font-medium">
+                        <li><a href="/client/find-food/" class="hover:text-brand-green transition">Find Food</a></li>
+                        <li><a href="/client/donate/" class="hover:text-brand-green transition">Donate Food</a></li>
+                        <li><a href="/client/volunteer/" class="hover:text-brand-green transition">Volunteer Portal</a></li>
+                        <li><a href="/login/" class="hover:text-brand-green transition">Client Login</a></li>
+                    </ul>
+                </div>
+                <div class="md:col-span-3">
+                    <h5 class="text-xs font-black uppercase tracking-widest text-gray-500 mb-6">Organization</h5>
+                    <ul class="space-y-4 text-base text-gray-300 font-medium">
+                        <li><a href="/about/" class="hover:text-brand-green transition">About Us</a></li>
+                        <li><a href="/contact/" class="hover:text-brand-green transition">Contact Directory</a></li>
+                        <li><a href="/terms/" class="hover:text-brand-green transition">Terms & Conditions</a></li>
+                        <li><a href="/privacy/" class="hover:text-brand-green transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 font-medium">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+                <p class="mt-4 md:mt-0">
+                    Member of <a href="https://tylernicholasgroup.com" target="_blank" class="text-gray-300 hover:text-brand-green transition border-b border-gray-600 hover:border-brand-green pb-0.5">The Tyler Nicholas Group</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Disable Right Click & Drag
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => { if(event.target.tagName.toLowerCase() === 'img') event.preventDefault(); });
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; }
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) { return false; }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+        }
+
+        // True Load Logic
+        function removeLoader() {
+            const loader = document.getElementById('loader');
+            const body = document.getElementById('body');
+            if(loader && loader.style.display !== 'none') {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    if (body) body.classList.remove('overflow-hidden');
+                }, 500); 
+            }
+        }
+
+        Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => {
+            img.onload = img.onerror = resolve;
+        }))).then(() => {
+            if (document.readyState === 'complete') { removeLoader(); } 
+            else { window.addEventListener('load', removeLoader); }
+        });
+        setTimeout(removeLoader, 7000); // Fail-safe
+
+        // Supabase Initialization & Auth Logic
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let masterNewsData = [];
+
+        // Check Auth State
+        async function checkAuth() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    document.getElementById('nav-auth-guest').classList.add('hidden');
+                    document.getElementById('nav-auth-user').classList.remove('hidden');
+                    document.getElementById('nav-auth-user').classList.add('flex');
+                }
+            } catch (err) { console.error("Auth check failed", err); }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        // Newsroom Logic
+        const getEmptyStateHTML = (title, message) => `
+            <div class="col-span-full flex flex-col items-center justify-center p-16 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 text-3xl mb-6 shadow-inner">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <h4 class="text-2xl font-black text-brand-slate mb-2 tracking-tight">${title}</h4>
+                <p class="text-gray-500 max-w-md mx-auto text-center font-medium">${message}</p>
+            </div>
+        `;
+
+        async function fetchNews() {
+            const container = document.getElementById('news-container');
+            
+            try {
+                // Fetch only published articles
+                const { data, error } = await supabaseClient
+                    .from('news_articles')
+                    .select('*')
+                    .eq('status', 'published')
+                    .order('published_at', { ascending: false });
+
+                if (error) throw error;
+                
+                masterNewsData = data || [];
+                renderNews('All'); // Initial render
+
+            } catch (err) {
+                console.error("Error fetching news:", err);
+                container.innerHTML = getEmptyStateHTML("Connection Error", "We are having trouble connecting to the news database. Please try again later.");
+            }
+        }
+
+        function filterNews(category) {
+            // Update active button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.textContent.trim().toLowerCase() === category.toLowerCase() || (category === 'All' && btn.textContent.trim() === 'All')) {
+                    btn.className = "filter-btn active px-5 py-2 bg-brand-slate text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-sm transition";
+                } else {
+                    btn.className = "filter-btn px-5 py-2 bg-white text-gray-600 border border-gray-200 hover:border-brand-green text-xs font-bold uppercase tracking-wider rounded-full transition";
+                }
+            });
+            renderNews(category);
+        }
+
+        function renderNews(categoryFilter) {
+            const container = document.getElementById('news-container');
+            
+            let filteredData = masterNewsData;
+            if (categoryFilter !== 'All') {
+                filteredData = masterNewsData.filter(article => article.category === categoryFilter);
+            }
+
+            if (filteredData.length === 0) {
+                container.innerHTML = getEmptyStateHTML("No Articles Found", `There are currently no published articles in the "${categoryFilter}" category. Please check back later.`);
+                return;
+            }
+
+            let html = '';
+            filteredData.forEach(article => {
+                const date = new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const snippet = article.content ? article.content.replace(/<[^>]*>?/gm, '') : '';
+                
+                // If a featured image exists, show it. Otherwise, show a nice gradient block.
+                const imageBlock = article.featured_image_url 
+                    ? `<img src="${article.featured_image_url}" alt="${article.title}" class="w-full h-56 object-cover transform group-hover:scale-105 transition duration-700">` 
+                    : `<div class="w-full h-56 bg-gradient-to-br from-brand-slate to-brand-green flex items-center justify-center"><i class="fa-solid fa-leaf text-4xl text-white/30"></i></div>`;
+
+                html += `
+                <a href="/news/article/?id=${article.id}" class="group flex flex-col bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-2xl hover:border-brand-green hover:-translate-y-2 transition duration-500">
+                    <div class="relative overflow-hidden border-b border-gray-100">
+                        ${imageBlock}
+                        <div class="absolute top-4 left-4">
+                            <span class="inline-block px-3 py-1.5 bg-white/90 backdrop-blur text-brand-darkgreen text-[10px] font-black uppercase tracking-widest rounded-md shadow-sm">
+                                ${article.category}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-8 flex-grow flex flex-col relative z-10">
+                        <div class="flex items-center mb-4">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><i class="fa-regular fa-clock mr-1"></i> ${date}</span>
+                        </div>
+                        <h4 class="text-2xl font-black text-brand-slate mb-4 group-hover:text-brand-green transition leading-tight">${article.title}</h4>
+                        <p class="text-base text-gray-600 line-clamp-3 leading-relaxed mb-8">${snippet}</p>
+                        <div class="mt-auto text-sm font-black text-brand-slate uppercase tracking-widest group-hover:text-brand-green transition flex items-center">
+                            Read Full Story <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition"></i>
+                        </div>
+                    </div>
+                </a>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // Handle Newsletter Signup
+        async function handleSubscribe(e) {
+            e.preventDefault();
+            const btn = document.getElementById('newsletter-btn');
+            const emailInput = document.getElementById('newsletter-email');
+            const errorEl = document.getElementById('newsletter-error');
+            const email = emailInput.value.trim();
+
+            if(!email) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing';
+            errorEl.classList.add('hidden');
+
+            try {
+                const { error } = await supabaseClient.from('newsletter_subscribers').insert([{ email: email }]);
+                if (error) {
+                    if (error.code === '23505') throw new Error("You are already subscribed to our list!");
+                    else throw new Error("A system error occurred. Please try again.");
+                }
+                document.getElementById('newsletter-container').classList.add('hidden');
+                document.getElementById('thank-you-message').classList.remove('hidden');
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+                errorEl.classList.add('block');
+                btn.disabled = false;
+                btn.innerHTML = 'Subscribe';
+            }
+        }
+
+        // Execution
+        checkAuth();
+        fetchNews();
+    </script>
+</body>
+</html>
