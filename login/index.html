@@ -104,7 +104,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Security Password</label>
-                            <a href="#" class="text-xs font-bold text-brand-green hover:underline">Forgot password?</a>
+                            <button type="button" onclick="openResetModal()" class="text-xs font-bold text-brand-green hover:underline focus:outline-none">Forgot password?</button>
                         </div>
                         <div class="relative">
                             <input type="password" id="password" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
@@ -148,6 +148,51 @@
 
     </div>
 
+    <div id="reset-modal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-brand-slate/60 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full border border-gray-100 overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="reset-modal-card">
+            
+            <div class="p-6 bg-brand-slate text-white flex justify-between items-center">
+                <h3 class="text-xl font-black tracking-tight"><i class="fa-solid fa-key text-brand-green mr-2"></i> Password Recovery</h3>
+                <button onclick="closeResetModal()" class="text-gray-400 hover:text-white transition text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="p-8 space-y-6">
+                <div id="reset-form-context">
+                    <p class="text-sm text-gray-500 font-medium mb-4">Enter your registered email below. Our system will check your profile permissions before issuing reset parameters.</p>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Account Email Address</label>
+                        <input type="email" id="reset_email" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                    </div>
+                    <button type="button" onclick="verifyResetPermissions()" id="verify-reset-btn" class="w-full mt-5 py-3.5 bg-brand-green text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-darkgreen transition shadow-md">Verify Identity Context</button>
+                </div>
+
+                <div id="reset-client-success" class="hidden text-center space-y-4">
+                    <div class="w-16 h-16 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-3xl mx-auto"><i class="fa-solid fa-envelope-circle-check"></i></div>
+                    <h4 class="text-xl font-black text-brand-slate">Reset Token Dispatched</h4>
+                    <p class="text-sm text-gray-600 font-medium">Your client profile classification has been verified. A secure password reset link has been transmitted to your email.</p>
+                </div>
+
+                <div id="reset-admin-restricted" class="hidden space-y-4 bg-amber-50 border border-amber-200 p-6 rounded-2xl">
+                    <div class="flex items-center gap-3 border-b border-amber-200 pb-3">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-600"></i>
+                        <h4 class="text-lg font-black text-amber-900">Administrative Lockout</h4>
+                    </div>
+                    <p class="text-sm text-amber-800 font-medium leading-relaxed">
+                        Automated security recoveries are strictly unavailable for internal Staff and Executive Administrator accounts. 
+                    </p>
+                    <p class="text-sm text-amber-800 font-medium leading-relaxed">
+                        To recover your platform credentials, you must manual initiate an identity re-verification request by emailing:
+                    </p>
+                    <div class="text-center py-2 bg-white rounded-xl border border-amber-300 font-mono text-xs font-bold text-brand-slate">
+                        admin@foodshare-seychelles.online
+                    </div>
+                </div>
+
+                <p id="reset-error" class="text-red-500 text-xs font-bold text-center hidden bg-red-50 p-2 rounded-lg"></p>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-white border-t border-gray-100 py-4 text-center text-xs text-gray-400 font-medium flex-shrink-0 z-10 relative">
         <p>&copy; FoodShare Seychelles. Member of The Tyler Nicholas Group.</p>
     </footer>
@@ -182,6 +227,77 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // --- PASSWORD RESET MODAL LOGIC ---
+        function openResetModal() {
+            const modal = document.getElementById('reset-modal');
+            const card = document.getElementById('reset-modal-card');
+            
+            // Reset state views
+            document.getElementById('reset-form-context').classList.remove('hidden');
+            document.getElementById('reset-client-success').classList.add('hidden');
+            document.getElementById('reset-admin-restricted').classList.add('hidden');
+            document.getElementById('reset-error').classList.add('hidden');
+            document.getElementById('reset_email').value = '';
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => { card.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+
+        function closeResetModal() {
+            const modal = document.getElementById('reset-modal');
+            const card = document.getElementById('reset-modal-card');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+        }
+
+        async function verifyResetPermissions() {
+            const emailInput = document.getElementById('reset_email').value.trim();
+            const btn = document.getElementById('verify-reset-btn');
+            const errEl = document.getElementById('reset-error');
+            
+            if(!emailInput) return;
+
+            errEl.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Checking Database Matrix...';
+
+            try {
+                // Query public profiles table to verify role constraints
+                const { data: profile, error } = await supabaseClient
+                    .from('client_profiles')
+                    .select('role')
+                    .eq('email', emailInput)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!profile) {
+                    throw new Error("No registered account found with that email identifier.");
+                }
+
+                document.getElementById('reset-form-context').classList.add('hidden');
+
+                if (profile.role === 'client') {
+                    // Trigger Supabase automated token recovery link for clients
+                    await supabaseClient.auth.resetPasswordForEmail(emailInput, {
+                        redirectTo: window.location.origin + '/client/dashboard/'
+                    });
+                    document.getElementById('reset-client-success').classList.remove('hidden');
+                } else {
+                    // Restrict staff or admin roles, pop up physical contact parameter notice block
+                    document.getElementById('reset-admin-restricted').classList.remove('hidden');
+                }
+
+            } catch (err) {
+                console.error(err);
+                errEl.textContent = err.message || "An identity verification exception occurred.";
+                errEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = 'Verify Identity Context';
+            }
+        }
+
         // Core Session Verification Loop
         async function handleAuthLogin(e) {
             e.preventDefault();
@@ -196,17 +312,16 @@
             const password = document.getElementById('password').value;
 
             try {
-                // 1. Authenticate with Supabase Auth Engine
+                // Authenticate with Supabase Auth Engine
                 const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
 
                 if (authError) throw authError;
-
                 const user = authData.user;
 
-                // 2. Fetch structural role configuration value array parameters from client_profiles
+                // Fetch structural role configuration parameters from client_profiles
                 const { data: profile, error: profileError } = await supabaseClient
                     .from('client_profiles')
                     .select('role')
@@ -215,7 +330,6 @@
 
                 if (profileError) throw profileError;
 
-                // 3. Dynamic Matrix Execution Routing Based on Verified User Data Parameters
                 const userRole = profile.role || 'client';
 
                 if (userRole === 'admin') {
