@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Food | FoodShare Seychelles</title>
+    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+        
+        /* Copyright Protection */
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden" id="body" oncontextmenu="return false;">
+
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Syncing Inventory</p>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <div id="nav-auth-guest" class="flex items-center gap-6">
+                        <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                        <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                    </div>
+                    <div id="nav-auth-user" class="hidden items-center gap-6">
+                        <a href="/client/dashboard/" class="text-brand-green font-bold text-sm hover:text-brand-darkgreen transition flex items-center gap-2"><i class="fa-solid fa-user-circle text-lg"></i> My Dashboard</a>
+                        <button onclick="handleLogout()" class="text-gray-500 font-bold text-sm hover:text-red-500 transition">Logout</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="w-full py-16 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Available Food Directory</h1>
+            <p class="text-lg text-gray-300 font-medium max-w-2xl mx-auto">
+                Select an active, verified listing below to request an food allocation package for your household.
+            </p>
+        </div>
+    </header>
+
+    <section class="bg-gray-50 py-16 min-h-[60vh]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div id="auth-wall" class="hidden bg-white p-12 rounded-3xl shadow-md border border-gray-200 text-center max-w-xl mx-auto">
+                <div class="w-20 h-20 bg-blue-50 text-brand-blue rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-lock"></i></div>
+                <h2 class="text-3xl font-black text-brand-slate mb-4">Portal Access Secured</h2>
+                <p class="text-gray-600 font-medium mb-8 max-w-sm mx-auto leading-relaxed">
+                    To browse active listings or submit allocation requests, you must be securely signed into your profile.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="/login/" class="px-8 py-3.5 bg-brand-slate text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-md">Sign In</a>
+                    <a href="/signup/" class="px-8 py-3.5 bg-white text-gray-700 border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition shadow-sm">Sign Up</a>
+                </div>
+            </div>
+
+            <div id="request-success" class="hidden bg-white p-12 rounded-3xl shadow-lg border border-brand-green text-center max-w-2xl mx-auto">
+                <div class="w-24 h-24 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-5xl mx-auto mb-6">
+                    <i class="fa-solid fa-phone-volume"></i>
+                </div>
+                <h2 class="text-4xl font-black text-brand-slate mb-4">Form Completed & Sent</h2>
+                <p class="text-lg text-gray-600 font-medium mb-8 max-w-lg mx-auto leading-relaxed">
+                    Your request has been successfully registered on the platform ledger. Please follow the direct phone protocol below to confirm and schedule your pickup or delivery.
+                </p>
+                
+                <div class="bg-brand-slate text-white p-8 rounded-2xl shadow-inner max-w-xl mx-auto text-left">
+                    <p class="text-brand-green font-bold uppercase tracking-widest text-xs mb-2 text-center">Mandatory Next Step</p>
+                    <p class="font-medium text-base mb-4 text-center">Contact our logistics team immediately:</p>
+                    <a href="tel:+2482596659" class="text-3xl font-black text-white hover:text-brand-green transition block text-center mb-6">+248 2596659</a>
+                    <p class="text-sm text-gray-300 leading-relaxed border-t border-gray-700 pt-4">
+                        Please state <strong>your name</strong> clearly to the respective staff member and advise them that you have just applied for a food listing. The staff member will immediately review your request state and inform you of further details.
+                    </p>
+                </div>
+                
+                <div class="mt-8">
+                    <button onclick="window.location.reload()" class="text-brand-green font-bold hover:text-brand-darkgreen transition">Browse Available Inventory</button>
+                </div>
+            </div>
+
+            <div id="directory-layout" class="hidden">
+                <div id="food-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div id="request-modal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-brand-slate/60 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-card">
+            
+            <div class="bg-brand-slate text-white p-6 flex justify-between items-center border-b border-gray-800">
+                <div>
+                    <span id="modal-category-badge" class="inline-block px-2.5 py-1 bg-brand-green text-white text-[10px] font-black uppercase tracking-wider rounded mb-1">Category</span>
+                    <h3 class="text-2xl font-black tracking-tight" id="modal-item-title">Item Title</h3>
+                </div>
+                <button onclick="closeRequestModal()" class="text-gray-400 hover:text-white transition text-2xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="food-request-form" onsubmit="handleRequestSubmit(event)" class="p-8 space-y-6">
+                <input type="hidden" id="target_listing_id">
+
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-gray-600">
+                    <div class="md:col-span-2 border-b border-gray-200 pb-2 flex justify-between items-center">
+                        <span class="font-bold uppercase tracking-wider text-gray-400 text-[10px]">Recipient Validation Details</span>
+                        <span class="text-brand-green text-[10px] font-bold uppercase tracking-wider"><i class="fa-solid fa-circle-check"></i> Account Profile Verified</span>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Full Name</label>
+                        <input type="text" id="req_full_name" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Email Address</label>
+                        <input type="email" id="req_email" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Primary Phone</label>
+                        <input type="tel" id="req_phone" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Physical Address</label>
+                        <input type="text" id="req_address" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-500 mb-1 font-bold uppercase tracking-wider text-[10px]">Alternative Phone Number <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
+                        <input type="text" id="req_other_phone" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-brand-green">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Household Size *</label>
+                        <input type="number" id="household_size" min="1" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium" placeholder="Total members in house">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Logistics Mode *</label>
+                        <select id="logistics_option" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium appearance-none cursor-pointer">
+                            <option value="" disabled selected>Select execution method...</option>
+                            <option value="I can Pick up the Food">I can Pick up the Food</option>
+                            <option value="I Require Delivery of the Product">I Require Delivery of the Product</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="allergen-warning-block" class="hidden bg-amber-50 border border-amber-200 p-5 rounded-2xl">
+                    <label class="flex items-start gap-3 cursor-pointer group">
+                        <div class="mt-0.5">
+                            <input type="checkbox" id="allergen_ack" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500 cursor-pointer transition">
+                        </div>
+                        <span class="text-sm text-amber-800 font-medium group-hover:text-amber-950 transition" id="allergen-ack-text">
+                            I understand this item contains stated allergens and I accept responsibility.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="bg-blue-50/60 border border-blue-100 p-5 rounded-2xl">
+                    <label class="flex items-start gap-3 cursor-pointer group">
+                        <div class="mt-0.5">
+                            <input type="checkbox" id="no_resale" required class="w-5 h-5 text-brand-green border-gray-300 rounded focus:ring-brand-green cursor-pointer transition">
+                        </div>
+                        <span class="text-sm text-gray-600 font-medium group-hover:text-gray-900 transition">
+                            I certify that this food is for personal consumption/my household and will not be resold. *
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeRequestModal()" class="px-5 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition text-sm">Cancel</button>
+                    <button type="submit" id="submit-request-btn" class="px-6 py-3 bg-brand-green text-white font-black uppercase tracking-wider rounded-xl hover:bg-brand-darkgreen transition text-sm shadow-md">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-brand-slate text-white pt-10 pb-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500 font-medium">
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Right click protection
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => { if(event.target.tagName.toLowerCase() === 'img') event.preventDefault(); });
+
+        // Supabase App Config
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let userProfile = null;
+        let localActiveListings = [];
+
+        const getEmptyStateHTML = (title, message, icon) => `
+            <div class="col-span-full flex flex-col items-center justify-center p-16 bg-white rounded-3xl border border-gray-100 shadow-sm text-center">
+                <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-brand-green text-3xl mb-6 shadow-inner"><i class="fa-solid ${icon}"></i></div>
+                <h4 class="text-2xl font-black text-brand-slate mb-2 tracking-tight">${title}</h4>
+                <p class="text-gray-500 max-w-md mx-auto font-medium leading-relaxed">${message}</p>
+            </div>
+        `;
+
+        function removeLoader() {
+            const loader = document.getElementById('loader');
+            if(loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500);
+            }
+        }
+
+        async function initPage() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    currentUser = session.user;
+                    
+                    document.getElementById('nav-auth-guest').classList.add('hidden');
+                    document.getElementById('nav-auth-user').classList.remove('hidden');
+                    document.getElementById('nav-auth-user').classList.add('flex');
+
+                    const { data: profile } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
+                    userProfile = profile;
+                    
+                    if (profile) {
+                        const compiledName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User Profile';
+                        document.getElementById('req_full_name').value = compiledName;
+                        document.getElementById('req_email').value = profile.email || '';
+                        document.getElementById('req_phone').value = profile.mobile_phone || '';
+                        document.getElementById('req_address').value = profile.physical_address || '';
+                    }
+
+                    document.getElementById('auth-wall').style.display = 'none';
+                    document.getElementById('directory-layout').classList.remove('hidden');
+                    
+                    await loadFoodDirectory();
+                } else {
+                    document.getElementById('auth-wall').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("System sync failed", err);
+            } finally {
+                removeLoader();
+            }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        async function loadFoodDirectory() {
+            const grid = document.getElementById('food-grid');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('food_listings')
+                    .select('*')
+                    .eq('is_available', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                localActiveListings = data || [];
+
+                if (localActiveListings.length === 0) {
+                    grid.innerHTML = getEmptyStateHTML("Directory Clear", "All listed food configurations have been claimed or distribution limits have passed. Check back soon.", "fa-box-open");
+                    return;
+                }
+
+                let html = '';
+                localActiveListings.forEach(item => {
+                    const timeWindowFrom = new Date(item.available_from).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const timeWindowTo = new Date(item.available_to).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const dateString = new Date(item.available_from).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const allergensText = (item.allergen_disclosures && item.allergen_disclosures.length > 0) ? item.allergen_disclosures.join(', ') : 'None';
+
+                    html += `
+                    <div class="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl hover:border-brand-green transition duration-500 flex flex-col">
+                        <div class="p-8 flex-grow flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-[10px] font-bold bg-green-50 text-brand-darkgreen px-2.5 py-1 rounded uppercase tracking-wider">${item.food_category}</span>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-scale-balanced mr-1"></i> ${item.weight_kg} KG</span>
+                            </div>
+                            <h4 class="text-2xl font-black text-brand-slate mb-2 tracking-tight leading-tight">${item.title}</h4>
+                            <p class="text-sm text-gray-500 font-medium mb-6 flex items-center gap-1.5"><i class="fa-solid fa-snowflake text-brand-green/70"></i> ${item.storage_requirements}</p>
+                            
+                            <div class="mt-auto space-y-3 bg-gray-50 p-4 rounded-2xl border border-gray-100 text-sm font-medium text-gray-600">
+                                <p><span class="text-gray-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Availability Window</span><i class="fa-regular fa-clock text-brand-green mr-1"></i> ${dateString} (${timeWindowFrom} - ${timeWindowTo})</p>
+                                <p><span class="text-gray-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Allergens Disclosure</span><i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i> <span class="${allergensText !== 'None' ? 'text-amber-700 font-bold' : ''}">${allergensText}</span></p>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-gray-50 border-t border-gray-100">
+                            <button onclick="openRequestModal('${item.id}')" class="w-full py-3 bg-brand-slate text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-green shadow transition duration-300">Claim Allocation</button>
+                        </div>
+                    </div>`;
+                });
+                grid.innerHTML = html;
+            } catch (err) {
+                console.error("Directory fetch exception", err);
+                grid.innerHTML = getEmptyStateHTML("Sync Failure", "Failed to compile inventory data arrays.", "fa-triangle-exclamation");
+            }
+        }
+
+        function openRequestModal(id) {
+            const item = localActiveListings.find(x => x.id === id);
+            if (!item) return;
+
+            document.getElementById('target_listing_id').value = id;
+            document.getElementById('modal-item-title').textContent = item.title;
+            document.getElementById('modal-category-badge').textContent = item.food_category;
+
+            const warningBlock = document.getElementById('allergen-warning-block');
+            const ackCheckbox = document.getElementById('allergen_ack');
+            const hasAllergens = item.allergen_disclosures && item.allergen_disclosures.length > 0 && !item.allergen_disclosures.includes('None');
+            
+            if (hasAllergens) {
+                warningBlock.classList.remove('hidden');
+                document.getElementById('allergen-ack-text').innerHTML = `I understand this item contains <strong>${item.allergen_disclosures.join(', ')}</strong> and I accept responsibility. *`;
+                ackCheckbox.required = true;
+            } else {
+                warningBlock.classList.add('hidden');
+                ackCheckbox.required = false;
+                ackCheckbox.checked = false;
+            }
+
+            const modal = document.getElementById('request-modal');
+            const card = document.getElementById('modal-card');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => { card.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+
+        function closeRequestModal() {
+            const modal = document.getElementById('request-modal');
+            const card = document.getElementById('modal-card');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.getElementById('food-request-form').reset(); }, 300);
+        }
+
+        async function handleRequestSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-request-btn');
+            const listingId = document.getElementById('target_listing_id').value;
+
+            btn.disabled = true;
+            btn.textContent = 'Allocating Batch...';
+
+            const payload = {
+                listing_id: listingId,
+                client_id: currentUser.id,
+                full_name: document.getElementById('req_full_name').value,
+                email_address: document.getElementById('req_email').value,
+                phone_number: document.getElementById('req_phone').value,
+                physical_address: document.getElementById('req_address').value,
+                other_phone: document.getElementById('req_other_phone').value.trim() || null,
+                household_size: parseInt(document.getElementById('household_size').value),
+                logistics_option: document.getElementById('logistics_option').value,
+                allergen_acknowledged: document.getElementById('allergen_ack').checked,
+                certified_no_resale: document.getElementById('no_resale').checked
+            };
+
+            try {
+                // 1. Write the snapshot record to food_requests
+                const { error: requestError } = await supabaseClient.from('food_requests').insert([payload]);
+                if (requestError) throw requestError;
+
+                // 2. Mark the listing as unavailable so others can't double-claim it
+                await supabaseClient.from('food_listings').update({ is_available: false }).eq('id', listingId);
+
+                closeRequestModal();
+                
+                // Hide listings interface completely, reveal success communication card
+                document.getElementById('directory-layout').classList.add('hidden');
+                document.getElementById('request-success').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                console.error("Fulfillment entry request error:", err);
+                alert("Fulfillment reservation failure. Verify local parameter properties.");
+                btn.disabled = false;
+                btn.textContent = 'Submit Request';
+            }
+        }
+
+        // Run Init Sequence
+        Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => { initPage(); });
+        setTimeout(initPage, 7000); // Fail-safe
+    </script>
+</body>
+</html>
