@@ -5,227 +5,316 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us | FoodShare Seychelles</title>
     
-    <link rel="icon" type="image/png" href="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            green: '#16a34a', 
+                            darkgreen: '#15803d',
+                            slate: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        .impact-bg {
-            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-            color: var(--white);
-            text-align: center;
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.8s ease-out, visibility 0.8s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+        
+        /* Copyright Protection: Disable text selection everywhere except inputs */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
-        .impact-bg .section-title {
-            color: var(--white);
-            border-bottom: 2px solid rgba(255,255,255,0.3);
-        }
-        .impact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        .impact-stat i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-        .impact-stat h3 {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-            font-weight: 800;
-        }
-        .impact-stat p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        .partners-grid {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 50px;
-            margin-top: 30px;
-        }
-        .partner-logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-dark);
-            transition: transform 0.3s ease;
-        }
-        .partner-logo:hover {
-            transform: translateY(-5px);
-            color: var(--primary-green);
-        }
-        .partner-logo i {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            color: #555;
-            transition: color 0.3s ease;
-        }
-        .partner-logo:hover i {
-            color: var(--primary-green);
-        }
-        .partner-logo h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
+        input, textarea, button, select {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
         }
     </style>
 </head>
-<body>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden" id="body" oncontextmenu="return false;">
 
-    <div class="loader-wrapper" id="loader">
-        <div class="loader"></div>
-    </div>
-
-    <div class="top-bar">
-        <a href="https://sc.linkedin.com/company/foodshare-seychelles" target="_blank" title="Official LinkedIn Page"><i class="fab fa-linkedin"></i></a>
-        <a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank" title="LinkedIn Blog"><i class="fab fa-linkedin-in"></i></a>
-    </div>
-
-    <header>
-        <div class="logo">
-            <a href="/"><img src="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png" alt="FoodShare Seychelles Logo"></a>
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-700">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-black tracking-widest uppercase text-xs">Loading Assets</p>
         </div>
-        
-        <div class="menu-toggle" id="mobile-menu">&#9776;</div>
+    </div>
 
-        <nav>
-            <ul id="nav-list">
-                <li><a href="/about/" class="active">ABOUT</a></li>
-                <li><a href="/volunteer/">VOLUNTEER</a></li>
-                <li><a href="/find-food/">FIND FOOD</a></li>
-                <li><a href="/donate/">DONATE</a></li>
-                <li><a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank">BLOG</a></li>
-                <li><a href="/contact/">CONTACT</a></li>
-                <li><a href="/login/" class="staff-login">LOGIN</a></li>
-            </ul>
-        </nav>
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                    <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="w-full py-32 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 20px 20px;"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">Our Mission & Story</h1>
+            <p class="text-xl text-gray-300 font-medium max-w-2xl mx-auto leading-relaxed">
+                We are building a robust digital infrastructure to eradicate food insecurity and reduce commercial waste across Seychelles.
+            </p>
+        </div>
     </header>
 
-    <section class="page-header">
-        <h1>The Heart of FoodShare</h1>
-    </section>
+    <section class="bg-white py-24 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                
+                <div class="bg-gray-50 p-10 md:p-14 rounded-3xl border border-gray-200 shadow-sm relative">
+                    <i class="fa-solid fa-bullseye text-5xl text-brand-green mb-6 block"></i>
+                    <h3 class="text-3xl font-black text-brand-slate mb-4">Our Mission</h3>
+                    <p class="text-lg text-gray-600 leading-relaxed font-medium">
+                        To act as the definitive bridge between surplus food and the communities that need it. We provide a seamless, dignified, and digitally managed ecosystem that empowers businesses to donate efficiently and individuals to receive support without stigma.
+                    </p>
+                </div>
 
-    <section class="section-container">
-        <h2 class="section-title">Our Story</h2>
-        <div class="story-text">
-            <p>In the beautiful islands of Seychelles, a stark contrast exists. While our supermarkets and hospitality sectors occasionally generate surplus, there are vulnerable individuals and families who face daily challenges with food insecurity. FoodShare Seychelles was born out of a simple, compelling idea: bridging this gap.</p>
-            <br>
-            <p>We recognized that food waste is not just an environmental issue—contributing heavily to landfill mass and CO2 emissions—but a missed opportunity to nourish our local community. By mobilizing a dedicated network of volunteers, donors, and corporate partners, we established a digital and physical infrastructure to rescue surplus food and redirect it to where it is needed most. Today, we stand as a beacon of compassion and sustainability in Seychelles.</p>
-        </div>
-    </section>
+                <div class="bg-brand-slate p-10 md:p-14 rounded-3xl border border-gray-800 shadow-xl relative text-white">
+                    <i class="fa-solid fa-eye text-5xl text-brand-green mb-6 block"></i>
+                    <h3 class="text-3xl font-black text-white mb-4">Our Vision</h3>
+                    <p class="text-lg text-gray-300 leading-relaxed font-medium">
+                        A Seychelles where no edible food goes to a landfill, and no citizen goes to sleep hungry. We envision a future where commercial food waste is culturally unacceptable and logistical barriers to charity are entirely eliminated.
+                    </p>
+                </div>
 
-    <section class="section-container" style="background-color: #fff;">
-        <h2 class="section-title">Mission & Vision</h2>
-        <div class="mv-container">
-            <div class="mv-card">
-                <h3>Our Mission</h3>
-                <p>To rescue quality surplus food from local businesses and distribute it efficiently to individuals and community organizations in need across Seychelles, ensuring that no good food goes to waste while fostering a culture of localized compassion and service.</p>
-            </div>
-            <div class="mv-card">
-                <h3>Our Vision</h3>
-                <p>A sustainable and hunger-free Seychelles where the community works in synergy to protect the environment and uplift its most vulnerable citizens, leading the Indian Ocean region in food waste diversion and food security.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="section-container impact-bg">
-        <h2 class="section-title">Our Impact So Far</h2>
-        <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto;">Together with our community, we are making a measurable difference in food security and environmental sustainability across the islands.</p>
-        
-        <div class="impact-grid">
-            <div class="impact-stat">
-                <i class="fas fa-box-open"></i>
-                <h3>N/A</h3>
-                <p>KGs of Food Rescued</p>
-            </div>
-            <div class="impact-stat">
-                <i class="fas fa-utensils"></i>
-                <h3>N/A</h3>
-                <p>Meals Provided</p>
-            </div>
-            <div class="impact-stat">
-                <i class="fas fa-users"></i>
-                <h3>5+</h3>
-                <p>Active Volunteers</p>
-            </div>
-            <div class="impact-stat">
-                <i class="fas fa-leaf"></i>
-                <h3>N/A</h3>
-                <p>Tons CO2 Saved</p>
             </div>
         </div>
     </section>
 
-    <section class="section-container">
-        <h2 class="section-title">Meet The Team</h2>
-        <div class="team-grid">
-            <div class="team-member">
-                <img src="https://media.licdn.com/dms/image/v2/D4D03AQGRKh3DGxSABQ/profile-displayphoto-scale_400_400/B4DZr4z1B9GwAg-/0/1765110932319?e=1774483200&v=beta&t=kfbgGyoPquwXygrYf0wrgOBTe-Mu4JydRJcYd3WKm4g" alt="Tyler Nicholas">
-                <h4>Tyler Nicholas</h4>
-                <p>Technology Coordinator & Recruiter</p>
-            </div>
+    <section class="bg-gray-50 py-24 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="team-member">
-                <img src="https://media.licdn.com/dms/image/v2/D4D03AQFPaPFmzIkEQg/profile-displayphoto-shrink_200_200/B4DZOYKjpcG4AY-/0/1733424725878?e=1775088000&v=beta&t=tACiJ9e5AQhockgBwhezUWK3Zm8ctrUkCbHdz5Y9F8U" alt="Rosetta Alcindor">
-                <h4>Rosetta Alcindor</h4>
-                <p>Founder & Lead Administrator</p>
+            <div class="text-center mb-24">
+                <h2 class="text-sm font-bold tracking-widest text-brand-green uppercase mb-2">How We Operate</h2>
+                <h3 class="text-3xl md:text-5xl font-black text-brand-slate tracking-tight">The Pillars of FoodShare</h3>
             </div>
-        </div> </section>
 
-<section class="section-container" style="background-color: #f9f9f9; text-align: center;">
-        <h2 class="section-title">Our Partner</h2>
-        <p style="color: #666; font-size: 1.1rem; max-width: 700px; margin: 0 auto;">We are proud to collaborate with organizations committed to ending food waste and empowering the community in Seychelles.</p>
-        
-        <div class="partners-grid">
-            <a href="https://tylernicholasgroup.com" target="_blank" class="partner-logo" style="text-decoration: none; color: var(--text-dark);">
-                <img src="https://i.ibb.co/XkMkGnfB/TNG-Logo.png" alt="Tyler Nicholas Group Logo" style="max-width: 220px; height: auto; margin-bottom: 15px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--dark-green);">Tyler Nicholas Group</h4>
-            </a>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-32">
+                <div class="relative group flex items-center justify-center h-[350px]">
+                    <div class="absolute inset-0 bg-brand-green/10 rounded-full blur-[80px] transform group-hover:scale-125 transition-transform duration-700"></div>
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="relative z-10 w-64 h-64 md:w-80 md:h-80 object-contain pointer-events-none select-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)] transform group-hover:-translate-y-4 transition duration-500">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h4 class="text-3xl md:text-4xl font-black text-brand-slate mb-6">Uncompromising Food Safety</h4>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                        Quality and dignity go hand in hand. Every donation passes through our strict digital inventory system to track best-by dates, allergen information, and storage requirements.
+                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                        Our staff and volunteers follow rigorous protocols to ensure that all fresh produce, canned goods, and prepared meals are transported and distributed safely. We believe surplus food should always mean safe, high-quality food.
+                    </p>
+                    <a href="/about/food/" class="inline-flex items-center text-brand-green font-bold hover:text-brand-darkgreen transition text-lg group">
+                        Read our Safety Guidelines <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mb-32">
+                <div class="order-2 lg:order-1 flex flex-col justify-center">
+                    <h4 class="text-3xl md:text-4xl font-black text-brand-slate mb-6">Digital Innovation</h4>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                        Charity meets modern logistics. We have engineered a custom platform that connects donors directly to our fleet, and our fleet directly to clients in real-time. 
+                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                        Our automated dashboards manage everything from driver routing to instant notifications for client pickups. By digitizing the donation pipeline, we reduce response times and drastically minimize the risk of food spoiling in transit.
+                    </p>
+                    <a href="/about/innovation/" class="inline-flex items-center text-brand-green font-bold hover:text-brand-darkgreen transition text-lg group">
+                        Explore our Tech Infrastructure <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition"></i>
+                    </a>
+                </div>
+                <div class="order-1 lg:order-2 relative group flex items-center justify-center h-[350px]">
+                    <div class="absolute inset-0 bg-brand-slate/10 rounded-full blur-[80px] transform group-hover:scale-125 transition-transform duration-700"></div>
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="relative z-10 w-64 h-64 md:w-80 md:h-80 object-contain pointer-events-none select-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)] transform group-hover:-translate-y-4 transition duration-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+                <div class="relative group flex items-center justify-center h-[350px]">
+                    <div class="absolute inset-0 bg-brand-green/10 rounded-full blur-[80px] transform group-hover:scale-125 transition-transform duration-700"></div>
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="relative z-10 w-64 h-64 md:w-80 md:h-80 object-contain pointer-events-none select-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)] transform group-hover:-translate-y-4 transition duration-500">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h4 class="text-3xl md:text-4xl font-black text-brand-slate mb-6">A Nationwide Movement</h4>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-6">
+                        FoodShare is not just an organization; it is a collaborative community effort. Our success is driven by the hundreds of volunteers, local farmers, corporate donors, and community leaders who give their time and resources.
+                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                        Together, we are shifting the culture around food waste in Seychelles, building a sustainable ecosystem where communities take care of each other.
+                    </p>
+                    <a href="/about/movement/" class="inline-flex items-center text-brand-green font-bold hover:text-brand-darkgreen transition text-lg group">
+                        Meet the Community <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition"></i>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <footer>
-        <p>&copy; 2026 FoodShare Seychelles. All Rights Reserved.</p>
-        <p>
-            FoodShare Seychelles is powered & a proud member of 
-            <a href="https://tylernicholasgroup.com" target="_blank">The Tyler Nicholas Group</a> 
-            In Official Partner with the 
-            <a href="https://tyler-nicholas-foundation.online" target="_blank">Tyler Nicholas Foundation</a>.
-        </p>
+    <section class="bg-brand-green py-24 text-white relative overflow-hidden">
+        <i class="fa-solid fa-handshake-angle absolute -right-10 -bottom-10 text-[20rem] text-white/10 pointer-events-none transform -rotate-12"></i>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h3 class="text-4xl md:text-6xl font-black tracking-tight mb-8">Become a Corporate Partner</h3>
+            <p class="text-xl text-green-50 leading-relaxed font-medium max-w-3xl mx-auto mb-12">
+                Are you a hotel, supermarket, restaurant, or farm? Join our network of corporate donors and transform your daily surplus into daily impact. Let's work together to nourish Seychelles.
+            </p>
+            <div class="inline-flex flex-col sm:flex-row items-center justify-center gap-6 bg-white/10 p-3 pl-8 rounded-full border border-white/20 backdrop-blur-sm shadow-xl">
+                <span class="font-mono text-lg font-bold">partner@foodshare-seychelles.online</span>
+                <a href="mailto:partner@foodshare-seychelles.online" class="px-10 py-4 bg-white text-brand-green font-black uppercase tracking-widest text-sm rounded-full hover:bg-gray-100 transition shadow-lg">
+                    Email Us Today
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-brand-slate text-white pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+                
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-4 mb-6">
+                        <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-14 h-14 object-contain drop-shadow-lg pointer-events-none">
+                        <h4 class="text-3xl font-black tracking-tight text-white">FoodShare Seychelles</h4>
+                    </div>
+                    <p class="text-gray-400 text-base mb-8 leading-relaxed max-w-sm">A digital logistics platform dedicated to eliminating food waste and ensuring equitable access to nourishment across Seychelles.</p>
+                    
+                    <a href="/about/socials/" class="inline-flex items-center gap-3 px-6 py-3 bg-gray-800 hover:bg-brand-green border border-gray-700 hover:border-brand-green rounded-lg text-sm font-bold transition shadow-md">
+                        <i class="fa-solid fa-hashtag"></i> View Our Socials
+                    </a>
+                </div>
+
+                <div class="md:col-span-4 lg:col-span-3 lg:col-start-7">
+                    <h5 class="text-xs font-black uppercase tracking-widest text-gray-500 mb-6">Platform</h5>
+                    <ul class="space-y-4 text-base text-gray-300 font-medium">
+                        <li><a href="/client/find-food/" class="hover:text-brand-green transition">Find Food</a></li>
+                        <li><a href="/client/donate/" class="hover:text-brand-green transition">Donate Food</a></li>
+                        <li><a href="/client/volunteer/" class="hover:text-brand-green transition">Volunteer Portal</a></li>
+                        <li><a href="/login/" class="hover:text-brand-green transition">Client Login</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-3">
+                    <h5 class="text-xs font-black uppercase tracking-widest text-gray-500 mb-6">Organization</h5>
+                    <ul class="space-y-4 text-base text-gray-300 font-medium">
+                        <li><a href="/about/" class="text-brand-green transition">About Us</a></li>
+                        <li><a href="/contact/" class="hover:text-brand-green transition">Contact Directory</a></li>
+                        <li><a href="/terms/" class="hover:text-brand-green transition">Terms & Conditions</a></li>
+                        <li><a href="/privacy/" class="hover:text-brand-green transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 font-medium">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+                <p class="mt-4 md:mt-0">
+                    Member of <a href="https://tylernicholasgroup.com" target="_blank" class="text-gray-300 hover:text-brand-green transition border-b border-gray-600 hover:border-brand-green pb-0.5">The Tyler Nicholas Group</a>
+                </p>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // Supabase Initialization
-        const supabaseUrl = 'https://czebjuuklhqidukkfjmu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZWJqdXVrbGhxaWR1a2tmam11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjYxOTksImV4cCI6MjA4ODgwMjE5OX0.6LDKvcHt07c-Sg6ZjOGyzrhGVCteSg234ulLpV9iNU4';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Mobile Menu Toggle
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navList = document.getElementById('nav-list');
-        if (mobileMenu && navList) {
-            mobileMenu.addEventListener('click', () => {
-                navList.classList.toggle('active');
-            });
-        }
-
-        // Loader Logic
-        function removeLoader() {
-            const loader = document.getElementById('loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500); 
+        // Disable Right Click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // Disable drag on images
+        document.addEventListener('dragstart', event => {
+            if(event.target.tagName.toLowerCase() === 'img') {
+                event.preventDefault();
             }
+        });
+        
+        // Optional: Disable common developer shortcut keys
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
         }
-        window.addEventListener('load', removeLoader);
-        if (document.readyState === 'complete') { removeLoader(); }
-        setTimeout(removeLoader, 2500);
+
+        // --- TRUE LOAD LOGIC ---
+        // This ensures the loader ONLY disappears once every image, script, and CSS file has finished downloading.
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('loader');
+            const body = document.getElementById('body');
+            
+            if(loader) {
+                // Add fade out class
+                loader.classList.add('fade-out');
+                
+                // Wait for the CSS transition to finish before hiding it completely
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    if (body) {
+                        body.classList.remove('overflow-hidden'); // Unlock scrolling
+                    }
+                }, 800); // 800ms matches the transition duration in CSS
+            }
+        });
+
+        // Fail-safe: If an external asset is broken and hangs forever, unlock the page after 10 seconds anyway.
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if(loader && loader.style.display !== 'none') {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.getElementById('body').classList.remove('overflow-hidden');
+                }, 800);
+            }
+        }, 10000);
     </script>
 </body>
 </html>
