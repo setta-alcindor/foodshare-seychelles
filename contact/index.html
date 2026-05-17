@@ -5,195 +5,398 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us | FoodShare Seychelles</title>
     
-    <link rel="icon" type="image/png" href="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png">
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
 
-    <div class="loader-wrapper" id="loader">
-        <div class="loader"></div>
-    </div>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            green: '#16a34a', 
+                            darkgreen: '#15803d',
+                            slate: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-    <div class="top-bar">
-        <a href="https://sc.linkedin.com/company/foodshare-seychelles" target="_blank" title="Official LinkedIn Page"><i class="fab fa-linkedin"></i></a>
-        <a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank" title="LinkedIn Blog"><i class="fab fa-linkedin-in"></i></a>
-    </div>
-
-    <header>
-        <div class="logo">
-            <a href="../"><img src="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png" alt="FoodShare Seychelles Logo"></a>
-        </div>
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
         
-        <div class="menu-toggle" id="mobile-menu">&#9776;</div>
+        /* Copyright Protection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        input, textarea, button, select {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden" id="body" oncontextmenu="return false;">
 
-        <nav>
-            <ul id="nav-list">
-                <li><a href="../about/">ABOUT</a></li>
-                <li><a href="../volunteer/">VOLUNTEER</a></li>
-                <li><a href="../find-food/">FIND FOOD</a></li>
-                <li><a href="../donate/">DONATE</a></li>
-                <li><a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank">BLOG</a></li>
-                <li><a href="../contact/" class="active">CONTACT</a></li>
-                <li><a href="../login/" class="staff-login">LOGIN</a></li>
-            </ul>
-        </nav>
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading Form</p>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                    <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="w-full py-20 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">Contact the Office</h1>
+            <p class="text-xl text-gray-300 font-medium max-w-2xl mx-auto leading-relaxed">
+                Whether you want to partner, volunteer, or request support, our team is ready to assist you.
+            </p>
+        </div>
     </header>
 
-    <section class="page-header">
-        <h1>Get In Touch</h1>
-    </section>
+    <section class="bg-gray-50 py-20 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
 
-    <section class="section-container">
-        <div class="contact-wrapper">
-            
-            <div class="form-container" style="margin: 0; max-width: 100%;">
-                <h2 style="color: var(--dark-green); margin-bottom: 20px; font-size: 1.8rem;">Send Us a Message</h2>
-                <form id="contact-form">
-                    <div class="form-group">
-                        <label for="contactName">Full Name</label>
-                        <input type="text" id="contactName" name="contactName" placeholder="Your name" required>
+                <div class="lg:col-span-8">
+                    <div class="bg-white p-8 md:p-12 rounded-3xl shadow-lg border border-gray-200 relative overflow-hidden">
+                        
+                        <div class="mb-10 border-b border-gray-100 pb-6">
+                            <h2 class="text-3xl font-black text-brand-slate mb-2">Send us a Message</h2>
+                            <p class="text-gray-500 font-medium">Please fill out the form below. Our system will automatically refer your inquiry to the correct department for the fastest response.</p>
+                        </div>
+
+                        <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-6 relative z-10">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">First Name *</label>
+                                    <input type="text" id="f_name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Last Name *</label>
+                                    <input type="text" id="l_name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Company / Organization <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
+                                <input type="text" id="company" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Physical Address *</label>
+                                <input type="text" id="address" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium" placeholder="Street, District, Mahé/Praslin/La Digue">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Email Address *</label>
+                                    <input type="email" id="email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Mobile Phone *</label>
+                                    <input type="tel" id="mobile" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium" placeholder="+248 X XX XX">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Other Phone <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
+                                    <input type="tel" id="other_phone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium">
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-100 mt-6">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Subject *</label>
+                                <input type="text" id="subject" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium mb-6">
+                                
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Message *</label>
+                                <textarea id="message" rows="5" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium resize-none" placeholder="How can we help you?"></textarea>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-100 mt-6 bg-blue-50/50 p-6 rounded-xl border border-blue-100">
+                                <label class="block text-xs font-bold text-gray-900 uppercase tracking-wide mb-3">How did you hear about us? *</label>
+                                <select id="heard_from" required class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium mb-6 appearance-none cursor-pointer">
+                                    <option value="" disabled selected>Select an option...</option>
+                                    <option value="Social Media">Social Media</option>
+                                    <option value="Radio, TV, News Outlets">Radio, TV, News Outlets</option>
+                                    <option value="Referral">Referral</option>
+                                    <option value="Search Engine">Search Engine</option>
+                                    <option value="Email or Newsletter">Email or Newsletter</option>
+                                    <option value="Other">Other</option>
+                                </select>
+
+                                <label class="flex items-start gap-3 cursor-pointer group">
+                                    <div class="mt-0.5">
+                                        <input type="checkbox" id="privacy_policy" required class="w-5 h-5 text-brand-green border-gray-300 rounded focus:ring-brand-green cursor-pointer transition">
+                                    </div>
+                                    <span class="text-sm text-gray-600 font-medium group-hover:text-gray-900 transition">
+                                        I accept the <a href="/privacy/" class="text-brand-green font-bold hover:underline" target="_blank">FoodShare Seychelles Privacy Policy</a> and consent to my data being processed to handle this inquiry. *
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="pt-4">
+                                <button type="submit" id="submit-btn" class="w-full md:w-auto px-10 py-4 bg-brand-slate text-white text-sm font-black uppercase tracking-widest rounded-xl hover:bg-gray-800 transition shadow-lg flex items-center justify-center gap-3">
+                                    <i class="fa-solid fa-paper-plane"></i> Send Message
+                                </button>
+                                <p id="form-error" class="text-red-500 font-bold mt-4 hidden text-sm"></p>
+                                
+                                <div id="form-success" class="hidden mt-6 bg-green-50 border border-green-200 p-6 rounded-xl flex items-start gap-4">
+                                    <i class="fa-solid fa-circle-check text-2xl text-brand-green mt-1"></i>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 mb-1">Message Sent Successfully!</h4>
+                                        <p class="text-sm text-gray-600">Thank you for reaching out. Your inquiry has been routed to the correct department. You can track the status of your inquiry via your Client Dashboard once logged in.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 space-y-8">
+                    
+                    <div class="bg-brand-green p-8 rounded-3xl shadow-lg text-white relative overflow-hidden">
+                        <i class="fa-solid fa-bolt absolute -right-4 -bottom-4 text-white/10 text-8xl transform rotate-12"></i>
+                        <h3 class="text-xl font-black mb-3 relative z-10">Fastest Response</h3>
+                        <p class="text-green-50 font-medium text-sm leading-relaxed relative z-10">
+                            While we provide direct emails below, we highly recommend utilizing the contact form. Our automated system instantly refers your submission to the correct department for priority processing.
+                        </p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="contactEmail">Email Address</label>
-                        <input type="email" id="contactEmail" name="contactEmail" placeholder="Your email address" required>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
+                        <div class="w-12 h-12 bg-gray-100 text-brand-slate rounded-full flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">Call Us</h3>
+                        <p class="text-2xl font-black text-brand-slate">+248 2 596 659</p>
                     </div>
 
-                    <div class="form-group">
-                        <label for="contactSubject">Subject</label>
-                        <input type="text" id="contactSubject" name="contactSubject" placeholder="What is this regarding?" required>
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
+                        <div class="w-12 h-12 bg-gray-100 text-brand-slate rounded-full flex items-center justify-center text-xl mb-6">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">Direct Departments</h3>
+                        
+                        <ul class="space-y-5">
+                            <li>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">General Admin</p>
+                                <a href="mailto:admin@foodshare-seychelles.online" class="text-brand-slate font-bold hover:text-brand-green transition break-all">admin@foodshare-seychelles.online</a>
+                            </li>
+                            <li>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Client Support (CS)</p>
+                                <a href="mailto:cs@foodshare-seychelles.online" class="text-brand-slate font-bold hover:text-brand-green transition break-all">cs@foodshare-seychelles.online</a>
+                            </li>
+                            <li>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Corporate Partnerships</p>
+                                <a href="mailto:partner@foodshare-seychelles.online" class="text-brand-slate font-bold hover:text-brand-green transition break-all">partner@foodshare-seychelles.online</a>
+                            </li>
+                            <li>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Legal & Compliance</p>
+                                <a href="mailto:legal@foodshare-seychelles.online" class="text-brand-slate font-bold hover:text-brand-green transition break-all">legal@foodshare-seychelles.online</a>
+                            </li>
+                            <li>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Platform Tech Support</p>
+                                <a href="mailto:techsupport@foodshare-seychelles.online" class="text-brand-slate font-bold hover:text-brand-green transition break-all">techsupport@foodshare-seychelles.online</a>
+                            </li>
+                        </ul>
                     </div>
 
-                    <div class="form-group">
-                        <label for="contactMessage">Message</label>
-                        <textarea id="contactMessage" name="contactMessage" placeholder="How can we help you?" required></textarea>
-                    </div>
+                </div>
 
-                    <div id="form-message" style="margin-bottom: 15px; font-weight: bold;"></div>
-
-                    <button type="submit" class="btn btn-primary" id="submit-btn" style="width: 100%;">Send Message</button>
-                </form>
             </div>
-
-            <div class="contact-info-box">
-                <h3>Direct Contact Info</h3>
-                
-                <div class="contact-detail">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <div>
-                        <strong>Victoria Depot</strong><br>
-                        Mahé, Seychelles<br>
-                        <em>(Please contact us to schedule drop-offs)</em>
-                    </div>
-                </div>
-
-                <div class="contact-detail">
-                    <i class="fas fa-envelope"></i>
-                    <div>
-                        <strong>Email Us</strong><br>
-                        tylernicholasgroup@gmail.com
-                    </div>
-                </div>
-
-                <div class="contact-detail">
-                    <i class="fas fa-phone-alt"></i>
-                    <div>
-                        <strong>Call Us</strong><br>
-                        +248 2 596 659
-                    </div>
-                </div>
-
-                <div class="contact-socials">
-                    <a href="https://sc.linkedin.com/company/foodshare-seychelles" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="https://www.foodshare-seychelles.online/not-available/" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.foodshare-seychelles.online/not-available/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-
         </div>
     </section>
 
-    <footer>
-        <p>&copy; 2026 FoodShare Seychelles. All Rights Reserved.</p>
-        <p>
-            FoodShare Seychelles is powered & a proud member of 
-            <a href="https://tylernicholasgroup.com" target="_blank">The Tyler Nicholas Group</a> 
-            In Official Partner with the 
-            <a href="https://tyler-nicholas-foundation.online" target="_blank">Tyler Nicholas Foundation</a>.
-        </p>
+    <footer class="bg-brand-slate text-white pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+                
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-4 mb-6">
+                        <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-14 h-14 object-contain drop-shadow-lg pointer-events-none">
+                        <h4 class="text-3xl font-black tracking-tight text-white">FoodShare Seychelles</h4>
+                    </div>
+                    <p class="text-gray-400 text-base mb-8 leading-relaxed max-w-sm">A digital logistics platform dedicated to eliminating food waste and ensuring equitable access to nourishment across Seychelles.</p>
+                    
+                    <a href="/about/socials/" class="inline-flex items-center gap-3 px-6 py-3 bg-gray-800 hover:bg-brand-green border border-gray-700 hover:border-brand-green rounded-lg text-sm font-bold transition shadow-md">
+                        <i class="fa-solid fa-hashtag"></i> View Our Socials
+                    </a>
+                </div>
+
+                <div class="md:col-span-4 lg:col-span-3 lg:col-start-7">
+                    <h5 class="text-xs font-black uppercase tracking-widest text-gray-500 mb-6">Platform</h5>
+                    <ul class="space-y-4 text-base text-gray-300 font-medium">
+                        <li><a href="/client/find-food/" class="hover:text-brand-green transition">Find Food</a></li>
+                        <li><a href="/client/donate/" class="hover:text-brand-green transition">Donate Food</a></li>
+                        <li><a href="/client/volunteer/" class="hover:text-brand-green transition">Volunteer Portal</a></li>
+                        <li><a href="/login/" class="hover:text-brand-green transition">Client Login</a></li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-3">
+                    <h5 class="text-xs font-black uppercase tracking-widest text-gray-500 mb-6">Organization</h5>
+                    <ul class="space-y-4 text-base text-gray-300 font-medium">
+                        <li><a href="/about/" class="hover:text-brand-green transition">About Us</a></li>
+                        <li><a href="/contact/" class="text-brand-green transition">Contact Directory</a></li>
+                        <li><a href="/terms/" class="hover:text-brand-green transition">Terms & Conditions</a></li>
+                        <li><a href="/privacy/" class="hover:text-brand-green transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 font-medium">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+                <p class="mt-4 md:mt-0">
+                    Member of <a href="https://tylernicholasgroup.com" target="_blank" class="text-gray-300 hover:text-brand-green transition border-b border-gray-600 hover:border-brand-green pb-0.5">The Tyler Nicholas Group</a>
+                </p>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // 1. Initialize Supabase
-        const supabaseUrl = 'https://czebjuuklhqidukkfjmu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZWJqdXVrbGhxaWR1a2tmam11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjYxOTksImV4cCI6MjA4ODgwMjE5OX0.6LDKvcHt07c-Sg6ZjOGyzrhGVCteSg234ulLpV9iNU4';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // UI Scripts (Menu & Loader)
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navList = document.getElementById('nav-list');
-        if (mobileMenu && navList) {
-            mobileMenu.addEventListener('click', () => {
-                navList.classList.toggle('active');
-            });
+        // Disable Right Click & Drag
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => {
+            if(event.target.tagName.toLowerCase() === 'img') { event.preventDefault(); }
+        });
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; }
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) { return false; }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
         }
 
+        // True Load Logic
         function removeLoader() {
             const loader = document.getElementById('loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500); 
+            const body = document.getElementById('body');
+            if(loader && loader.style.display !== 'none') {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    if (body) body.classList.remove('overflow-hidden');
+                }, 500); 
             }
         }
-        window.addEventListener('load', removeLoader);
-        if (document.readyState === 'complete') { removeLoader(); }
-        setTimeout(removeLoader, 2500);
 
-        // 2. Form Submission to Supabase
-        document.getElementById('contact-form').addEventListener('submit', async function(e) {
+        Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => {
+            img.onload = img.onerror = resolve;
+        }))).then(() => {
+            if (document.readyState === 'complete') {
+                removeLoader();
+            } else {
+                window.addEventListener('load', removeLoader);
+            }
+        });
+        setTimeout(removeLoader, 7000); // Fail-safe
+
+        // Supabase Form Logic
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function handleContactSubmit(e) {
             e.preventDefault();
             
             const btn = document.getElementById('submit-btn');
-            const messageDiv = document.getElementById('form-message');
+            const errorEl = document.getElementById('form-error');
+            const successEl = document.getElementById('form-success');
             
-            btn.innerText = "Sending...";
+            errorEl.classList.add('hidden');
+            successEl.classList.add('hidden');
+            
             btn.disabled = true;
-            messageDiv.innerText = "";
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
 
-            const name = document.getElementById('contactName').value;
-            const email = document.getElementById('contactEmail').value;
-            const subject = document.getElementById('contactSubject').value;
-            const message = document.getElementById('contactMessage').value;
+            const payload = {
+                first_name: document.getElementById('f_name').value.trim(),
+                last_name: document.getElementById('l_name').value.trim(),
+                company_name: document.getElementById('company').value.trim() || null,
+                physical_address: document.getElementById('address').value.trim(),
+                email_address: document.getElementById('email').value.trim(),
+                mobile_phone: document.getElementById('mobile').value.trim(),
+                other_phone: document.getElementById('other_phone').value.trim() || null,
+                subject: document.getElementById('subject').value.trim(),
+                message: document.getElementById('message').value.trim(),
+                heard_from: document.getElementById('heard_from').value,
+                accepted_privacy_policy: document.getElementById('privacy_policy').checked
+            };
 
-            const { data, error } = await supabaseClient
-                .from('contact_messages')
-                .insert([{ 
-                    name: name, 
-                    email: email, 
-                    subject: subject,
-                    message: message,
-                    status: 'Unread'
-                }]);
+            try {
+                const { error } = await supabaseClient.from('contact_inquiries').insert([payload]);
+                
+                if (error) throw error;
 
-            if (error) {
-                console.error("Database Error:", error);
-                messageDiv.innerText = "Error: Could not send message. Please try again later.";
-                messageDiv.style.color = "red";
-            } else {
-                messageDiv.innerText = "Success! Your message has been sent to our team.";
-                messageDiv.style.color = "green";
+                // Success
                 document.getElementById('contact-form').reset();
+                successEl.classList.remove('hidden');
+                
+            } catch (err) {
+                console.error(err);
+                errorEl.textContent = "A system error occurred while sending your message. Please try again or use our direct emails.";
+                errorEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Message';
             }
-            btn.innerText = "Send Message";
-            btn.disabled = false;
-        });
+        }
     </script>
 </body>
 </html>
