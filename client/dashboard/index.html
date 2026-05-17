@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard | FoodShare Seychelles</title>
+    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+        
+        /* Copyright Protection */
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden flex flex-col h-screen" id="body" oncontextmenu="return false;">
+
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Syncing Workspace Profile</p>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-gray-100 flex-shrink-0 shadow-sm z-40 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <button onclick="handleLogout()" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex overflow-hidden">
+        
+        <aside class="w-64 bg-brand-slate text-white flex flex-col justify-between p-4 flex-shrink-0 border-r border-gray-800">
+            <div class="space-y-6 pt-4">
+                <div class="px-3 flex items-center gap-3 border-b border-gray-800 pb-4">
+                    <div class="w-10 h-10 bg-brand-green rounded-full flex items-center justify-center font-black text-white text-sm uppercase shadow" id="avatar-fallback">FS</div>
+                    <div class="overflow-hidden">
+                        <p class="font-bold text-sm text-white truncate" id="sidebar-user-name">Client Account</p>
+                        <span class="text-[10px] uppercase font-bold text-brand-green tracking-widest">Verified Account</span>
+                    </div>
+                </div>
+
+                <nav class="space-y-1">
+                    <button onclick="switchWorkspaceTab('overview')" id="tab-btn-overview" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition">
+                        <i class="fa-solid fa-chart-pie w-5"></i> Workspace Overview
+                    </button>
+                    <button onclick="switchWorkspaceTab('claims')" id="tab-btn-claims" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition">
+                        <i class="fa-solid fa-box-open w-5"></i> Food Claims History
+                    </button>
+                    <button onclick="switchWorkspaceTab('donations')" id="tab-btn-donations" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition">
+                        <i class="fa-solid fa-hand-holding-heart w-5"></i> Donation Logs
+                    </button>
+                    <button onclick="switchWorkspaceTab('support')" id="tab-btn-support" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition">
+                        <i class="fa-solid fa-headset w-5"></i> Support Inquiries
+                    </button>
+                    <button onclick="switchWorkspaceTab('profile')" id="tab-btn-profile" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition">
+                        <i class="fa-solid fa-user-gear w-5"></i> Profile Settings
+                    </button>
+                </nav>
+            </div>
+
+            <div class="bg-gray-800/40 border border-gray-700/40 p-4 rounded-xl text-xs text-center text-gray-400 font-medium">
+                <i class="fa-solid fa-headset block text-lg text-brand-green mb-1"></i>
+                Logistics Desk Support Hotline: <a href="tel:+2482596659" class="text-white font-bold block mt-0.5 hover:underline">+248 2596659</a>
+            </div>
+        </aside>
+
+        <main class="flex-1 bg-gray-50 overflow-y-auto p-6 md:p-10" id="main-viewport">
+            
+            <div id="view-overview" class="workspace-panel block space-y-8">
+                <div>
+                    <h1 class="text-3xl font-black text-brand-slate tracking-tight mb-1" id="welcome-header">Welcome back!</h1>
+                    <p class="text-sm text-gray-500 font-medium">Platform verification operational registry overview ledger stats context.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-50 text-brand-green flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-box-open"></i></div>
+                        <div><p class="text-2xl font-black text-brand-slate" id="stat-claims-count">0</p><span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Claims Made</span></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-50 text-brand-green flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        <div><p class="text-2xl font-black text-brand-slate" id="stat-donations-count">0</p><span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Donations Logs</span></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-50 text-brand-green flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-headset"></i></div>
+                        <div><p class="text-2xl font-black text-brand-slate" id="stat-tickets-count">0</p><span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Open Tickets</span></div>
+                    </div>
+                </div>
+
+                <div id="profile-warning-alert" class="hidden bg-amber-50 border border-amber-200 p-5 rounded-2xl items-center justify-between gap-4">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-xl text-amber-600 mt-0.5"></i>
+                        <div>
+                            <h4 class="font-bold text-amber-900 text-sm">Logistics Data Incomplete</h4>
+                            <p class="text-xs text-amber-700 font-medium mt-0.5">Your profile configuration lacks a verified physical delivery address or telephone parameter. Fill these fields out now to enable platform claims checkouts.</p>
+                        </div>
+                    </div>
+                    <button onclick="switchWorkspaceTab('profile')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold uppercase rounded-lg shadow-sm whitespace-nowrap transition">Fix Profile</button>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h3 class="font-black text-brand-slate text-lg tracking-tight">Active Operations Pipeline</h3>
+                        <span class="text-xs font-mono font-bold text-gray-400">Live Sync Ledger</span>
+                    </div>
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    <th class="p-4 pl-6">Timestamp Date</th>
+                                    <th class="p-4">Operational Category Type</th>
+                                    <th class="p-4">Subject Description Context</th>
+                                    <th class="p-4 text-right pr-6">Pipeline Pipeline Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overview-recent-table" class="text-sm divide-y divide-gray-100 font-medium text-gray-600">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-claims" class="workspace-panel hidden space-y-6">
+                <div class="border-b border-gray-200 pb-4 flex justify-between items-end">
+                    <div><h2 class="text-2xl font-black text-brand-slate tracking-tight">My Food Claims History</h2><p class="text-xs text-gray-500 font-medium mt-0.5">Historical overview parameters for food directory container claims.</p></div>
+                    <a href="/client/find-food/" class="px-4 py-2 bg-brand-green hover:bg-brand-darkgreen text-white text-xs font-black uppercase tracking-wider rounded-lg transition shadow">Find Available Food</a>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    <th class="p-4 pl-6">Request Date</th>
+                                    <th class="p-4">Food Item Package Description</th>
+                                    <th class="p-4">Fulfillment Mode</th>
+                                    <th class="p-4">Household Dependents</th>
+                                    <th class="p-4 text-right pr-6">Fulfillment Pipeline Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="claims-history-table" class="text-sm divide-y divide-gray-100 font-medium text-gray-600">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-donations" class="workspace-panel hidden space-y-6">
+                <div class="border-b border-gray-200 pb-4 flex justify-between items-end">
+                    <div><h2 class="text-2xl font-black text-brand-slate tracking-tight">Food Donation Logs</h2><p class="text-xs text-gray-500 font-medium mt-0.5">Verifiable ledger recording corporate or individual surplus donation events.</p></div>
+                    <a href="/client/donate/" class="px-4 py-2 bg-brand-green hover:bg-brand-darkgreen text-white text-xs font-black uppercase tracking-wider rounded-lg transition shadow">Log Donation Entry</a>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[900px]">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    <th class="p-4 pl-6">Entry Date</th>
+                                    <th class="p-4">Food Type/Classification</th>
+                                    <th class="p-4">Amount & Mass (KG)</th>
+                                    <th class="p-4">Fulfillment Logistics</th>
+                                    <th class="p-4 text-right pr-6">Verification Appraisal Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="donations-history-table" class="text-sm divide-y divide-gray-100 font-medium text-gray-600">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-support" class="workspace-panel hidden space-y-6">
+                <div class="border-b border-gray-200 pb-4 flex justify-between items-end">
+                    <div><h2 class="text-2xl font-black text-brand-slate tracking-tight">Support Tickets Feed</h2><p class="text-xs text-gray-500 font-medium mt-0.5">Secure communication pipeline logs mapped directly to administrative operational hubs.</p></div>
+                    <a href="/contact/" class="px-4 py-2 bg-brand-green hover:bg-brand-darkgreen text-white text-xs font-black uppercase tracking-wider rounded-lg transition shadow">File Support Ticket</a>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    <th class="p-4 pl-6">Submission Date</th>
+                                    <th class="p-4">Subject Vector Thread</th>
+                                    <th class="p-4">Message Context Block Snippet</th>
+                                    <th class="p-4 text-right pr-6">Resolution Stage Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="support-history-table" class="text-sm divide-y divide-gray-100 font-medium text-gray-600">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-profile" class="workspace-panel hidden max-w-2xl">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Profile Settings</h2>
+                    <p class="text-xs text-gray-500 font-medium mt-0.5">Update verified context descriptors applied automatically across logistics matching operations nodes.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm">
+                    <form id="profile-mutation-form" onsubmit="handleProfileMutation(event)" class="space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">First Name</label>
+                                <input type="text" id="prof_first_name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Last Name</label>
+                                <input type="text" id="prof_last_name" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Account Email (Immutable Identity Parameter)</label>
+                            <input type="email" id="prof_email" readonly class="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl text-gray-400 font-bold text-sm focus:outline-none cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Mobile Phone *</label>
+                            <input type="tel" id="prof_phone" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="+248 2 XXX XXX">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Physical Delivery Address *</label>
+                            <textarea id="prof_address" rows="3" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm resize-none" placeholder="Provide precise directional criteria to enable automated driver vehicle dispatches."></textarea>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <p id="mutation-feedback" class="text-xs font-bold text-brand-green hidden"></p>
+                            <button type="submit" id="mutation-submit-btn" class="px-8 py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow transition">Save Config Profile Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Security protections layers context
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => { if(event.target.tagName.toLowerCase() === 'img') event.preventDefault(); });
+
+        // Supabase Initialization Context
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let globalUserRole = 'client';
+
+        // Helper style state pipelines map structures generator
+        const statusPillsMap = {
+            // Food claims statuses pipeline options
+            'pending': 'bg-amber-50 text-amber-700 border border-amber-200',
+            'approved': 'bg-blue-50 text-blue-700 border border-blue-200',
+            'out_for_delivery': 'bg-purple-50 text-purple-700 border border-purple-200',
+            'ready_for_pickup': 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+            'completed': 'bg-green-50 text-green-700 border border-green-200',
+            'cancelled': 'bg-gray-100 text-gray-600 border border-gray-200',
+            // Donation tracking statuses mapping options
+            'rejected': 'bg-red-50 text-red-700 border border-red-200',
+            // Support inquiries status keys options
+            'new': 'bg-blue-50 text-blue-700 border border-blue-200',
+            'in_progress': 'bg-amber-50 text-amber-700 border border-amber-200',
+            'resolved': 'bg-green-50 text-green-700 border border-green-200'
+        };
+
+        const renderEmptyTableHTML = (cols, msg) => `<tr><td colspan="${cols}" class="p-8 text-center text-gray-400 font-medium italic">${msg}</td></tr>`;
+
+        function removeLoader() {
+            const loader = document.getElementById('loader');
+            if(loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500);
+            }
+        }
+
+        // Authentication State Engine Checker Context Router Loop Execution
+        async function checkWorkspaceSecuritySession() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (!session) {
+                    window.location.href = '/login/';
+                    return;
+                }
+                
+                currentUser = session.user;
+                
+                // Read global roles metadata parameter validation attributes properties
+                const { data: profile } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
+                
+                if (profile) {
+                    globalUserRole = profile.role || 'client';
+                    // Security boundary trap: Prevent Staff or Admin roles leaking to basic client dashboards layout models context frame
+                    if(globalUserRole !== 'client') {
+                        if(globalUserRole === 'admin') window.location.href = '/admin/';
+                        else window.location.href = '/staff/dashboard/';
+                        return;
+                    }
+
+                    // Populate layout nodes parameters
+                    const compiledName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Client Account';
+                    document.getElementById('sidebar-user-name').textContent = compiledName;
+                    document.getElementById('welcome-header').textContent = `Welcome back, ${profile.first_name || 'User'}!`;
+                    
+                    // Set up avatar text fallback boundary parameters matching metrics values context framework layer logic operations 
+                    if(profile.first_name) {
+                        document.getElementById('avatar-fallback').textContent = (profile.first_name[0] + (profile.last_name ? profile.last_name[0] : '')).toUpperCase();
+                    }
+
+                    // Populate immutable or current profile mutable values directly inside state parameters forms inputs
+                    document.getElementById('prof_first_name').value = profile.first_name || '';
+                    document.getElementById('prof_last_name').value = profile.last_name || '';
+                    document.getElementById('prof_email').value = profile.email || '';
+                    document.getElementById('prof_phone').value = profile.mobile_phone || '';
+                    document.getElementById('prof_address').value = profile.physical_address || '';
+
+                    // Trigger alert flash warning indicators block if required delivery properties parameters are unpopulated values string lengths
+                    if (!profile.physical_address || !profile.mobile_phone) {
+                        document.getElementById('profile-warning-alert').classList.remove('hidden');
+                        document.getElementById('profile-warning-alert').classList.add('flex');
+                    }
+                }
+
+                // Hydrate all database array grid lists sets contexts parameters collections arrays
+                await compileDashboardMetricsLedger();
+
+            } catch (err) {
+                console.error("Critical Exception Framework Core Engine Intercepted Fail", err);
+                window.location.href = '/login/';
+            } finally {
+                removeLoader();
+            }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.href = '/login/';
+        }
+
+        // Switching Workspace Navigation Panels Context Menu Layer
+        function switchWorkspaceTab(tabTargetId) {
+            document.querySelectorAll('.workspace-panel').forEach(panel => panel.classList.add('hidden'));
+            document.getElementById('view-' + tabTargetId).classList.remove('hidden');
+            
+            // Remove active style vectors rules frames metrics elements values paths blocks from all buttons
+            document.querySelectorAll('aside nav button').forEach(btn => {
+                btn.className = "w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition";
+            });
+            // Apply active green style to standard node button reference target index selector
+            document.getElementById('tab-btn-' + tabTargetId).className = "w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition";
+        }
+
+        // Compile and query all tables in parallel tracking vectors
+        async function compileDashboardMetricsLedger() {
+            const recentTable = document.getElementById('overview-recent-table');
+            const claimsTable = document.getElementById('claims-history-table');
+            const donationsTable = document.getElementById('donations-history-table');
+            const supportTable = document.getElementById('support-history-table');
+
+            try {
+                // 1. Fetch Food Claims Context Array Mapped to Listings Titles via Foreign Key Definitions Relational Engine
+                const { data: claimsData } = await supabaseClient.from('food_requests').select('*, food_listings(title, food_category)').eq('client_id', currentUser.id).order('created_at', { ascending: false });
+                
+                // 2. Fetch Donation Records Array Mapped Parameters
+                const { data: donationsData } = await supabaseClient.from('food_donations').select('*').eq('donor_id', currentUser.id).order('created_at', { ascending: false });
+                
+                // 3. Fetch Registered Communication Support Ticket Threads Parameters Mapped
+                const { data: ticketsData } = await supabaseClient.from('contact_inquiries').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+
+                // Hydrate Quick Metric Counters
+                document.getElementById('stat-claims-count').textContent = claimsData ? claimsData.length : 0;
+                document.getElementById('stat-donations-count').textContent = donationsData ? donationsData.length : 0;
+                document.getElementById('stat-tickets-count').textContent = ticketsData ? ticketsData.filter(x => x.status !== 'resolved').length : 0;
+
+                // --- PIPELINE 1: RENDER CLAIMS ---
+                if(claimsData && claimsData.length > 0) {
+                    let html = '';
+                    claimsData.forEach(row => {
+                        const date = new Date(row.created_at).toLocaleDateString();
+                        const title = row.food_listings ? row.food_listings.title : 'Claimed Food Allocation';
+                        const statusLabel = row.status.replace(/_/g, ' ');
+                        html += `
+                        <tr>
+                            <td class="p-4 pl-6 font-mono text-xs text-gray-400">${date}</td>
+                            <td class="p-4 font-bold text-brand-slate">${title} <span class="block text-[10px] text-gray-400 font-medium uppercase mt-0.5">${row.food_listings ? row.food_listings.food_category : 'produce'}</span></td>
+                            <td class="p-4 text-xs font-semibold text-gray-500">${row.logistics_option}</td>
+                            <td class="p-4 text-sm font-bold text-center">${row.household_size}</td>
+                            <td class="p-4 text-right pr-6"><span class="inline-block px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md ${statusPillsMap[row.status] || ''}">${statusLabel}</span></td>
+                        </tr>`;
+                    });
+                    claimsTable.innerHTML = html;
+                } else {
+                    claimsTable.innerHTML = renderEmptyTableHTML(5, "You haven't claimed any available food listings packages yet.");
+                }
+
+                // --- PIPELINE 2: RENDER DONATIONS ---
+                if(donationsData && donationsData.length > 0) {
+                    let html = '';
+                    donationsData.forEach(row => {
+                        const date = new Date(row.created_at).toLocaleDateString();
+                        html += `
+                        <tr>
+                            <td class="p-4 pl-6 font-mono text-xs text-gray-400">${date}</td>
+                            <td class="p-4 font-bold text-brand-slate">${row.food_type} <span class="block text-[10px] text-gray-400 font-medium normal-case mt-0.5 truncate max-w-xs">${row.detailed_description}</span></td>
+                            <td class="p-4 text-xs font-bold text-gray-500">${row.amount} <span class="block font-mono text-[10px] text-brand-green mt-0.5">~${row.estimated_weight_kg} KG</span></td>
+                            <td class="p-4 text-xs text-gray-500 font-semibold">${row.logistics_option}</td>
+                            <td class="p-4 text-right pr-6"><span class="inline-block px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md ${statusPillsMap[row.status] || ''}">${row.status}</span></td>
+                        </tr>`;
+                    });
+                    donationsTable.innerHTML = html;
+                } else {
+                    donationsTable.innerHTML = renderEmptyTableHTML(5, "No donation log entry configurations recorded under this client entity.");
+                }
+
+                // --- PIPELINE 3: RENDER SUPPORT TICKETS ---
+                if(ticketsData && ticketsData.length > 0) {
+                    let html = '';
+                    ticketsData.forEach(row => {
+                        const date = new Date(row.created_at).toLocaleDateString();
+                        const statusLabel = row.status.replace(/_/g, ' ');
+                        html += `
+                        <tr>
+                            <td class="p-4 pl-6 font-mono text-xs text-gray-400">${date}</td>
+                            <td class="p-4 font-bold text-brand-slate max-w-xs truncate">${row.subject}</td>
+                            <td class="p-4 text-xs font-medium text-gray-500 max-w-sm truncate">${row.message}</td>
+                            <td class="p-4 text-right pr-6"><span class="inline-block px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md ${statusPillsMap[row.status] || ''}">${statusLabel}</span></td>
+                        </tr>`;
+                    });
+                    supportTable.innerHTML = html;
+                } else {
+                    supportTable.innerHTML = renderEmptyTableHTML(4, "No support communication tickets logged to your dashboard registry account context.");
+                }
+
+                // --- PIPELINE 4: CONSTRUCT CONSOLIDATED RECENT ACTIVITY TIMELINE BLOCKS ---
+                let timelineArray = [];
+                if(claimsData) claimsData.forEach(x => timelineArray.push({ date: new Date(x.created_at), cat: 'Food Claim', desc: x.food_listings ? x.food_listings.title : 'Food Package Allocation', status: x.status }));
+                if(donationsData) donationsData.forEach(x => timelineArray.push({ date: new Date(x.created_at), cat: 'Food Donation', desc: `${x.amount} of ${x.food_type}`, status: x.status }));
+                if(ticketsData) ticketsData.forEach(x => timelineArray.push({ date: new Date(x.created_at), cat: 'Support Inquiry', desc: x.subject, status: x.status }));
+
+                // Sort absolute master composite context pipeline by descending timestamp array structure bounds
+                timelineArray.sort((a,b) => b.date - a.date);
+                const slicedTimeline = timelineArray.slice(0, 7); // Limit to top 7 actions outputs entries metrics
+
+                if(slicedTimeline.length > 0) {
+                    let html = '';
+                    slicedTimeline.forEach(row => {
+                        const dateStr = row.date.toLocaleDateString();
+                        const labelStr = row.status.replace(/_/g, ' ');
+                        html += `
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="p-4 pl-6 font-mono text-xs text-gray-400">${dateStr}</td>
+                            <td class="p-4 font-bold text-brand-slate"><span class="px-2 py-0.5 rounded text-[10px] uppercase bg-gray-100 text-gray-700 mr-2 border border-gray-200/40 shadow-sm">${row.cat}</span></td>
+                            <td class="p-4 text-sm text-gray-600 font-semibold truncate max-w-xs">${row.desc}</td>
+                            <td class="p-4 text-right pr-6"><span class="inline-block px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md ${statusPillsMap[row.status] || ''}">${labelStr}</span></td>
+                        </tr>`;
+                    });
+                    recentTable.innerHTML = html;
+                } else {
+                    recentTable.innerHTML = renderEmptyTableHTML(4, "No active operations recorded across this transaction matrix thread profile context.");
+                }
+
+            } catch (err) {
+                console.error("Metrics Collection Processing Core Fault Thread Intercepted:", err);
+            }
+        }
+
+        // Write Mutable Descriptors Profile Changes Back to Database
+        async function handleProfileMutation(e) {
+            e.preventDefault();
+            const btn = document.getElementById('mutation-submit-btn');
+            const feedback = document.getElementById('mutation-feedback');
+
+            feedback.className = "text-xs font-bold text-brand-slate";
+            feedback.textContent = "Updating verification records...";
+            feedback.classList.remove('hidden');
+            btn.disabled = true;
+
+            const payload = {
+                first_name: document.getElementById('prof_first_name').value.trim(),
+                last_name: document.getElementById('prof_last_name').value.trim(),
+                mobile_phone: document.getElementById('prof_phone').value.trim(),
+                physical_address: document.getElementById('prof_address').value.trim()
+            };
+
+            try {
+                const { error } = await supabaseClient
+                    .from('client_profiles')
+                    .update(payload)
+                    .eq('id', currentUser.id);
+
+                if (error) throw error;
+
+                feedback.className = "text-xs font-bold text-brand-green";
+                feedback.textContent = "Configuration changes committed successfully!";
+                
+                // Hide warning block if inputs are successfully populated string values bounds loops attributes
+                if(payload.mobile_phone && payload.physical_address) {
+                    document.getElementById('profile-warning-alert').style.display = 'none';
+                }
+
+                // Sync and rehydrate components properties metrics states values tracking fields layouts variables grids maps elements
+                await compileDashboardMetricsLedger();
+
+            } catch (err) {
+                console.error(err);
+                feedback.className = "text-xs font-bold text-red-500";
+                feedback.textContent = "Failed to commit profile structural data update mutations parameters.";
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => feedback.classList.add('hidden'), 4000);
+            }
+        }
+
+        // Run Initialization Sequence Mapped Execution Loops
+        document.addEventListener("DOMContentLoaded", checkWorkspaceSecuritySession);
+    </script>
+</body>
+</html>
