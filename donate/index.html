@@ -4,148 +4,490 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donate Food | FoodShare Seychelles</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../style.css">
+    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+        
+        /* Copyright Protection */
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+        
+        /* Custom Checkbox Styling */
+        .allergen-checkbox:checked + div {
+            background-color: #16a34a;
+            border-color: #16a34a;
+            color: white;
+        }
+    </style>
 </head>
-<body>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden" id="body" oncontextmenu="return false;">
 
-    <div class="loader-wrapper" id="loader"><div class="loader"></div></div>
-
-    <div class="top-bar">
-        <a href="https://sc.linkedin.com/company/foodshare-seychelles" target="_blank"><i class="fab fa-linkedin"></i></a>
-        <a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Authenticating Portal</p>
+        </div>
     </div>
 
-    <header>
-        <div class="logo">
-            <a href="../"><img src="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png" alt="FoodShare Seychelles Logo"></a>
-        </div>
-        <div class="menu-toggle" id="mobile-menu">&#9776;</div>
-        <nav>
-            <ul id="nav-list">
-                <li><a href="../about/">ABOUT</a></li>
-                <li><a href="../volunteer/">VOLUNTEER</a></li>
-                <li><a href="../find-food/">FIND FOOD</a></li>
-                <li><a href="../donate/" class="active">DONATE</a></li>
-                <li><a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank">BLOG</a></li>
-                <li><a href="../contact/">CONTACT</a></li>
-                <li><a href="../login/" class="staff-login">LOGIN</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section class="page-header">
-        <h1>Donate Surplus Food</h1>
-    </section>
-
-    <section class="section-container" style="background-color: #f9f9f9; padding-top: 40px;">
-        <div class="form-container">
-            <form id="donation-form">
-                <div class="form-group">
-                    <label for="donorType">Donor Type</label>
-                    <select id="donorType" name="donorType" required>
-                        <option value="" disabled selected>Select your donor category...</option>
-                        <option value="Personal">Personal (Household / Individual)</option>
-                        <option value="Organizational">Organizational (Supermarket, Hotel, Farm)</option>
-                    </select>
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
                 </div>
-
-                <div class="form-group">
-                    <label for="foodDetails">Food Details & Quantity</label>
-                    <textarea id="foodDetails" name="foodDetails" placeholder="Example: 10kg of fresh tomatoes, 5 loaves of bread (Best before tomorrow)." required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Collection Preference</label>
-                    <div style="margin-top: 10px;">
-                        <label style="display: block; margin-bottom: 10px; cursor: pointer;">
-                            <input type="radio" name="collectionPreference" value="Drop-off" required checked> 
-                            <strong>I will drop it off</strong> (Bring it to our Victoria Depot)
-                        </label>
-                        <label style="display: block; cursor: pointer;">
-                            <input type="radio" name="collectionPreference" value="Request Pickup"> 
-                            <strong>Request Pickup</strong> (A volunteer driver will come to you)
-                        </label>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <div id="nav-auth-guest" class="flex items-center gap-6">
+                        <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                        <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                    </div>
+                    <div id="nav-auth-user" class="hidden items-center gap-6">
+                        <a href="/client/dashboard/" class="text-brand-green font-bold text-sm hover:text-brand-darkgreen transition flex items-center gap-2"><i class="fa-solid fa-user-circle text-lg"></i> My Dashboard</a>
+                        <button onclick="handleLogout()" class="text-gray-500 font-bold text-sm hover:text-red-500 transition">Logout</button>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="photoLink">Image Link (Optional)</label>
-                    <input type="url" id="photoLink" name="photoLink" placeholder="Paste a link to an image of the food (e.g., from Imgur or Google Drive)">
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
                 </div>
+            </div>
+        </div>
+    </nav>
 
-                <div id="form-message" style="margin-bottom: 15px; font-weight: bold; text-align: center;"></div>
+    <header class="w-full py-20 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">Donate Food</h1>
+            <p class="text-xl text-gray-300 font-medium max-w-2xl mx-auto leading-relaxed">
+                Transform your surplus into community impact. Submit your donation details below to initiate a safe and secure transfer.
+            </p>
+        </div>
+    </header>
 
-                <button type="submit" class="btn btn-primary" id="submit-btn" style="width: 100%;">Submit Donation Offer</button>
-            </form>
+    <section class="bg-gray-50 py-20 border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div id="auth-wall" class="hidden bg-white p-12 rounded-3xl shadow-md border border-gray-200 text-center">
+                <div class="w-20 h-20 bg-blue-50 text-brand-blue rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2 class="text-3xl font-black text-brand-slate mb-4">Authentication Required</h2>
+                <p class="text-gray-600 font-medium mb-8 max-w-md mx-auto leading-relaxed">
+                    To maintain strict food safety standards and accountability, all donors must be logged into their Client Dashboard to submit surplus food.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="/login/" class="px-8 py-3.5 bg-brand-slate text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-md">Sign In to Continue</a>
+                    <a href="/signup/" class="px-8 py-3.5 bg-white text-gray-700 border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition shadow-sm">Create Account</a>
+                </div>
+            </div>
+
+            <div id="form-success" class="hidden bg-white p-12 rounded-3xl shadow-lg border border-brand-green text-center">
+                <div class="w-24 h-24 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-5xl mx-auto mb-6">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="text-4xl font-black text-brand-slate mb-4">Donation Logged</h2>
+                <p class="text-lg text-gray-600 font-medium mb-8 max-w-lg mx-auto leading-relaxed">
+                    Thank you for your generous contribution. Your submission has been securely logged in our system under a pending status.
+                </p>
+                
+                <div class="bg-brand-slate text-white p-8 rounded-2xl shadow-inner max-w-lg mx-auto">
+                    <p class="text-brand-green font-bold uppercase tracking-widest text-xs mb-2">Required Next Step</p>
+                    <p class="font-medium text-lg mb-4">Please call us immediately to confirm logistics:</p>
+                    <a href="tel:+2482596659" class="text-3xl font-black text-white hover:text-brand-green transition block mb-4">+248 2596659</a>
+                    <p class="text-sm text-gray-400">Inform the staff member of your donation and provide your name so we can expedite your request.</p>
+                </div>
+                
+                <div class="mt-8">
+                    <a href="/client/dashboard/" class="text-brand-slate font-bold hover:text-brand-green transition">Return to Dashboard</a>
+                </div>
+            </div>
+
+            <div id="donation-form-container" class="hidden">
+                <form id="donation-form" onsubmit="handleDonationSubmit(event)" class="space-y-8">
+                    
+                    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-200">
+                        <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                            <div class="w-8 h-8 bg-brand-green text-white rounded flex items-center justify-center font-bold">1</div>
+                            <h3 class="text-2xl font-black text-brand-slate">Donor Profile</h3>
+                        </div>
+
+                        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 flex flex-wrap gap-x-8 gap-y-2 mb-6">
+                            <div><span class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Verified Contact</span><p class="font-bold text-gray-900" id="display-name">Loading...</p></div>
+                            <div><span class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Primary Email</span><p class="font-bold text-gray-900" id="display-email">Loading...</p></div>
+                            <div><span class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Primary Phone</span><p class="font-bold text-gray-900" id="display-phone">Loading...</p></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Donor Type *</label>
+                                <select id="donor_type" onchange="toggleOrgField()" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium appearance-none cursor-pointer">
+                                    <option value="" disabled selected>Select an entity...</option>
+                                    <option value="Individual">Individual / Household</option>
+                                    <option value="Restaurant">Restaurant</option>
+                                    <option value="Grocery Store">Grocery Store / Supermarket</option>
+                                    <option value="Catering / Event">Catering / Event</option>
+                                    <option value="Corporate Partner">Corporate Partner</option>
+                                    <option value="Organization">Other Organization</option>
+                                </select>
+                            </div>
+                            
+                            <div id="org_container" class="hidden">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Organization Name *</label>
+                                <input type="text" id="organization_name" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Alternative Phone <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
+                                <input type="tel" id="other_phone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium" placeholder="Additional contact number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-200">
+                        <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                            <div class="w-8 h-8 bg-brand-green text-white rounded flex items-center justify-center font-bold">2</div>
+                            <h3 class="text-2xl font-black text-brand-slate">Food Details</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Food Category *</label>
+                                <select id="food_type" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium appearance-none cursor-pointer">
+                                    <option value="" disabled selected>Select primary category...</option>
+                                    <option value="Fresh produce">Fresh produce</option>
+                                    <option value="Dry/Packaged Goods">Dry/Packaged Goods</option>
+                                    <option value="Chilled / Dairy / Meat">Chilled / Dairy / Meat</option>
+                                    <option value="Prepared / Cooked Meals">Prepared / Cooked Meals</option>
+                                    <option value="Frozen Goods">Frozen Goods</option>
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Detailed Description *</label>
+                                <textarea id="detailed_description" rows="3" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium resize-none" placeholder="E.g., 5 crates of ripe bananas, untouched buffet trays..."></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Visual Quantity *</label>
+                                <input type="text" id="amount" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium" placeholder="E.g., 5 Boxes, 20 Loaves">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Estimated Total Weight (KG) *</label>
+                                <input type="number" step="0.1" id="estimated_weight_kg" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium" placeholder="0.0">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Expiration / Best By Date *</label>
+                                <input type="date" id="expiration_date" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Storage History *</label>
+                                <select id="storage_history" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium appearance-none cursor-pointer">
+                                    <option value="" disabled selected>How was this stored?</option>
+                                    <option value="Room Temperature">Room Temperature</option>
+                                    <option value="Refrigerated (1-5°C)">Refrigerated (1-5°C)</option>
+                                    <option value="Frozen (Below 0°C)">Frozen (Below 0°C)</option>
+                                    <option value="Heated Holding">Heated Holding</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Allergen Disclosures *</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="allergen-container">
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" value="Nuts" class="allergen-checkbox sr-only">
+                                    <div class="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-sm font-bold text-gray-600 transition hover:bg-gray-50">Nuts</div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" value="Dairy" class="allergen-checkbox sr-only">
+                                    <div class="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-sm font-bold text-gray-600 transition hover:bg-gray-50">Dairy</div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" value="Gluten" class="allergen-checkbox sr-only">
+                                    <div class="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-sm font-bold text-gray-600 transition hover:bg-gray-50">Gluten</div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" value="Soy" class="allergen-checkbox sr-only">
+                                    <div class="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-sm font-bold text-gray-600 transition hover:bg-gray-50">Soy</div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" value="Shellfish" class="allergen-checkbox sr-only">
+                                    <div class="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-sm font-bold text-gray-600 transition hover:bg-gray-50">Shellfish</div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" value="None" class="allergen-checkbox sr-only" onchange="handleNoneAllergen(this)">
+                                    <div class="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-sm font-bold text-gray-600 transition hover:bg-gray-50">None</div>
+                                </label>
+                            </div>
+                            <p id="allergen-error" class="text-red-500 text-xs font-bold mt-2 hidden">Please select at least one option.</p>
+                        </div>
+
+                        <div class="mt-8 bg-blue-50/50 p-6 rounded-xl border border-blue-100">
+                            <label class="block text-xs font-bold text-gray-900 uppercase tracking-wide mb-2">Photo Direct Link *</label>
+                            <p class="text-xs text-gray-500 font-medium mb-3">For internal security reasons, we do not accept direct uploads. Please upload a clear photo of the food to <a href="https://imgbb.com/" target="_blank" class="text-brand-green font-bold hover:underline">imgbb.com</a> and paste the <strong>Direct Link</strong> below.</p>
+                            <input type="url" id="photo_link" required class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium" placeholder="https://i.ibb.co/...">
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-200">
+                        <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                            <div class="w-8 h-8 bg-brand-green text-white rounded flex items-center justify-center font-bold">3</div>
+                            <h3 class="text-2xl font-black text-brand-slate">Logistics</h3>
+                        </div>
+
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-4">Transfer Method *</label>
+                        <div class="space-y-3 mb-6">
+                            <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition">
+                                <input type="radio" name="logistics_option" value="We will drop the product off" onchange="toggleAddressField()" required class="w-5 h-5 text-brand-green focus:ring-brand-green border-gray-300">
+                                <span class="font-bold text-gray-700">We will drop the product off at FoodShare HQ</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition">
+                                <input type="radio" name="logistics_option" value="We require a pick up" onchange="toggleAddressField()" class="w-5 h-5 text-brand-green focus:ring-brand-green border-gray-300">
+                                <span class="font-bold text-gray-700">We require a fleet pick up</span>
+                            </label>
+                        </div>
+
+                        <div id="pickup_container" class="hidden bg-gray-50 p-6 rounded-xl border border-gray-200">
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Detailed Pickup Address *</label>
+                            <textarea id="pickup_address" rows="3" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium resize-none" placeholder="Provide full physical address, gate codes, or special instructions for our drivers."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center border-t border-gray-200 pt-8">
+                        <button type="submit" id="submit-btn" class="w-full max-w-md px-10 py-5 bg-brand-green text-white text-base font-black uppercase tracking-widest rounded-2xl hover:bg-brand-darkgreen transition shadow-xl shadow-brand-green/30 flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-truck-fast text-xl"></i> Submit Donation Log
+                        </button>
+                        <p id="form-error" class="text-red-500 font-bold mt-4 hidden text-sm text-center"></p>
+                    </div>
+
+                </form>
+            </div>
+
         </div>
     </section>
 
-    <footer>
-        <p>&copy; 2026 FoodShare Seychelles. All Rights Reserved.</p>
-        <p>Powered by <a href="https://tylernicholasgroup.com" target="_blank">The Tyler Nicholas Group</a> & <a href="https://tyler-nicholas-foundation.online" target="_blank">Tyler Nicholas Foundation</a>.</p>
+    <footer class="bg-brand-slate text-white pt-20 pb-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500 font-medium">
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+        </div>
     </footer>
 
     <script>
-        const supabaseUrl = 'https://czebjuuklhqidukkfjmu.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZWJqdXVrbGhxaWR1a2tmam11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMjYxOTksImV4cCI6MjA4ODgwMjE5OX0.6LDKvcHt07c-Sg6ZjOGyzrhGVCteSg234ulLpV9iNU4';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        // Security Scripts
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => { if(event.target.tagName.toLowerCase() === 'img') event.preventDefault(); });
 
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navList = document.getElementById('nav-list');
-        if (mobileMenu && navList) mobileMenu.addEventListener('click', () => navList.classList.toggle('active'));
+        // Supabase Initialization
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let userProfile = null;
 
         function removeLoader() {
             const loader = document.getElementById('loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500); 
+            if(loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500);
             }
         }
-        window.addEventListener('load', removeLoader);
-        if (document.readyState === 'complete') removeLoader();
-        setTimeout(removeLoader, 2500);
 
-        // Submit to Database
-        document.getElementById('donation-form').addEventListener('submit', async function(e) {
+        async function initPage() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    currentUser = session.user;
+                    
+                    document.getElementById('nav-auth-guest').classList.add('hidden');
+                    document.getElementById('nav-auth-user').classList.remove('hidden');
+                    document.getElementById('nav-auth-user').classList.add('flex');
+
+                    const { data: profile } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
+                    userProfile = profile;
+                    
+                    if (profile) {
+                        const fullName = profile.first_name && profile.last_name ? `${profile.first_name} ${profile.last_name}` : 'Name not set';
+                        document.getElementById('display-name').textContent = fullName;
+                        document.getElementById('display-email').textContent = profile.email;
+                        document.getElementById('display-phone').textContent = profile.mobile_phone || 'Phone pending setup';
+                    }
+
+                    document.getElementById('auth-wall').classList.add('hidden');
+                    document.getElementById('donation-form-container').classList.remove('hidden');
+
+                } else {
+                    document.getElementById('auth-wall').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Auth check failed", err);
+                document.getElementById('auth-wall').classList.remove('hidden');
+            } finally {
+                removeLoader();
+            }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        // Form Logic
+        function toggleOrgField() {
+            const type = document.getElementById('donor_type').value;
+            const container = document.getElementById('org_container');
+            const input = document.getElementById('organization_name');
+            if (type && type !== 'Individual') {
+                container.classList.remove('hidden');
+                input.required = true;
+            } else {
+                container.classList.add('hidden');
+                input.required = false;
+                input.value = '';
+            }
+        }
+
+        function toggleAddressField() {
+            const val = document.querySelector('input[name="logistics_option"]:checked').value;
+            const container = document.getElementById('pickup_container');
+            const input = document.getElementById('pickup_address');
+            
+            if (val === 'We require a pick up') {
+                container.classList.remove('hidden');
+                input.required = true;
+                // Auto-fill address if they have one saved
+                if(userProfile && userProfile.physical_address && !input.value) {
+                    input.value = userProfile.physical_address;
+                }
+            } else {
+                container.classList.add('hidden');
+                input.required = false;
+            }
+        }
+
+        // Handle "None" checkbox exclusivity
+        function handleNoneAllergen(noneCheckbox) {
+            if(noneCheckbox.checked) {
+                document.querySelectorAll('.allergen-checkbox').forEach(cb => {
+                    if(cb.value !== 'None') cb.checked = false;
+                });
+            }
+        }
+        document.querySelectorAll('.allergen-checkbox').forEach(cb => {
+            if(cb.value !== 'None') {
+                cb.addEventListener('change', () => {
+                    if(cb.checked) document.querySelector('input[value="None"]').checked = false;
+                });
+            }
+        });
+
+        async function handleDonationSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            const messageDiv = document.getElementById('form-message');
-            
-            btn.innerText = "Submitting...";
-            btn.disabled = true;
-            messageDiv.innerText = "";
+            const errorEl = document.getElementById('form-error');
+            errorEl.classList.add('hidden');
 
-            const donorType = document.getElementById('donorType').value;
-            const foodDetails = document.getElementById('foodDetails').value;
-            const collectionPreference = document.querySelector('input[name="collectionPreference"]:checked').value;
-            const photoLink = document.getElementById('photoLink').value;
-
-            const { data, error } = await supabaseClient
-                .from('donations')
-                .insert([{ 
-                    donor_type: donorType, 
-                    food_details: foodDetails, 
-                    collection_preference: collectionPreference,
-                    photo_link: photoLink,
-                    status: 'Pending Review' 
-                }]);
-
-            if (error) {
-                console.error("Database Error:", error);
-                messageDiv.innerText = "Error: Could not submit. Check console for details.";
-                messageDiv.style.color = "red";
-            } else {
-                messageDiv.innerText = "Success! Your donation offer has been received.";
-                messageDiv.style.color = "green";
-                document.getElementById('donation-form').reset();
+            // Gather Allergens
+            const allergens = Array.from(document.querySelectorAll('.allergen-checkbox:checked')).map(cb => cb.value);
+            if (allergens.length === 0) {
+                document.getElementById('allergen-error').classList.remove('hidden');
+                return;
             }
-            btn.innerText = "Submit Donation Offer";
-            btn.disabled = false;
-        });
+            document.getElementById('allergen-error').classList.add('hidden');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+            const payload = {
+                donor_id: currentUser.id,
+                donor_type: document.getElementById('donor_type').value,
+                organization_name: document.getElementById('organization_name').value.trim() || null,
+                contact_name: userProfile.first_name + ' ' + userProfile.last_name,
+                phone_number: userProfile.mobile_phone || 'N/A',
+                other_phone: document.getElementById('other_phone').value.trim() || null,
+                email_address: userProfile.email,
+                
+                food_type: document.getElementById('food_type').value,
+                detailed_description: document.getElementById('detailed_description').value.trim(),
+                amount: document.getElementById('amount').value.trim(),
+                estimated_weight_kg: parseFloat(document.getElementById('estimated_weight_kg').value),
+                expiration_date: document.getElementById('expiration_date').value,
+                storage_history: document.getElementById('storage_history').value,
+                allergen_disclosures: allergens,
+                photo_link: document.getElementById('photo_link').value.trim(),
+                
+                logistics_option: document.querySelector('input[name="logistics_option"]:checked').value,
+                pickup_address: document.getElementById('pickup_address').value.trim() || null
+            };
+
+            try {
+                const { error } = await supabaseClient.from('food_donations').insert([payload]);
+                if (error) throw error;
+
+                // Success State: Hide form, show custom success message
+                document.getElementById('donation-form-container').classList.add('hidden');
+                document.getElementById('form-success').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+            } catch (err) {
+                console.error(err);
+                errorEl.textContent = "A system error occurred. Please ensure all required fields are correctly filled.";
+                errorEl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-truck-fast"></i> Submit Donation Log';
+            }
+        }
+
+        // Wait for images then init
+        Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => { initPage(); });
+        setTimeout(initPage, 7000); 
     </script>
 </body>
 </html>
