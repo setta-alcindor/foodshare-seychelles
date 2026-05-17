@@ -58,7 +58,7 @@
         }
     </style>
 </head>
-<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-x-hidden" id="body" oncontextmenu="return false;">
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden" id="body" oncontextmenu="return false;">
 
     <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
         <div class="flex flex-col items-center">
@@ -135,11 +135,8 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-24">
-                <div class="relative group">
-                    <div class="absolute inset-0 bg-brand-green rounded-3xl transform translate-x-4 translate-y-4 transition-transform group-hover:translate-x-6 group-hover:translate-y-6"></div>
-                    <div class="relative z-10 w-full h-[400px] bg-white border border-gray-100 rounded-3xl shadow-xl flex items-center justify-center p-12">
-                        <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-full h-full object-contain pointer-events-none select-none drop-shadow-md">
-                    </div>
+                <div class="flex items-center justify-center h-[350px]">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-64 h-64 md:w-80 md:h-80 object-contain pointer-events-none select-none drop-shadow-2xl">
                 </div>
                 <div class="flex flex-col justify-center">
                     <h4 class="text-3xl md:text-4xl font-black text-brand-slate mb-6">Uncompromising Food Safety</h4>
@@ -168,20 +165,14 @@
                         Explore our Tech Infrastructure <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition"></i>
                     </a>
                 </div>
-                <div class="order-1 lg:order-2 relative group">
-                    <div class="absolute inset-0 bg-brand-slate rounded-3xl transform -translate-x-4 translate-y-4 transition-transform group-hover:-translate-x-6 group-hover:translate-y-6"></div>
-                    <div class="relative z-10 w-full h-[400px] bg-white border border-gray-100 rounded-3xl shadow-xl flex items-center justify-center p-12">
-                        <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-full h-full object-contain pointer-events-none select-none drop-shadow-md">
-                    </div>
+                <div class="order-1 lg:order-2 flex items-center justify-center h-[350px]">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-64 h-64 md:w-80 md:h-80 object-contain pointer-events-none select-none drop-shadow-2xl">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                <div class="relative group">
-                    <div class="absolute inset-0 bg-brand-green rounded-3xl transform translate-x-4 translate-y-4 transition-transform group-hover:translate-x-6 group-hover:translate-y-6"></div>
-                    <div class="relative z-10 w-full h-[400px] bg-white border border-gray-100 rounded-3xl shadow-xl flex items-center justify-center p-12">
-                        <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-full h-full object-contain pointer-events-none select-none drop-shadow-md">
-                    </div>
+                <div class="flex items-center justify-center h-[350px]">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-64 h-64 md:w-80 md:h-80 object-contain pointer-events-none select-none drop-shadow-2xl">
                 </div>
                 <div class="flex flex-col justify-center">
                     <h4 class="text-3xl md:text-4xl font-black text-brand-slate mb-6">A Nationwide Movement</h4>
@@ -320,7 +311,7 @@
             }
         });
         
-        // Optional: Disable common developer shortcut keys (F12, Ctrl+Shift+I)
+        // Optional: Disable common developer shortcut keys
         document.onkeydown = function(e) {
             if(e.keyCode == 123) { return false; }
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
@@ -328,6 +319,35 @@
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
             if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
         }
+
+        // --- TRUE LOAD LOGIC ---
+        function removeLoader() {
+            const loader = document.getElementById('loader');
+            const body = document.getElementById('body');
+            
+            if(loader && loader.style.display !== 'none') {
+                loader.classList.add('fade-out');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    if (body) body.classList.remove('overflow-hidden');
+                }, 500); 
+            }
+        }
+
+        // Wait for all actual <img> elements to fire their load events
+        Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => {
+            img.onload = img.onerror = resolve;
+        }))).then(() => {
+            // Also ensure the window itself is fully ready
+            if (document.readyState === 'complete') {
+                removeLoader();
+            } else {
+                window.addEventListener('load', removeLoader);
+            }
+        });
+
+        // Fail-safe: Unblock page after 7 seconds regardless
+        setTimeout(removeLoader, 7000);
     </script>
 
     <script>
@@ -346,17 +366,6 @@
                 <p class="text-gray-500 max-w-md mx-auto text-center font-medium">${message}</p>
             </div>
         `;
-
-        // Remove Loading Screen
-        function removeLoader() {
-            const loader = document.getElementById('loader');
-            if(loader) {
-                loader.classList.add('fade-out');
-                setTimeout(() => loader.style.display = 'none', 500);
-            }
-        }
-        window.addEventListener('load', removeLoader);
-        setTimeout(removeLoader, 1500); // Fail-safe
 
         // Fetch Data on Load
         async function initPageData() {
