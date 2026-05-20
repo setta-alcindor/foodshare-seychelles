@@ -5,97 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found | FoodShare Seychelles</title>
     
-    <link rel="icon" type="image/png" href="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png">
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
 
-    <div class="loader-wrapper" id="loader">
-        <div class="loader"></div>
-    </div>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
 
-    <div class="top-bar">
-        <a href="https://sc.linkedin.com/company/foodshare-seychelles" target="_blank" title="Official LinkedIn Page"><i class="fab fa-linkedin"></i></a>
-        <a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank" title="LinkedIn Blog"><i class="fab fa-linkedin-in"></i></a>
-    </div>
-
-    <header>
-        <div class="logo">
-            <a href="/"><img src="https://i.ibb.co/TxWz44h0/Food-Share-Seychelles-Logo.png" alt="FoodShare Seychelles Logo"></a>
-        </div>
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
         
-        <div class="menu-toggle" id="mobile-menu">&#9776;</div>
+        /* Copyright Protection */
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden flex flex-col min-h-screen" id="body" oncontextmenu="return false;">
 
-        <nav>
-            <ul id="nav-list">
-                <li><a href="/about/">ABOUT</a></li>
-                <li><a href="/volunteer/">VOLUNTEER</a></li>
-                <li><a href="/find-food/">FIND FOOD</a></li>
-                <li><a href="/donate/">DONATE</a></li>
-                <li><a href="https://www.linkedin.com/newsletters/foodshare-seychelles-7406371244033617921" target="_blank">BLOG</a></li>
-                <li><a href="/contact/">CONTACT</a></li>
-                <li><a href="/login/" class="staff-login">STAFF LOGIN</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading Directory</p>
+        </div>
+    </div>
 
-    <section class="section-container" style="min-height: 70vh; display: flex; justify-content: center; align-items: center; background-color: #f9f9f9;">
-        <div style="text-align: center; background-color: var(--white); padding: 60px 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); max-width: 650px; width: 100%; border-top: 5px solid var(--primary-green);">
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <div id="nav-auth-guest" class="flex items-center gap-6">
+                        <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                        <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                    </div>
+                    <div id="nav-auth-user" class="hidden items-center gap-6">
+                        <a href="/client/dashboard/" class="text-brand-green font-bold text-sm hover:text-brand-darkgreen transition flex items-center gap-2"><i class="fa-solid fa-user-circle text-lg"></i> My Dashboard</a>
+                        <button onclick="handleLogout()" class="text-gray-500 font-bold text-sm hover:text-red-500 transition">Logout</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-brand-slate">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        
+        <div class="max-w-2xl w-full text-center relative z-10 bg-white p-12 md:p-16 rounded-3xl shadow-2xl border border-gray-100">
             
-            <h1 style="font-size: 6rem; color: var(--primary-green); margin-bottom: 10px; line-height: 1;">404</h1>
-            <h2 style="color: var(--dark-green); font-size: 2rem; margin-bottom: 20px; text-transform: uppercase;">Page Not Found</h2>
+            <div class="w-24 h-24 mx-auto bg-green-50 text-brand-green rounded-full flex items-center justify-center text-5xl mb-8 shadow-inner">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
             
-            <p style="color: #666; font-size: 1.1rem; margin-bottom: 40px; line-height: 1.6;">
-                Oops! It looks like this page got lost in transit, or the food has already been rescued. Don't worry, let's get you back to where you need to go.
+            <h1 class="text-6xl md:text-8xl font-black text-brand-slate tracking-tight mb-4">404</h1>
+            <h2 class="text-2xl md:text-3xl font-black text-gray-800 mb-4">Logistics Route Not Found</h2>
+            
+            <p class="text-gray-500 font-medium text-lg leading-relaxed mb-10 max-w-md mx-auto">
+                The digital destination you are looking for has been moved, deleted, or does not exist in our system ledger.
             </p>
             
-            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                <a href="/" class="btn btn-primary"><i class="fas fa-home" style="margin-right: 8px;"></i> Back to Home</a>
-                <a href="/find-food/" class="btn btn-outline" style="border-color: var(--primary-green); color: var(--primary-green);"><i class="fas fa-search" style="margin-right: 8px;"></i> Find Food</a>
-                <a href="/contact/" class="btn btn-outline" style="border-color: var(--primary-green); color: var(--primary-green);"><i class="fas fa-envelope" style="margin-right: 8px;"></i> Contact Us</a>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="/" class="w-full sm:w-auto px-8 py-4 bg-brand-green text-white font-black uppercase tracking-widest text-xs rounded-xl hover:bg-brand-darkgreen transition shadow-lg shadow-green-900/20">
+                    <i class="fa-solid fa-house mr-2"></i> Return to Homepage
+                </a>
+                <a href="/contact/" class="w-full sm:w-auto px-8 py-4 bg-gray-100 text-brand-slate font-black uppercase tracking-widest text-xs rounded-xl hover:bg-gray-200 transition border border-gray-200">
+                    <i class="fa-solid fa-headset mr-2"></i> Contact Support
+                </a>
             </div>
             
         </div>
-    </section>
+    </main>
 
-    <footer>
-        <p>&copy; 2026 FoodShare Seychelles. All Rights Reserved.</p>
-        <p>
-            FoodShare Seychelles is powered & a proud member of 
-            <a href="https://tylernicholasgroup.com" target="_blank">The Tyler Nicholas Group</a> 
-            In Official Partner with the 
-            <a href="https://tyler-nicholas-foundation.online" target="_blank">Tyler Nicholas Foundation</a>.
-        </p>
+    <footer class="bg-brand-slate text-white pt-16 pb-8 border-t border-gray-800 flex-shrink-0 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-10 h-10 object-contain drop-shadow-lg pointer-events-none">
+                <h4 class="text-xl font-black tracking-tight text-white">FoodShare Seychelles</h4>
+            </div>
+            <div class="text-sm text-gray-500 font-medium">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+                <p class="mt-2">
+                    Member of <a href="https://tylernicholasgroup.com" target="_blank" class="text-gray-400 hover:text-brand-green transition border-b border-gray-700 hover:border-brand-green pb-0.5">The Tyler Nicholas Group</a>
+                </p>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // Mobile Menu Toggle
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navList = document.getElementById('nav-list');
-        if (mobileMenu && navList) {
-            mobileMenu.addEventListener('click', () => {
-                navList.classList.toggle('active');
-            });
-        }
-
-        // Loader Logic
-        function removeLoader() {
-            const loader = document.getElementById('loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 500); 
-            }
-        }
-        window.addEventListener('load', removeLoader);
-        if (document.readyState === 'complete') { removeLoader(); }
-        setTimeout(removeLoader, 2500);
-    </script>
-</body>
-</html>
+        // Disable Right Click & Drag
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => { if(event.target.tagName.toLowerCase() === 'img') event.preventDefault(); });
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) { return false; }
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) { return false; }
+            if
