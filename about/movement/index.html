@@ -3,18 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meet the Community | FoodShare Seychelles</title>
+    <title>Tech Infrastructure | FoodShare Seychelles</title>
     
     <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
-
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -36,8 +30,6 @@
         ::-webkit-scrollbar-track { background: #f8fafc; }
         ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #15803d; }
-        
-        /* Copyright Protection */
         body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
     </style>
 </head>
@@ -46,7 +38,7 @@
     <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
         <div class="flex flex-col items-center">
             <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
-            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading Directory</p>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading Architecture</p>
         </div>
     </div>
 
@@ -62,7 +54,7 @@
                 
                 <div class="hidden lg:flex items-center space-x-8">
                     <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
-                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/about/" class="text-brand-green font-bold border-b-2 border-brand-green pb-1 text-sm">About Us</a>
                     <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
                     <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
                     <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
@@ -81,55 +73,119 @@
                 </div>
 
                 <div class="flex items-center lg:hidden">
-                    <button class="text-gray-600 hover:text-brand-green focus:outline-none">
-                        <i class="fa-solid fa-bars text-2xl"></i>
-                    </button>
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none"><i class="fa-solid fa-bars text-2xl"></i></button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-brand-slate">
-        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
-        
-        <div class="max-w-3xl w-full text-center relative z-10 bg-white p-10 md:p-16 rounded-3xl shadow-2xl border border-gray-100">
+    <header class="w-full py-16 bg-white relative overflow-hidden border-b border-gray-200">
+        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-5xl font-black text-brand-slate tracking-tight mb-4">Our Technology Infrastructure</h1>
+            <p class="text-lg text-gray-500 font-medium max-w-2xl mx-auto">
+                Discover the streamlined, robust, and highly secure cloud architecture powering our redistribution ecosystem.
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow bg-gray-50 py-16 px-4 sm:px-6 lg:px-8 overflow-y-auto">
+        <div class="max-w-5xl mx-auto space-y-12">
             
-            <div class="w-20 h-20 mx-auto bg-green-50 text-brand-green rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner">
-                <i class="fa-solid fa-users"></i>
-            </div>
-            
-            <h1 class="text-4xl md:text-6xl font-black text-brand-slate tracking-tight mb-4">Meet the Community</h1>
-            
-            <div class="w-24 h-1 bg-brand-green mx-auto mb-8 rounded-full"></div>
-            
-            <div class="inline-block bg-gray-50 border border-gray-200 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-gray-500 mb-8 shadow-sm">
-                <i class="fa-solid fa-person-digging mr-2 text-brand-green"></i> Directory Under Construction
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 flex flex-col items-center text-center hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-2xl mb-5 shadow-inner">
+                        <i class="fa-solid fa-laptop-mobile"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-brand-slate mb-3">Streamlined Experience</h3>
+                    <p class="text-sm text-gray-600 font-medium leading-relaxed">
+                        Engineered for effortless usability, our platform delivers an identical, fast-loading workspace across mobile phones, tablets, and desktop computers.
+                    </p>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 flex flex-col items-center text-center hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-2xl mb-5 shadow-inner">
+                        <i class="fa-solid fa-vault"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-brand-slate mb-3">Zero-Breach Security</h3>
+                    <p class="text-sm text-gray-600 font-medium leading-relaxed">
+                        By enforcing strict server-side Row Level Security (RLS) layers, your profile and transaction data are cryptographically locked with zero chance of unauthorized exposure.
+                    </p>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200 flex flex-col items-center text-center hover:shadow-md transition">
+                    <div class="w-14 h-14 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-2xl mb-5 shadow-inner">
+                        <i class="fa-solid fa-bolt-lightning"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-brand-slate mb-3">Real-Time Sync</h3>
+                    <p class="text-sm text-gray-600 font-medium leading-relaxed">
+                        Leveraging advanced event triggers, all inventory allocations, donation approvals, and claim updates cycle across the network with absolute real-time accuracy.
+                    </p>
+                </div>
             </div>
 
-            <p class="text-gray-600 font-medium text-lg leading-relaxed mb-6 max-w-xl mx-auto">
-                We are currently building a dedicated space to highlight the incredible volunteers, corporate partners, and local heroes who make the FoodShare Seychelles network possible.
-            </p>
-
-            <p class="text-gray-500 font-medium text-sm leading-relaxed mb-10 max-w-lg mx-auto">
-                Our team is compiling community stories and impact portfolios. This digital directory will be launching soon. Thank you for your patience as we prepare to celebrate our island network.
-            </p>
-            
-            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="/" class="w-full sm:w-auto px-8 py-4 bg-brand-slate text-white font-black uppercase tracking-widest text-xs rounded-xl hover:bg-gray-800 transition shadow-lg shadow-gray-900/20">
-                    <i class="fa-solid fa-house mr-2"></i> Return Home
-                </a>
-                <a href="/client/volunteer/" class="w-full sm:w-auto px-8 py-4 bg-gray-50 border border-gray-200 text-gray-700 font-black uppercase tracking-widest text-xs rounded-xl hover:bg-white hover:border-brand-green transition shadow-sm">
-                    <i class="fa-solid fa-handshake-angle mr-2"></i> Join as a Volunteer
-                </a>
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row">
+                <div class="p-8 md:p-12 md:w-3/5 space-y-6">
+                    <h2 class="text-2xl md:text-3xl font-black text-brand-slate tracking-tight">System Integrity & Support</h2>
+                    <div class="w-16 h-1 bg-brand-green rounded-full"></div>
+                    <p class="text-sm text-gray-600 font-medium leading-relaxed">
+                        FoodShare Seychelles utilizes an elite cloud framework to guarantee that all private donor parameters, matching algorithms, and internal administrative logs are securely stored. We believe that technology should be invisible, powerful, and completely secure.
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 mt-4">
+                        <span class="text-[10px] uppercase font-black text-gray-400 tracking-wider block mb-1">Direct Infrastructure Support</span>
+                        <a href="mailto:tyler@foodshare-seychelles.online" class="text-lg font-black text-brand-slate hover:text-brand-green transition break-all flex items-center gap-2">
+                            <i class="fa-solid fa-headset text-brand-green"></i> tyler@foodshare-seychelles.online
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-gray-50 md:w-2/5 p-8 md:p-12 flex flex-col justify-center border-t md:border-t-0 md:border-l border-gray-200 space-y-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center flex-shrink-0 text-brand-green shadow-sm"><i class="fa-solid fa-database text-xs"></i></div>
+                        <div><p class="text-sm font-bold text-brand-slate">PostgreSQL Cloud</p><p class="text-xs text-gray-500 font-medium mt-0.5">Enterprise database protection.</p></div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center flex-shrink-0 text-brand-green shadow-sm"><i class="fa-solid fa-key text-xs"></i></div>
+                        <div><p class="text-sm font-bold text-brand-slate">JWT Access Controls</p><p class="text-xs text-gray-500 font-medium mt-0.5">Strict session validation tokens.</p></div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center flex-shrink-0 text-brand-green shadow-sm"><i class="fa-solid fa-code text-xs"></i></div>
+                        <div><p class="text-sm font-bold text-brand-slate">Lightweight Rendering</p><p class="text-xs text-gray-500 font-medium mt-0.5">Optimized for low-bandwidth areas.</p></div>
+                    </div>
+                </div>
             </div>
-            
+
+            <div class="bg-white p-10 md:p-12 rounded-3xl shadow-sm border border-gray-200 text-center space-y-8">
+                <div>
+                    <span class="text-[10px] uppercase font-black text-gray-400 tracking-widest block mb-2 border-b border-gray-100 pb-2 max-w-xs mx-auto">Engineering Alliances</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-brand-slate tracking-tight">Our Technology Partners</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-3 max-w-xl mx-auto">
+                        This highly secure, easy-to-use operational stack would not be possible without the generous expertise and architectural contributions of our engineering allies.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto pt-4">
+                    <div class="flex flex-col items-center p-8 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm hover:shadow transition duration-300">
+                        <img src="https://i.ibb.co/MDHS2J5v/Blue-Wave-Digital-New-Logo.png" alt="BlueWave Digital" class="h-16 w-auto object-contain mb-6 filter drop-shadow-sm pointer-events-none">
+                        <p class="font-black text-brand-slate text-base">BlueWave Digital</p>
+                        <span class="text-[10px] uppercase text-gray-400 font-bold tracking-wider mt-1">Cloud Implementation</span>
+                    </div>
+
+                    <div class="flex flex-col items-center p-8 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm hover:shadow transition duration-300">
+                        <img src="https://i.ibb.co/1tcyLSRN/TNG-Logo.png" alt="Tyler Nicholas Group" class="h-16 w-auto object-contain mb-6 filter drop-shadow-sm pointer-events-none">
+                        <p class="font-black text-brand-slate text-base">Tyler Nicholas Group</p>
+                        <span class="text-[10px] uppercase text-gray-400 font-bold tracking-wider mt-1">Core Security Architecture</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <footer class="bg-brand-slate text-white pt-12 pb-8 border-t border-gray-800 flex-shrink-0 relative z-20">
+    <footer class="bg-white text-gray-600 pt-12 pb-8 border-t border-gray-200 flex-shrink-0 relative z-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="text-sm text-gray-500 font-medium">
+            <div class="text-sm font-medium">
                 <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+                <p class="mt-2 text-gray-400 text-xs">A Tyler Nicholas Group Initiative</p>
             </div>
         </div>
     </footer>
@@ -153,19 +209,14 @@
 
         async function initPage() {
             try {
-                // Check Session for dynamic navbar
                 const { data: { session } } = await supabaseClient.auth.getSession();
-                
                 if (session) {
                     document.getElementById('nav-auth-guest').classList.add('hidden');
                     document.getElementById('nav-auth-user').classList.remove('hidden');
                     document.getElementById('nav-auth-user').classList.add('flex');
                 }
-            } catch (err) {
-                console.error("Auth check failed", err);
-            } finally {
-                removeLoader();
-            }
+            } catch (err) { console.error("Authentication handshake failure", err); } 
+            finally { removeLoader(); }
         }
 
         async function handleLogout() {
@@ -173,9 +224,8 @@
             window.location.reload();
         }
 
-        // Load Event
         window.addEventListener('load', initPage);
-        setTimeout(initPage, 7000); // Fail-safe
+        setTimeout(initPage, 7000); 
     </script>
 </body>
 </html>
