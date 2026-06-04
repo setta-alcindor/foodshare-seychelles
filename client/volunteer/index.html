@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Portal | FoodShare Seychelles</title>
+    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+        .skill-checkbox:checked + div { background-color: #16a34a; border-color: #16a34a; color: white; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden flex flex-col min-h-screen" id="body" oncontextmenu="return false;">
+
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Syncing Directory</p>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <div id="nav-auth-guest" class="flex items-center gap-6">
+                        <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                        <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                    </div>
+                    <div id="nav-auth-user" class="hidden items-center gap-6">
+                        <a href="/client/dashboard/" class="text-brand-green font-bold text-sm hover:text-brand-darkgreen transition flex items-center gap-2"><i class="fa-solid fa-user-circle text-lg"></i> My Dashboard</a>
+                        <button onclick="handleLogout()" class="text-gray-500 font-bold text-sm hover:text-red-500 transition">Logout</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none"><i class="fa-solid fa-bars text-2xl"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="w-full py-20 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">Join the Movement</h1>
+            <p class="text-xl text-gray-300 font-medium max-w-2xl mx-auto leading-relaxed">
+                FoodShare relies on community members like you. Apply below to become a general volunteer or fulfill a specialized role within our operations.
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow bg-gray-50 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div id="auth-wall" class="hidden bg-white p-12 rounded-3xl shadow-md border border-gray-200 text-center max-w-xl mx-auto">
+                <div class="w-20 h-20 bg-blue-50 text-brand-blue rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-lock"></i></div>
+                <h2 class="text-3xl font-black text-brand-slate mb-4">Portal Access Secured</h2>
+                <p class="text-gray-600 font-medium mb-8 max-w-sm mx-auto leading-relaxed">
+                    To apply for a position and track your application status, you must be securely signed into your verified profile.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="/login/" class="px-8 py-3.5 bg-brand-slate text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-md">Sign In</a>
+                    <a href="/signup/" class="px-8 py-3.5 bg-white text-gray-700 border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition shadow-sm">Sign Up</a>
+                </div>
+            </div>
+
+            <div id="application-success" class="hidden bg-white p-12 rounded-3xl shadow-lg border border-brand-green text-center max-w-2xl mx-auto">
+                <div class="w-24 h-24 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-5xl mx-auto mb-6">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                </div>
+                <h2 class="text-4xl font-black text-brand-slate mb-4">Application Submitted</h2>
+                <p class="text-lg text-gray-600 font-medium mb-8 max-w-lg mx-auto leading-relaxed">
+                    Thank you for stepping up to help nourish Seychelles. Your application has been securely logged to your dashboard.
+                </p>
+                <div class="bg-gray-50 text-brand-slate p-6 rounded-2xl border border-gray-200 max-w-lg mx-auto text-left space-y-4">
+                    <p class="text-brand-green font-bold uppercase tracking-widest text-xs mb-2 text-center">Processing Timeline</p>
+                    <div class="flex items-center gap-4 text-sm font-medium text-gray-600">
+                        <i class="fa-solid fa-hourglass-half text-brand-green text-xl"></i>
+                        <p>Applications are reviewed by our operations team between <strong>6 and 48 hours</strong>.</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-sm font-medium text-gray-600">
+                        <i class="fa-solid fa-calendar-check text-brand-green text-xl"></i>
+                        <p>Expect a formal response regarding next steps within <strong>2-3 Business Days</strong>.</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <a href="/client/dashboard/" class="text-brand-slate font-bold hover:text-brand-green transition">Track Status in Dashboard <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+
+            <div id="roles-layout" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <div class="lg:col-span-1">
+                        <div class="bg-brand-slate p-8 rounded-3xl shadow-xl text-white relative overflow-hidden h-full flex flex-col border-b-4 border-brand-green">
+                            <div class="absolute -right-4 -top-4 w-32 h-32 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+                            <div class="w-14 h-14 bg-brand-green text-white rounded-xl flex items-center justify-center text-2xl mb-6 shadow-lg"><i class="fa-solid fa-hands-holding-child"></i></div>
+                            <h3 class="text-3xl font-black tracking-tight mb-4">General Volunteer</h3>
+                            <p class="text-gray-300 font-medium leading-relaxed mb-8 flex-grow">
+                                Join our core community network. General volunteers form the backbone of our operations—helping sort rescued food, managing community distributions, and assisting with local outreach.
+                            </p>
+                            <button onclick="openAppModal('regular', null)" class="w-full py-4 bg-brand-green hover:bg-brand-darkgreen text-white text-sm font-black uppercase tracking-widest rounded-xl transition shadow-lg">Apply Now</button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <div class="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
+                            <h3 class="text-xl font-black text-brand-slate tracking-tight">Specialized Positions</h3>
+                            <span class="text-[10px] font-bold uppercase tracking-widest bg-gray-100 text-gray-500 px-3 py-1 rounded-md">Live Board</span>
+                        </div>
+                        <div id="custom-roles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="app-modal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-brand-slate/60 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-card">
+            
+            <div class="bg-brand-slate text-white p-6 flex justify-between items-center border-b border-gray-800">
+                <div>
+                    <span class="inline-block px-2.5 py-1 bg-brand-green text-white text-[10px] font-black uppercase tracking-wider rounded mb-1">Application Form</span>
+                    <h3 class="text-2xl font-black tracking-tight" id="modal-role-title">Loading Role...</h3>
+                </div>
+                <button onclick="closeAppModal()" class="text-gray-400 hover:text-white transition text-2xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="volunteer-form" onsubmit="handleApplicationSubmit(event)" class="p-8 space-y-6">
+                <input type="hidden" id="app_type">
+                <input type="hidden" id="app_role_id">
+
+                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-gray-600">
+                    <div class="md:col-span-2 border-b border-gray-200 pb-2 flex justify-between items-center">
+                        <span class="font-bold uppercase tracking-wider text-gray-400 text-[10px]">Verified Profile Link</span>
+                        <span class="text-brand-green text-[10px] font-bold uppercase tracking-wider"><i class="fa-solid fa-circle-check"></i> Connected</span>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Full Name</label>
+                        <input type="text" id="req_full_name" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Email Address</label>
+                        <input type="email" id="req_email" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Primary Phone</label>
+                        <input type="tel" id="req_phone" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 mb-1 font-bold uppercase tracking-wider text-[10px]">Other Phone <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
+                        <input type="text" id="req_other_phone" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-brand-green">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Availability Schedule *</label>
+                    <textarea id="app_schedule" rows="2" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm resize-none" placeholder="E.g., Weekends only, Monday-Wednesday mornings..."></textarea>
+                </div>
+
+                <div id="block-regular" class="space-y-6 hidden">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">What can you help with? *</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="skills-container">
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Social Media" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Social Media</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Communications & Outreach" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Comms & Outreach</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Driver" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Fleet Driver</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Dispatch" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Dispatch & Sorting</div></label>
+                        </div>
+                        <p id="skill-error" class="text-red-500 text-xs font-bold mt-2 hidden">Select at least one area of assistance.</p>
+                    </div>
+
+                    <div class="bg-blue-50/60 border border-blue-100 p-5 rounded-2xl">
+                        <label class="flex items-start gap-3 cursor-pointer group">
+                            <div class="mt-0.5"><input type="checkbox" id="bg_consent" class="w-5 h-5 text-brand-green border-gray-300 rounded focus:ring-brand-green cursor-pointer transition"></div>
+                            <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900 transition">
+                                I consent to a standard background safety check prior to working on-site or interfacing with community dependents. *
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="block-custom" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Available To Start *</label>
+                        <input type="date" id="app_start_date" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Resume Direct Link *</label>
+                        <input type="url" id="app_resume" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="URL to PDF (Drive, Dropbox)">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                    <p id="form-err-msg" class="text-red-500 text-xs font-bold mr-auto hidden">System Error</p>
+                    <button type="button" onclick="closeAppModal()" class="px-5 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition text-sm">Cancel</button>
+                    <button type="submit" id="submit-app-btn" class="px-6 py-3 bg-brand-green text-white font-black uppercase tracking-wider rounded-xl hover:bg-brand-darkgreen transition text-sm shadow-md">Submit Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-brand-slate text-white pt-10 pb-8 border-t border-gray-800 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500 font-medium">
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => { if(event.target.tagName.toLowerCase() === 'img') event.preventDefault(); });
+
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let globalRolesData = [];
+
+        function removeLoader() {
+            const loader = document.getElementById('loader');
+            if(loader) { loader.classList.add('fade-out'); setTimeout(() => { loader.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500); }
+        }
+
+        async function initPage() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    currentUser = session.user;
+                    document.getElementById('nav-auth-guest').classList.add('hidden');
+                    document.getElementById('nav-auth-user').classList.remove('hidden');
+                    document.getElementById('nav-auth-user').classList.add('flex');
+
+                    const { data: profile } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
+                    if (profile) {
+                        const compiledName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User Profile';
+                        document.getElementById('req_full_name').value = compiledName;
+                        document.getElementById('req_email').value = profile.email || '';
+                        document.getElementById('req_phone').value = profile.mobile_phone || '';
+                    }
+
+                    document.getElementById('auth-wall').classList.add('hidden');
+                    document.getElementById('roles-layout').classList.remove('hidden');
+                    
+                    await loadCustomRoles();
+                } else {
+                    document.getElementById('auth-wall').classList.remove('hidden');
+                }
+            } catch (err) { console.error("Init Error", err); } 
+            finally { removeLoader(); }
+        }
+
+        async function handleLogout() { await supabaseClient.auth.signOut(); window.location.reload(); }
+
+        const emptyHTML = `<div class="col-span-full bg-white border border-gray-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center"><div class="w-12 h-12 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-briefcase"></i></div><p class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">No Custom Roles</p><p class="text-sm text-gray-400 font-medium">There are currently no specialized positions available. Please apply as a General Volunteer.</p></div>`;
+
+        async function loadCustomRoles() {
+            const grid = document.getElementById('custom-roles-grid');
+            try {
+                const { data, error } = await supabaseClient.from('volunteer_roles').select('*').eq('is_active', true).order('created_at', { ascending: false });
+                if (error) throw error;
+                globalRolesData = data || [];
+
+                if (globalRolesData.length === 0) {
+                    grid.innerHTML = emptyHTML; return;
+                }
+
+                let html = '';
+                globalRolesData.forEach(role => {
+                    html += `
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-brand-green transition flex flex-col h-full">
+                        <div class="mb-4">
+                            <span class="inline-block px-2.5 py-1 bg-green-50 text-brand-darkgreen text-[10px] font-black uppercase tracking-wider rounded-md mb-3">Specialized Need</span>
+                            <h4 class="text-xl font-black text-brand-slate leading-tight">${role.title}</h4>
+                        </div>
+                        <p class="text-sm text-gray-500 font-medium mb-4 flex-grow line-clamp-3">${role.description}</p>
+                        <div class="pt-4 border-t border-gray-100">
+                            <button onclick="openAppModal('custom', '${role.id}')" class="w-full py-2.5 bg-white border-2 border-brand-slate text-brand-slate text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-slate hover:text-white transition">Apply for Role</button>
+                        </div>
+                    </div>`;
+                });
+                grid.innerHTML = html;
+            } catch (err) { grid.innerHTML = emptyHTML; }
+        }
+
+        function openAppModal(type, roleId) {
+            document.getElementById('app_type').value = type;
+            document.getElementById('form-err-msg').classList.add('hidden');
+            
+            const bReg = document.getElementById('block-regular');
+            const bCus = document.getElementById('block-custom');
+
+            if(type === 'regular') {
+                document.getElementById('modal-role-title').textContent = "General Volunteer";
+                document.getElementById('app_role_id').value = '';
+                bReg.classList.remove('hidden'); bCus.classList.add('hidden');
+                document.getElementById('bg_consent').required = true;
+                document.getElementById('app_start_date').required = false;
+                document.getElementById('app_resume').required = false;
+            } else {
+                const role = globalRolesData.find(x => x.id === roleId);
+                document.getElementById('modal-role-title').textContent = role ? role.title : "Custom Role";
+                document.getElementById('app_role_id').value = roleId;
+                bReg.classList.add('hidden'); bCus.classList.remove('hidden');
+                document.getElementById('bg_consent').required = false;
+                document.getElementById('app_start_date').required = true;
+                document.getElementById('app_resume').required = true;
+            }
+
+            const modal = document.getElementById('app-modal');
+            const card = document.getElementById('modal-card');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            setTimeout(() => { card.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+
+        function closeAppModal() {
+            const modal = document.getElementById('app-modal');
+            const card = document.getElementById('modal-card');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.getElementById('volunteer-form').reset(); }, 300);
+        }
+
+        async function handleApplicationSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-app-btn');
+            const errEl = document.getElementById('form-err-msg');
+            const type = document.getElementById('app_type').value;
+            errEl.classList.add('hidden');
+
+            let skills = [];
+            if(type === 'regular') {
+                skills = Array.from(document.querySelectorAll('.skill-checkbox:checked')).map(cb => cb.value);
+                if(skills.length === 0) {
+                    document.getElementById('skill-error').classList.remove('hidden'); return;
+                }
+                document.getElementById('skill-error').classList.add('hidden');
+            }
+
+            btn.disabled = true; btn.textContent = 'Submitting...';
+
+            const payload = {
+                client_id: currentUser.id,
+                application_type: type === 'regular' ? 'regular' : 'custom_role',
+                role_id: type === 'regular' ? null : document.getElementById('app_role_id').value,
+                full_name: document.getElementById('req_full_name').value,
+                email_address: document.getElementById('req_email').value,
+                phone_number: document.getElementById('req_phone').value,
+                other_phone: document.getElementById('req_other_phone').value.trim() || null,
+                availability_schedule: document.getElementById('app_schedule').value.trim(),
+                
+                // Regular specifics
+                skills_offered: type === 'regular' ? skills : null,
+                background_check_consent: type === 'regular' ? document.getElementById('bg_consent').checked : false,
+                
+                // Custom specifics
+                resume_link: type === 'regular' ? null : document.getElementById('app_resume').value.trim(),
+                available_to_start: type === 'regular' ? null : document.getElementById('app_start_date').value
+            };
+
+            try {
+                const { error } = await supabaseClient.from('volunteer_applications').insert([payload]);
+                if (error) throw error;
+
+                closeAppModal();
+                document.getElementById('roles-layout').classList.add('hidden');
+                document.getElementById('application-success').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                console.error(err);
+                errEl.textContent = "Data compliance error. Ensure all required fields are valid.";
+                errEl.classList.remove('hidden');
+                btn.disabled = false; btn.textContent = 'Submit Application';
+            }
+        }
+
+        window.addEventListener('load', initPage);
+        setTimeout(initPage, 7000); 
+    </script>
+</body>
+</html>
