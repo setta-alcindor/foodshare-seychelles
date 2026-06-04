@@ -84,14 +84,20 @@
         </div>
     </nav>
 
-    <div class="flex-1 flex overflow-hidden">
+    <div class="flex-1 flex overflow-hidden bg-gray-50 relative">
         
-        <div class="flex-1 overflow-y-auto p-6 md:p-12 lg:p-16 flex items-center justify-center bg-white">
-            <div class="w-full max-w-md">
+        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+
+        <div class="flex-1 overflow-y-auto p-6 flex items-center justify-center relative z-10">
+            
+            <div class="w-full max-w-md bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100">
                 
-                <div class="mb-8">
+                <div class="mb-8 text-center">
+                    <div class="w-16 h-16 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-sm">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
                     <h2 class="text-3xl font-black text-brand-slate tracking-tight mb-2">Account Sign In</h2>
-                    <p class="text-gray-500 font-medium text-sm">Enter your registered email identity and security password parameters below to enter the portal framework.</p>
+                    <p class="text-gray-500 font-medium text-sm">Enter your registered email and password to access the portal framework.</p>
                 </div>
 
                 <form id="login-form" onsubmit="handleAuthLogin(event)" class="space-y-5">
@@ -126,23 +132,6 @@
                     </div>
                 </form>
 
-            </div>
-        </div>
-
-        <div class="hidden lg:flex lg:w-[40%] bg-brand-slate items-center justify-center p-12 relative overflow-hidden border-l-4 border-brand-green">
-            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 2px, transparent 2px); background-size: 32px 32px;"></div>
-            
-            <div class="text-center text-white relative z-10 max-w-sm space-y-6">
-                <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-28 h-28 object-contain mx-auto drop-shadow-xl pointer-events-none select-none mb-4">
-                <h3 class="text-3xl font-black tracking-tight">Role Matrix Routing</h3>
-                <p class="text-gray-400 text-sm leading-relaxed font-medium">
-                    The platform identity matrix automatically determines access tokens, securely dispatching clients, collection staff, and administrative management nodes to their appropriate operational centers.
-                </p>
-                <div class="pt-4 flex justify-center gap-6 text-xs font-bold uppercase tracking-widest font-mono text-gray-400">
-                    <div class="bg-gray-800/50 px-4 py-2 rounded-xl border border-gray-700/40 text-center"><i class="fa-solid fa-users text-white block mb-1 text-sm"></i> Clients</div>
-                    <div class="bg-gray-800/50 px-4 py-2 rounded-xl border border-gray-700/40 text-center"><i class="fa-solid fa-truck-ramp-box text-white block mb-1 text-sm"></i> Staff</div>
-                    <div class="bg-gray-800/50 px-4 py-2 rounded-xl border border-gray-700/40 text-center"><i class="fa-solid fa-user-gear text-white block mb-1 text-sm"></i> Admins</div>
-                </div>
             </div>
         </div>
 
@@ -181,7 +170,7 @@
                         Automated security recoveries are strictly unavailable for internal Staff and Executive Administrator accounts. 
                     </p>
                     <p class="text-sm text-amber-800 font-medium leading-relaxed">
-                        To recover your platform credentials, you must manual initiate an identity re-verification request by emailing:
+                        To recover your platform credentials, you must manually initiate an identity re-verification request by emailing:
                     </p>
                     <div class="text-center py-2 bg-white rounded-xl border border-amber-300 font-mono text-xs font-bold text-brand-slate">
                         admin@foodshare-seychelles.online
