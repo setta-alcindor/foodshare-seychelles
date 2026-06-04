@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media | FoodShare Seychelles</title>
+    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #15803d; }
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden flex flex-col min-h-screen" id="body" oncontextmenu="return false;">
+
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Loading Network</p>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                    <a href="/" class="text-2xl font-black text-brand-slate tracking-tight hover:text-brand-green transition">
+                        FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Home</a>
+                    <a href="/about/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">About Us</a>
+                    <a href="/client/find-food/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Find Food</a>
+                    <a href="/client/donate/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Donate</a>
+                    <a href="/news/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">News</a>
+                    <a href="/contact/" class="text-gray-600 hover:text-brand-green transition font-semibold text-sm">Contact</a>
+                    
+                    <div class="h-6 border-l border-gray-200 mx-2"></div>
+                    
+                    <div id="nav-auth-guest" class="flex items-center gap-6">
+                        <a href="/login/" class="text-brand-slate font-bold text-sm hover:text-brand-green transition">Login</a>
+                        <a href="/signup/" class="px-5 py-2.5 bg-brand-slate text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition shadow-md">Sign Up</a>
+                    </div>
+                    <div id="nav-auth-user" class="hidden items-center gap-6">
+                        <a href="/client/dashboard/" class="text-brand-green font-bold text-sm hover:text-brand-darkgreen transition flex items-center gap-2"><i class="fa-solid fa-user-circle text-lg"></i> My Dashboard</a>
+                        <button onclick="handleLogout()" class="text-gray-500 font-bold text-sm hover:text-red-500 transition">Logout</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button class="text-gray-600 hover:text-brand-green focus:outline-none"><i class="fa-solid fa-bars text-2xl"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="w-full py-16 bg-white relative overflow-hidden border-b border-gray-200">
+        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-5xl font-black text-brand-slate tracking-tight mb-4">Connect With Us</h1>
+            <p class="text-lg text-gray-500 font-medium max-w-2xl mx-auto">
+                Join our digital community to stay updated on our latest logistics routes, operational milestones, and community impact.
+            </p>
+        </div>
+    </header>
+
+    <main class="flex-grow bg-gray-50 py-16 px-4 sm:px-6 lg:px-8 overflow-y-auto">
+        <div class="max-w-4xl mx-auto space-y-12">
+            
+            <div class="bg-blue-50 border border-blue-200 p-6 rounded-2xl flex items-start sm:items-center gap-4 shadow-sm max-w-3xl mx-auto">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0 text-blue-600 shadow-sm border border-blue-100">
+                    <i class="fa-solid fa-tower-broadcast"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-blue-900 text-sm">Digital Footprint Expansion</h3>
+                    <p class="text-sm text-blue-800 font-medium mt-0.5">
+                        We are actively establishing our presence across all major social networks. While some accounts are still being configured, our official <strong>LinkedIn network is fully live!</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden max-w-3xl mx-auto text-center hover:shadow-md transition duration-300">
+                <div class="p-10 md:p-16 border-b border-gray-100 bg-gray-50/30">
+                    
+                    <i class="fa-brands fa-linkedin text-[#0a66c2] text-[140px] drop-shadow-sm mb-6 transition transform hover:scale-105 duration-300"></i>
+                    
+                    <h2 class="text-3xl md:text-4xl font-black text-brand-slate tracking-tight mb-4">Follow us on LinkedIn</h2>
+                    <p class="text-gray-500 font-medium text-lg leading-relaxed max-w-xl mx-auto mb-10">
+                        Join our professional network to get direct insights from our administrative team, track our logistics metrics, and read the latest foundational updates from FoodShare Seychelles.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="https://www.linkedin.com/company/foodshare-seychelles" target="_blank" class="w-full sm:w-auto px-8 py-4 bg-[#0a66c2] hover:bg-[#004182] text-white font-black uppercase tracking-widest text-sm rounded-xl transition shadow-lg shadow-blue-900/20 flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Official Page
+                        </a>
+                        <a href="https://www.linkedin.com/build-relation/newsletter-follow?entityUrn=7406371244033617921" target="_blank" class="w-full sm:w-auto px-8 py-4 bg-white border-2 border-[#0a66c2] text-[#0a66c2] hover:bg-blue-50 font-black uppercase tracking-widest text-sm rounded-xl transition flex items-center justify-center gap-3">
+                            <i class="fa-regular fa-newspaper"></i> Subscribe to Newsletter
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-3xl mx-auto pt-8 border-t border-gray-200 text-center">
+                <h3 class="text-xl font-black text-brand-slate mb-8 tracking-tight">Channels Launching Soon</h3>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm opacity-60 flex flex-col items-center">
+                        <i class="fa-brands fa-instagram text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Instagram</p>
+                        <span class="text-[9px] font-bold text-brand-slate bg-gray-100 border border-gray-200 px-2 py-0.5 rounded uppercase tracking-wider">Pending</span>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm opacity-60 flex flex-col items-center">
+                        <i class="fa-brands fa-square-facebook text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Facebook</p>
+                        <span class="text-[9px] font-bold text-brand-slate bg-gray-100 border border-gray-200 px-2 py-0.5 rounded uppercase tracking-wider">Pending</span>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm opacity-60 flex flex-col items-center">
+                        <i class="fa-brands fa-x-twitter text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">X (Twitter)</p>
+                        <span class="text-[9px] font-bold text-brand-slate bg-gray-100 border border-gray-200 px-2 py-0.5 rounded uppercase tracking-wider">Pending</span>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm opacity-60 flex flex-col items-center">
+                        <i class="fa-brands fa-youtube text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">YouTube</p>
+                        <span class="text-[9px] font-bold text-brand-slate bg-gray-100 border border-gray-200 px-2 py-0.5 rounded uppercase tracking-wider">Pending</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-white text-gray-600 pt-12 pb-8 border-t border-gray-200 flex-shrink-0 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="text-sm font-medium">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> FoodShare Seychelles. All rights reserved.</p>
+                <p class="mt-2 text-gray-400 text-xs">A Tyler Nicholas Group Initiative</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => { if(event.target.tagName.toLowerCase() === 'img') event.preventDefault(); });
+
+        function removeLoader() {
+            const loader = document.getElementById('loader');
+            const body = document.getElementById('body');
+            if(loader) {
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; if(body) body.classList.remove('overflow-hidden'); }, 500); 
+            }
+        }
+
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function initPage() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    document.getElementById('nav-auth-guest').classList.add('hidden');
+                    document.getElementById('nav-auth-user').classList.remove('hidden');
+                    document.getElementById('nav-auth-user').classList.add('flex');
+                }
+            } catch (err) { console.error("Authentication handshake failure", err); } 
+            finally { removeLoader(); }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        window.addEventListener('load', initPage);
+        setTimeout(initPage, 7000); 
+    </script>
+</body>
+</html>
