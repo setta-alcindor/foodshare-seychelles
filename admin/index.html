@@ -3,48 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Admin Control Panel | FoodShare Seychelles</title>
-    
+    <title>Administration | FoodShare Seychelles</title>
     <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
-
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
-                    }
-                }
-            }
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' } } } }
         }
     </script>
-
     <style>
         .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f8fafc; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
-        
         body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
         input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
-        
-        .admin-checkbox:checked + div {
-            background-color: #16a34a;
-            border-color: #16a34a;
-            color: white;
-        }
+        .admin-checkbox:checked + div { background-color: #16a34a; border-color: #16a34a; color: white; }
     </style>
 </head>
 <body class="font-sans bg-slate-900 text-slate-100 antialiased overflow-hidden flex flex-col h-screen" id="body" oncontextmenu="return false;">
@@ -52,570 +30,449 @@
     <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 transition-opacity duration-500">
         <div class="flex flex-col items-center">
             <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
-            <p class="text-slate-400 font-bold tracking-widest uppercase text-xs">Verifying Administrative Credentials</p>
+            <p class="text-slate-400 font-bold tracking-widest uppercase text-xs">Authenticating Root Node</p>
         </div>
     </div>
 
     <nav class="bg-slate-950 border-b border-slate-800 flex-shrink-0 z-40 relative px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
             <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-10 h-10 object-contain pointer-events-none">
-            <div class="text-xl font-black text-white tracking-tight">
-                FoodShare Seychelles <span class="text-brand-green font-bold text-sm bg-brand-green/10 border border-brand-green/20 px-2 py-0.5 rounded ml-2">HQ Admin Node</span>
-            </div>
+            <div class="text-xl font-black text-white tracking-tight">FoodShare Seychelles <span class="text-brand-green font-bold text-sm bg-brand-green/10 border border-brand-green/20 px-2 py-0.5 rounded ml-2">Root Admin</span></div>
         </div>
-        <button onclick="handleLogout()" class="px-4 py-2 bg-slate-800 hover:bg-red-600 border border-slate-700 hover:border-red-500 text-white text-xs font-bold uppercase rounded-lg tracking-wider transition shadow-sm">Secure Sign Out</button>
+        <button onclick="handleLogout()" class="px-4 py-2 bg-slate-800 hover:bg-red-600 border border-slate-700 hover:border-red-500 text-white text-xs font-bold uppercase rounded-lg tracking-wider transition shadow-sm">Sign Out</button>
     </nav>
 
     <div class="flex-1 flex overflow-hidden">
         
-        <aside class="w-64 bg-slate-950 flex flex-col justify-between p-4 flex-shrink-0 border-r border-slate-800">
+        <aside class="w-64 bg-slate-950 flex flex-col justify-between p-4 flex-shrink-0 border-r border-slate-800 overflow-y-auto">
             <div class="space-y-6">
                 <div class="px-3 py-2 bg-slate-900/50 rounded-xl border border-slate-800 flex items-center gap-3">
                     <div class="w-8 h-8 bg-brand-green text-white font-black text-xs rounded-full flex items-center justify-center">ADM</div>
                     <div class="overflow-hidden">
                         <p class="text-xs font-black text-white truncate" id="admin-display-email">admin@foodshare</p>
-                        <span class="text-[9px] font-mono font-bold text-brand-green uppercase tracking-wider block">System Root Admin</span>
                     </div>
                 </div>
 
-                <nav class="space-y-1">
-                    <button onclick="switchAdminTab('overview')" id="tab-btn-overview" class="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl bg-brand-green text-white transition">
-                        <i class="fa-solid fa-gauge-high w-4 text-base"></i> Network Overview
-                    </button>
-                    <button onclick="switchAdminTab('donations')" id="tab-btn-donations" class="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                        <i class="fa-solid fa-hand-holding-heart w-4 text-base"></i> Manage Donations
-                    </button>
-                    <button onclick="switchAdminTab('create-listing')" id="tab-btn-create-listing" class="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                        <i class="fa-solid fa-circle-plus w-4 text-base"></i> Create Inventory Listing
-                    </button>
-                    <button onclick="switchAdminTab('claims')" id="tab-btn-claims" class="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                        <i class="fa-solid fa-truck-ramp-box w-4 text-base"></i> Claims & Requests
-                    </button>
-                    <button onclick="switchAdminTab('support')" id="tab-btn-support" class="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
-                        <i class="fa-solid fa-inbox w-4 text-base"></i> Support Inbox
-                    </button>
+                <nav class="space-y-1" id="admin-nav">
+                    <button onclick="switchAdminTab('overview')" id="tab-btn-overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl bg-brand-green text-white transition"><i class="fa-solid fa-gauge-high w-4"></i> Overview</button>
+                    <button onclick="switchAdminTab('donations')" id="tab-btn-donations" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-hand-holding-heart w-4"></i> Donations Log</button>
+                    <button onclick="switchAdminTab('claims')" id="tab-btn-claims" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-truck-ramp-box w-4"></i> Client Claims</button>
+                    <button onclick="switchAdminTab('inventory')" id="tab-btn-inventory" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-circle-plus w-4"></i> Post Inventory</button>
+                    <button onclick="switchAdminTab('volunteers')" id="tab-btn-volunteers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-users-gear w-4"></i> Volunteers</button>
+                    <button onclick="switchAdminTab('support')" id="tab-btn-support" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-inbox w-4"></i> Support Inbox</button>
+                    <button onclick="switchAdminTab('news')" id="tab-btn-news" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-newspaper w-4"></i> Publish News</button>
+                    <button onclick="switchAdminTab('mailing')" id="tab-btn-mailing" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-envelope-open-text w-4"></i> Mailing List</button>
+                    <button onclick="switchAdminTab('staff')" id="tab-btn-staff" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-user-shield w-4"></i> Staff Roles</button>
+                    <button onclick="switchAdminTab('profile')" id="tab-btn-profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-user-gear w-4"></i> My Profile</button>
                 </nav>
-            </div>
-            
-            <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl text-[10px] font-mono text-slate-500 text-center">
-                Supabase TLS Engine v2.0
             </div>
         </aside>
 
         <main class="flex-1 bg-slate-900 overflow-y-auto p-6 md:p-10 text-slate-300">
 
             <div id="view-overview" class="admin-panel block space-y-8">
-                <div>
-                    <h1 class="text-3xl font-black text-white tracking-tight mb-1">Network Infrastructure Overview</h1>
-                    <p class="text-xs text-slate-500 font-mono">Live master analytics snapshot monitoring global transactions arrays.</p>
-                </div>
-
+                <h1 class="text-3xl font-black text-white tracking-tight">Root Command Center</h1>
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-scale-balanced"></i></div>
-                        <div><p class="text-2xl font-black text-white" id="metrics-weight-rescued">0.0</p><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Mass Rescued (KG)</span></div>
-                    </div>
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <div><p class="text-2xl font-black text-white" id="metrics-pending-donations">0</p><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pending Donations</span></div>
-                    </div>
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-boxes-packing"></i></div>
-                        <div><p class="text-2xl font-black text-white" id="metrics-active-claims">0</p><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Unfulfilled Claims</span></div>
-                    </div>
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl flex items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-envelope-open-text"></i></div>
-                        <div><p class="text-2xl font-black text-white" id="metrics-open-tickets">0</p><span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Open Support Logs</span></div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
-                    <div class="p-4 border-b border-slate-800 bg-slate-950 flex justify-between items-center">
-                        <h3 class="font-black text-white text-sm uppercase tracking-wider">Global System Ledger Stream</h3>
-                        <span class="text-[10px] font-mono bg-brand-green/10 text-brand-green border border-brand-green/20 px-2 py-0.5 rounded">Active Network Sync</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[700px]">
-                            <thead>
-                                <tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                    <th class="p-4 pl-6">Timestamp</th>
-                                    <th class="p-4">Process Event Context</th>
-                                    <th class="p-4">Descriptor Summary Info</th>
-                                    <th class="p-4 text-right pr-6">Database Pipeline State</th>
-                                </tr>
-                            </thead>
-                            <tbody id="global-ledger-stream" class="text-xs divide-y divide-slate-800/60 font-medium text-slate-400">
-                                </tbody>
-                        </table>
-                    </div>
+                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-donations">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Donations Logged</span></div>
+                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-claims">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Claims Made</span></div>
+                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-volunteers">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Volunteer Apps</span></div>
+                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-tickets">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Open Tickets</span></div>
                 </div>
             </div>
 
             <div id="view-donations" class="admin-panel hidden space-y-6">
-                <div>
-                    <h2 class="text-2xl font-black text-white tracking-tight">Surplus Donations Pipeline</h2>
-                    <p class="text-xs text-slate-500 font-mono">Appraise, confirm safety history compliance, and authorize incoming corporate batches.</p>
-                </div>
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[1100px]">
-                            <thead>
-                                <tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                    <th class="p-4 pl-6">Date</th>
-                                    <th class="p-4">Donor Context Info</th>
-                                    <th class="p-4">Food Inventory Data Array</th>
-                                    <th class="p-4">Allergens / Photo Link</th>
-                                    <th class="p-4">Transfer Logistics Mode</th>
-                                    <th class="p-4 text-right pr-6">Pipeline Evaluation Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-donations-table" class="text-xs divide-y divide-slate-800/60 font-medium text-slate-400">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-create-listing" class="admin-panel hidden max-w-3xl">
-                <div class="border-b border-slate-800 pb-4 mb-6">
-                    <h2 class="text-2xl font-black text-white tracking-tight">Publish Available Food Listing</h2>
-                    <p class="text-xs text-slate-500 font-mono">Input verified, checked food supplies into the public ledger directory for verified client claiming cycles.</p>
-                </div>
-                
-                <div class="bg-slate-950 p-8 rounded-2xl border border-slate-800 shadow-xl">
-                    <form id="listing-generation-form" onsubmit="handleCreateListing(event)" class="space-y-5">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Listing Title / Container Batch Label *</label>
-                            <input type="text" id="lst_title" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl focus:bg-slate-850 focus:outline-none focus:ring-1 focus:ring-brand-green transition text-white font-medium text-sm" placeholder="E.g., 50KG Checked Fresh Organic Tomatoes Batch">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Food Category Classification *</label>
-                                <select id="lst_category" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-green transition text-white font-medium text-sm appearance-none cursor-pointer">
-                                    <option value="" disabled selected>Select category descriptor...</option>
-                                    <option value="produce">Produce (Fresh Produce)</option>
-                                    <option value="prepared meals">Prepared Meals</option>
-                                    <option value="pantry items">Pantry Items</option>
-                                    <option value="baby food">Baby Food</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Net Weight Value mass (KGS) *</label>
-                                <input type="number" step="0.1" id="lst_weight" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-green transition text-white font-medium text-sm" placeholder="0.0">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Storage Environment Requirements *</label>
-                            <input type="text" id="lst_storage" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-green transition text-white font-medium text-sm" placeholder="E.g., Chilled environment tracking parameter, keep at 4°C">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Available Window From *</label>
-                                <input type="datetime-local" id="lst_from" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white font-medium text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Available Window To *</label>
-                                <input type="datetime-local" id="lst_to" required class="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white font-medium text-sm">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Allergen Disclosures Matrix *</label>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="admin-allergen-selectors">
-                                <label class="cursor-pointer relative">
-                                    <input type="checkbox" value="Nuts" class="admin-checkbox sr-only">
-                                    <div class="w-full px-4 py-2.5 border border-slate-800 bg-slate-900 rounded-xl text-center text-xs font-bold text-slate-400 hover:bg-slate-850 transition">Nuts</div>
-                                </label>
-                                <label class="cursor-pointer relative">
-                                    <input type="checkbox" value="Dairy" class="admin-checkbox sr-only">
-                                    <div class="w-full px-4 py-2.5 border border-slate-800 bg-slate-900 rounded-xl text-center text-xs font-bold text-slate-400 hover:bg-slate-850 transition">Dairy</div>
-                                </label>
-                                <label class="cursor-pointer relative">
-                                    <input type="checkbox" value="Gluten" class="admin-checkbox sr-only">
-                                    <div class="w-full px-4 py-2.5 border border-slate-800 bg-slate-900 rounded-xl text-center text-xs font-bold text-slate-400 hover:bg-slate-850 transition">Gluten</div>
-                                </label>
-                                <label class="cursor-pointer relative">
-                                    <input type="checkbox" value="Soy" class="admin-checkbox sr-only">
-                                    <div class="w-full px-4 py-2.5 border border-slate-800 bg-slate-900 rounded-xl text-center text-xs font-bold text-slate-400 hover:bg-slate-850 transition">Soy</div>
-                                </label>
-                                <label class="cursor-pointer relative">
-                                    <input type="checkbox" value="Shellfish" class="admin-checkbox sr-only">
-                                    <div class="w-full px-4 py-2.5 border border-slate-800 bg-slate-900 rounded-xl text-center text-xs font-bold text-slate-400 hover:bg-slate-850 transition">Shellfish</div>
-                                </label>
-                                <label class="cursor-pointer relative">
-                                    <input type="checkbox" value="None" class="admin-checkbox sr-only" onchange="handleAdminNoneAllergenExclusivity(this)">
-                                    <div class="w-full px-4 py-2.5 border border-slate-800 bg-slate-900 rounded-xl text-center text-xs font-bold text-slate-400 hover:bg-slate-850 transition">None</div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="pt-4 border-t border-slate-800 flex justify-between items-center">
-                            <p id="listing-form-feedback" class="text-xs font-bold text-brand-green hidden"></p>
-                            <button type="submit" id="listing-submit-btn" class="px-6 py-3.5 bg-brand-green hover:bg-brand-darkgreen text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow shadow-green-900/40">Commit Entry Node to Ledger</button>
-                        </div>
-                    </form>
+                <h2 class="text-2xl font-black text-white tracking-tight">Donations Registry</h2>
+                <p class="text-sm text-slate-400 mb-4">View incoming surplus details. Mark as Read/Acknowledged once reviewed.</p>
+                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Donor/Org</th><th class="p-4">Food Type & Qty</th><th class="p-4">Logistics</th><th class="p-4">Status</th><th class="p-4 text-right">Actions</th></tr></thead>
+                        <tbody id="tbl-donations" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
+                    </table>
                 </div>
             </div>
 
             <div id="view-claims" class="admin-panel hidden space-y-6">
-                <div>
-                    <h2 class="text-2xl font-black text-white tracking-tight">Fulfillment Allocation Streams</h2>
-                    <p class="text-xs text-slate-500 font-mono">Monitor public package claims requests and manage the fleet logistics pipeline values status loop.</p>
+                <h2 class="text-2xl font-black text-white tracking-tight">Client Claims & Requests</h2>
+                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[1000px]">
+                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Client Info</th><th class="p-4">Requested Item</th><th class="p-4">Logistics & Size</th><th class="p-4 text-right">Status Pipeline</th></tr></thead>
+                        <tbody id="tbl-claims" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
+                    </table>
                 </div>
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[1200px]">
-                            <thead>
-                                <tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                    <th class="p-4 pl-6">Claim Timestamp</th>
-                                    <th class="p-4">Target Batch Reference Item</th>
-                                    <th class="p-4">Recipient Form Snapshot Profile</th>
-                                    <th class="p-4">Logistics Variables Criteria</th>
-                                    <th class="p-4">Terms / Safety Disclosures</th>
-                                    <th class="p-4 text-right pr-6">Manage Execution Pipeline State</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-claims-table" class="text-xs divide-y divide-slate-800/60 font-medium text-slate-400">
-                                </tbody>
-                        </table>
+            </div>
+
+            <div id="view-inventory" class="admin-panel hidden max-w-3xl space-y-6">
+                <h2 class="text-2xl font-black text-white tracking-tight">Post Available Inventory</h2>
+                <form id="frm-inventory" onsubmit="postInventory(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <input type="text" id="inv_title" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Title (e.g. 50KG Carrots)">
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="inv_cat" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm"><option value="produce">Produce</option><option value="prepared meals">Prepared Meals</option><option value="pantry items">Pantry Items</option><option value="baby food">Baby Food</option></select>
+                        <input type="number" step="0.1" id="inv_weight" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Weight (KG)">
                     </div>
+                    <input type="text" id="inv_storage" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Storage Req (e.g. Keep Chilled)">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="datetime-local" id="inv_from" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm">
+                        <input type="datetime-local" id="inv_to" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm">
+                    </div>
+                    <input type="text" id="inv_allergens" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Allergens (comma separated) or 'None'">
+                    <button type="submit" class="w-full py-3 bg-brand-green text-white font-bold rounded-xl text-sm">Post to Directory</button>
+                </form>
+            </div>
+
+            <div id="view-volunteers" class="admin-panel hidden space-y-6">
+                <h2 class="text-2xl font-black text-white tracking-tight">Volunteer Applications</h2>
+                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Applicant</th><th class="p-4">Type/Role</th><th class="p-4">Skills/Resume</th><th class="p-4 text-right">Action</th></tr></thead>
+                        <tbody id="tbl-volunteers" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
+                    </table>
                 </div>
             </div>
 
             <div id="view-support" class="admin-panel hidden space-y-6">
-                <div>
-                    <h2 class="text-2xl font-black text-white tracking-tight">Help Desk Ticket Inbox Threads</h2>
-                    <p class="text-xs text-slate-500 font-mono">Process public support requests, legal communications, or partner inquiries logged via authenticated client profile channels.</p>
+                <h2 class="text-2xl font-black text-white tracking-tight">Support Inbox</h2>
+                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
+                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Sender</th><th class="p-4">Subject & Msg</th><th class="p-4 text-right">Status</th></tr></thead>
+                        <tbody id="tbl-support" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
+                    </table>
                 </div>
+            </div>
+
+            <div id="view-news" class="admin-panel hidden max-w-3xl space-y-6">
+                <h2 class="text-2xl font-black text-white tracking-tight">Publish News Article</h2>
+                <form id="frm-news" onsubmit="postNews(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <input type="text" id="news_title" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Article Title">
+                    <select id="news_cat" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm"><option value="Impact Stories">Impact Stories</option><option value="Program Updates">Program Updates</option><option value="Events">Events</option><option value="Media & Press Release">Press Release</option><option value="Newsletter From The Founder">Founder Newsletter</option></select>
+                    <input type="url" id="news_img" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Image Direct Link URL (Optional)">
+                    <textarea id="news_content" rows="6" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Article Content (HTML allowed)"></textarea>
+                    <button type="submit" class="w-full py-3 bg-brand-green text-white font-bold rounded-xl text-sm">Publish Article</button>
+                </form>
+            </div>
+
+            <div id="view-mailing" class="admin-panel hidden max-w-2xl space-y-6">
+                <h2 class="text-2xl font-black text-white tracking-tight">Newsletter Subscribers</h2>
                 <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[800px]">
-                            <thead>
-                                <tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                    <th class="p-4 pl-6">Logged Timestamp Date</th>
-                                    <th class="p-4">Account Origin Context Source</th>
-                                    <th class="p-4">Subject Vector Thread</th>
-                                    <th class="p-4 max-w-md">Message Content Descriptor Context</th>
-                                    <th class="p-4 text-right pr-6">Ticket Process Pipeline Adjustment</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-support-table" class="text-xs divide-y divide-slate-800/60 font-medium text-slate-400">
-                                </tbody>
-                        </table>
-                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date Subscribed</th><th class="p-4">Email Address</th></tr></thead>
+                        <tbody id="tbl-mailing" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
+                    </table>
                 </div>
+            </div>
+
+            <div id="view-staff" class="admin-panel hidden max-w-2xl space-y-6">
+                <h2 class="text-2xl font-black text-white tracking-tight">Elevate Staff & Admins</h2>
+                <p class="text-sm text-slate-400">Grant administrative or staff dashboard access to an existing user via their registered email.</p>
+                <form id="frm-roles" onsubmit="elevateRole(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <input type="email" id="role_email" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="User's exact email address">
+                    <select id="role_select" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm">
+                        <option value="staff">Elevate to Staff</option>
+                        <option value="admin">Elevate to Root Admin</option>
+                        <option value="client">Demote to Standard Client</option>
+                    </select>
+                    <button type="submit" class="w-full py-3 bg-brand-green text-white font-bold rounded-xl text-sm">Update Authority Role</button>
+                    <p id="role-feedback" class="text-xs font-bold mt-2 text-center"></p>
+                </form>
+            </div>
+
+            <div id="view-profile" class="admin-panel hidden max-w-2xl space-y-6">
+                <h2 class="text-2xl font-black text-white tracking-tight">Admin Profile</h2>
+                <form id="frm-profile" onsubmit="updateProfile(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="prof_first" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="First Name">
+                        <input type="text" id="prof_last" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Last Name">
+                    </div>
+                    <input type="email" id="prof_email" readonly class="w-full p-3 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-500 text-sm cursor-not-allowed">
+                    <input type="tel" id="prof_phone" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Phone">
+                    <button type="submit" class="w-full py-3 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition">Save Changes</button>
+                    <p id="prof-feedback" class="text-xs font-bold text-brand-green text-center hidden">Saved</p>
+                </form>
             </div>
 
         </main>
     </div>
 
+    <div id="view-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl max-w-xl w-full flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950 rounded-t-2xl">
+                <h3 class="font-black text-white" id="modal-title">Details Record</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 text-sm text-slate-300" id="modal-content">
+                </div>
+            <div class="p-4 border-t border-slate-800 bg-slate-950 rounded-b-2xl text-right" id="modal-actions">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 text-white font-bold rounded-lg text-xs">Close Window</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // App Configurations
         const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUser = null;
 
-        let systemAdminSessionUser = null;
+        const eRow = (cols, txt) => `<tr><td colspan="${cols}" class="p-6 text-center text-slate-600 italic">${txt}</td></tr>`;
+        const stPill = (txt, cl) => `<span class="px-2 py-1 text-[9px] font-black uppercase rounded ${cl}">${txt}</span>`;
 
-        const emptyRow = (cols, text) => `<tr><td colspan="${cols}" class="p-8 text-center text-slate-600 font-medium italic">${text}</td></tr>`;
-        
-        const pillStyles = {
-            'pending': 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-            'new': 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-            'approved': 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
-            'in_progress': 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-            'completed': 'bg-slate-800 text-slate-400 border border-slate-700',
-            'resolved': 'bg-slate-800 text-slate-400 border border-slate-700',
-            'rejected': 'bg-red-500/10 text-red-400 border border-red-500/20',
-            'cancelled': 'bg-slate-800 text-slate-500 border border-slate-700',
-            'out_for_delivery': 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
-            'ready_for_pickup': 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
-        };
-
-        function removeLoader() {
-            const el = document.getElementById('loader');
-            if(el) { el.classList.add('fade-out'); setTimeout(() => { el.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500); }
+        function closeModal() { document.getElementById('view-modal').classList.add('hidden'); }
+        function switchAdminTab(tid) {
+            document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById('view-' + tid).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => b.className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition");
+            document.getElementById('tab-btn-' + tid).className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl bg-brand-green text-white transition";
         }
 
-        // Administrative Access Boundary Firewall Guard Check Loop
-        async function runSecurityGateValidationCheck() {
+        async function init() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
-                if (!session) { window.location.href = '/login/'; return; }
+                if (!session) return window.location.href = '/login/';
+                currentUser = session.user;
+
+                const { data: prof } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
+                if (!prof || prof.role !== 'admin') return window.location.href = '/login/';
                 
-                systemAdminSessionUser = session.user;
-                document.getElementById('admin-display-email').textContent = systemAdminSessionUser.email;
+                document.getElementById('admin-display-email').textContent = prof.email;
+                document.getElementById('prof_first').value = prof.first_name || '';
+                document.getElementById('prof_last').value = prof.last_name || '';
+                document.getElementById('prof_email').value = prof.email;
+                document.getElementById('prof_phone').value = prof.mobile_phone || '';
 
-                const { data: profile } = await supabaseClient.from('client_profiles').select('role').eq('id', systemAdminSessionUser.id).single();
-                
-                if (!profile || profile.role !== 'admin') {
-                    // Evict unauthorized accounts to standard login or client home index space
-                    window.location.href = '/login/';
-                    return;
-                }
+                await loadAllData();
+            } catch (err) { window.location.href = '/login/'; }
+            finally { document.getElementById('loader').style.display = 'none'; }
+        }
 
-                // If role matches admin constraints, authorize and query data arrays sets
-                await compileNetworkDataLedgers();
+        async function handleLogout() { await supabaseClient.auth.signOut(); window.location.href = '/login/'; }
 
-            } catch (err) {
-                console.error("Gate security exception occurred:", err);
-                window.location.href = '/login/';
-            } finally {
-                removeLoader();
+        async function loadAllData() {
+            // Fetch everything concurrently
+            const [dons, reqs, vols, sups, mails] = await Promise.all([
+                supabaseClient.from('food_donations').select('*').order('created_at', {ascending: false}),
+                supabaseClient.from('food_requests').select('*, food_listings(title)').order('created_at', {ascending: false}),
+                supabaseClient.from('volunteer_applications').select('*, volunteer_roles(title)').order('created_at', {ascending: false}),
+                supabaseClient.from('contact_inquiries').select('*').order('created_at', {ascending: false}),
+                supabaseClient.from('newsletter_subscribers').select('*').order('created_at', {ascending: false})
+            ]);
+
+            document.getElementById('met-donations').textContent = dons.data ? dons.data.length : 0;
+            document.getElementById('met-claims').textContent = reqs.data ? reqs.data.length : 0;
+            document.getElementById('met-volunteers').textContent = vols.data ? vols.data.length : 0;
+            document.getElementById('met-tickets').textContent = sups.data ? sups.data.filter(x => x.status !== 'resolved').length : 0;
+
+            // Render Donations
+            const tDons = document.getElementById('tbl-donations');
+            if(dons.data && dons.data.length > 0) {
+                window.donationsData = dons.data; // store for modal
+                tDons.innerHTML = dons.data.map(r => `
+                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40 transition">
+                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-white">${r.contact_name}<br><span class="text-[10px] text-brand-green font-mono">${r.organization_name || 'Individual'}</span></td>
+                        <td class="p-4 font-medium">${r.food_type}<br><span class="text-[10px] text-slate-500">${r.amount} (~${r.estimated_weight_kg}kg)</span></td>
+                        <td class="p-4 text-xs">${r.logistics_option}</td>
+                        <td class="p-4">${r.status === 'pending' ? stPill('Unread', 'bg-amber-500/10 text-amber-400') : stPill('Read', 'bg-slate-700 text-slate-300')}</td>
+                        <td class="p-4 text-right"><button onclick="viewDonation('${r.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-brand-green text-white text-[10px] font-bold rounded transition">View Details</button></td>
+                    </tr>`).join('');
+            } else tDons.innerHTML = eRow(6, "No donations.");
+
+            // Render Claims (with update states)
+            const tReqs = document.getElementById('tbl-claims');
+            if(reqs.data && reqs.data.length > 0) {
+                tReqs.innerHTML = reqs.data.map(r => `
+                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
+                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-white">${r.full_name}<br><span class="text-[10px] font-mono text-slate-400">${r.phone_number}</span></td>
+                        <td class="p-4 text-xs">${r.food_listings ? r.food_listings.title : 'Deleted Listing'}</td>
+                        <td class="p-4 text-xs">${r.logistics_option} (Size: ${r.household_size})</td>
+                        <td class="p-4 text-right">
+                            <select onchange="updateStatus('food_requests', '${r.id}', this.value)" class="bg-slate-900 border border-slate-700 text-[10px] uppercase font-bold text-white p-1 rounded">
+                                <option value="pending" ${r.status==='pending'?'selected':''}>Pending</option>
+                                <option value="approved" ${r.status==='approved'?'selected':''}>Approved</option>
+                                <option value="completed" ${r.status==='completed'?'selected':''}>Completed</option>
+                                <option value="cancelled" ${r.status==='cancelled'?'selected':''}>Cancelled</option>
+                            </select>
+                        </td>
+                    </tr>`).join('');
+            } else tReqs.innerHTML = eRow(5, "No claims.");
+
+            // Render Volunteers
+            const tVols = document.getElementById('tbl-volunteers');
+            if(vols.data && vols.data.length > 0) {
+                window.volsData = vols.data;
+                tVols.innerHTML = vols.data.map(r => `
+                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
+                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-white">${r.full_name}</td>
+                        <td class="p-4 text-xs uppercase">${r.application_type === 'regular' ? 'General' : (r.volunteer_roles ? r.volunteer_roles.title : 'Custom')}</td>
+                        <td class="p-4 text-[10px] text-slate-400">${r.application_type === 'regular' ? (r.skills_offered?r.skills_offered.join(','):'N/A') : 'View Resume'}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="viewVolunteer('${r.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-brand-green text-white text-[10px] font-bold rounded transition">Review App</button>
+                        </td>
+                    </tr>`).join('');
+            } else tVols.innerHTML = eRow(5, "No apps.");
+
+            // Render Support
+            const tSups = document.getElementById('tbl-support');
+            if(sups.data && sups.data.length > 0) {
+                tSups.innerHTML = sups.data.map(r => `
+                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
+                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-white">${r.first_name} ${r.last_name}<br><span class="text-[10px] font-mono text-slate-400">${r.email_address}</span></td>
+                        <td class="p-4 text-xs"><strong>${r.subject}</strong><br><span class="text-slate-500">${r.message}</span></td>
+                        <td class="p-4 text-right">
+                            <select onchange="updateStatus('contact_inquiries', '${r.id}', this.value)" class="bg-slate-900 border border-slate-700 text-[10px] uppercase font-bold text-white p-1 rounded">
+                                <option value="new" ${r.status==='new'?'selected':''}>New</option>
+                                <option value="in_progress" ${r.status==='in_progress'?'selected':''}>In Progress</option>
+                                <option value="resolved" ${r.status==='resolved'?'selected':''}>Resolved</option>
+                            </select>
+                        </td>
+                    </tr>`).join('');
+            } else tSups.innerHTML = eRow(4, "Inbox empty.");
+
+            // Render Mailing
+            const tMails = document.getElementById('tbl-mailing');
+            if(mails.data && mails.data.length > 0) {
+                tMails.innerHTML = mails.data.map(r => `
+                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
+                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-brand-green">${r.email}</td>
+                    </tr>`).join('');
+            } else tMails.innerHTML = eRow(2, "No subscribers yet.");
+        }
+
+        // View Modals & Updates
+        async function updateStatus(table, id, status) {
+            await supabaseClient.from(table).update({status: status}).eq('id', id);
+        }
+
+        async function viewDonation(id) {
+            const r = window.donationsData.find(x => x.id === id);
+            if(!r) return;
+            // Mark as read immediately
+            if(r.status === 'pending') {
+                await updateStatus('food_donations', id, 'completed'); // 'completed' acts as 'read'
+                loadAllData();
             }
-        }
-
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
-            window.location.href = '/login/';
-        }
-
-        function switchAdminTab(targetId) {
-            document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
-            document.getElementById('view-' + targetId).classList.remove('hidden');
             
-            document.querySelectorAll('aside nav button').forEach(b => {
-                b.className = "w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition";
-            });
-            document.getElementById('tab-btn-' + targetId).className = "w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl bg-brand-green text-white transition";
+            document.getElementById('modal-title').textContent = "Donation Details";
+            document.getElementById('modal-content').innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold">Donor Info</p>
+                        <p class="font-bold text-white mt-1">${r.contact_name}</p>
+                        <p class="text-xs mt-1">${r.organization_name || 'Individual'}</p>
+                        <p class="text-xs font-mono text-brand-green mt-1">${r.phone_number}</p>
+                        <p class="text-xs font-mono text-slate-400 mt-1">${r.email_address}</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold">Logistics</p>
+                        <p class="font-bold text-white mt-1">${r.logistics_option}</p>
+                        ${r.pickup_address ? `<p class="text-xs mt-1 text-slate-400">Address: ${r.pickup_address}</p>` : ''}
+                    </div>
+                    <div class="col-span-2 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold">Food Details</p>
+                        <p class="font-bold text-white mt-1">${r.food_type} - ${r.amount} (~${r.estimated_weight_kg}kg)</p>
+                        <p class="text-sm mt-2">${r.detailed_description}</p>
+                        <p class="text-xs mt-2 text-amber-500 font-bold">Allergens: ${r.allergen_disclosures.join(', ')}</p>
+                        <p class="text-xs mt-2 text-slate-400">Storage: ${r.storage_history} | Expires: ${new Date(r.expiration_date).toLocaleDateString()}</p>
+                        <a href="${r.photo_link}" target="_blank" class="inline-block mt-4 text-xs font-bold bg-brand-green px-3 py-1 rounded text-white"><i class="fa-solid fa-image"></i> View Photo</a>
+                    </div>
+                </div>
+            `;
+            document.getElementById('view-modal').classList.remove('hidden');
         }
 
-        // Query Master Databases Context In Parallel Processing Channels
-        async function compileNetworkDataLedgers() {
-            try {
-                const { data: donations } = await supabaseClient.from('food_donations').select('*').order('created_at', { ascending: false });
-                const { data: claims } = await supabaseClient.from('food_requests').select('*, food_listings(title)').order('created_at', { ascending: false });
-                const { data: support } = await supabaseClient.from('contact_inquiries').select('*, client_profiles(email)').order('created_at', { ascending: false });
-
-                // Hydrate Aggregate analytical numbers metrics boxes tracking elements
-                let totalMassKG = 0;
-                if(donations) {
-                    totalMassKG = donations.filter(x => x.status === 'completed').reduce((sum, item) => sum + parseFloat(item.estimated_weight_kg || 0), 0);
-                }
-                document.getElementById('metrics-weight-rescued').textContent = totalMassKG.toFixed(1);
-                document.getElementById('metrics-pending-donations').textContent = donations ? donations.filter(x => x.status === 'pending').length : 0;
-                document.getElementById('metrics-active-claims').textContent = claims ? claims.filter(x => ['pending', 'approved', 'out_for_delivery', 'ready_for_pickup'].includes(x.status)).length : 0;
-                document.getElementById('metrics-open-tickets').textContent = support ? support.filter(x => x.status !== 'resolved').length : 0;
-
-                // --- PROCESS VIEW 1: GLOBAL CONSOLIDATED SYSTEM LEDGER OVERVIEW ---
-                let stream = [];
-                if(donations) donations.forEach(x => stream.push({ date: new Date(x.created_at), cat: 'Surplus Donation', label: `${x.amount} from ${x.organization_name || 'Individual'}`, status: x.status }));
-                if(claims) claims.forEach(x => stream.push({ date: new Date(x.created_at), cat: 'Allocation Claim', label: `${x.full_name} (${x.household_size} Pers.)`, status: x.status }));
-                if(support) support.forEach(x => stream.push({ date: new Date(x.created_at), cat: 'Inbox Ticket', label: x.subject, status: x.status }));
-                
-                stream.sort((a,b) => b.date - a.date);
-                const slicedStream = stream.slice(0, 10);
-
-                const ledgerContainer = document.getElementById('global-ledger-stream');
-                if(slicedStream.length > 0) {
-                    let html = '';
-                    slicedStream.forEach(r => {
-                        html += `
-                        <tr class="hover:bg-slate-850/40 transition border-b border-slate-800/40">
-                            <td class="p-4 pl-6 font-mono text-slate-500">${r.date.toLocaleString()}</td>
-                            <td class="p-4 font-bold text-white"><span class="px-2 py-0.5 rounded text-[9px] bg-slate-800 border border-slate-700 text-slate-300 mr-2 uppercase">${r.cat}</span></td>
-                            <td class="p-4 max-w-xs truncate font-semibold">${r.label}</td>
-                            <td class="p-4 text-right pr-6"><span class="inline-block px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded ${pillStyles[r.status] || ''}">${r.status.replace(/_/g, ' ')}</span></td>
-                        </tr>`;
-                    });
-                    ledgerContainer.innerHTML = html;
-                } else { ledgerContainer.innerHTML = emptyRow(4, "System stream ledger metrics array unpopulated context."); }
-
-                // --- PROCESS VIEW 2: DONATIONS TRACKING PIPELINE ACTION MATRIX ---
-                const donationsContainer = document.getElementById('admin-donations-table');
-                if(donations && donations.length > 0) {
-                    let html = '';
-                    donations.forEach(row => {
-                        const date = new Date(row.created_at).toLocaleDateString();
-                        const org = row.organization_name ? `<span class="block text-[10px] text-brand-green font-bold uppercase mt-0.5">${row.organization_name}</span>` : '';
-                        
-                        let controls = `<span class="text-xs font-bold text-slate-500 italic">Evaluated State Lock</span>`;
-                        if (row.status === 'pending') {
-                            controls = `
-                            <div class="flex justify-end gap-1">
-                                <button onclick="modifyDonationState('${row.id}', 'approved')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded uppercase text-[9px]">Approve</button>
-                                <button onclick="modifyDonationState('${row.id}', 'rejected')" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded uppercase text-[9px]">Reject</button>
-                            </div>`;
-                        } else if (row.status === 'approved') {
-                            controls = `<button onclick="modifyDonationState('${row.id}', 'completed')" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded border border-slate-700 uppercase text-[9px]">Mark Completed</button>`;
-                        }
-
-                        html += `
-                        <tr class="border-b border-slate-800/60 hover:bg-slate-850/20 transition">
-                            <td class="p-4 pl-6 font-mono text-slate-500">${date}</td>
-                            <td class="p-4 font-semibold text-white">${row.contact_name} ${org}<span class="block font-mono text-[10px] text-slate-400 mt-0.5">${row.phone_number}</span></td>
-                            <td class="p-4"><strong>${row.food_type}</strong><span class="block text-slate-400 font-medium max-w-xs truncate mt-0.5">${row.detailed_description}</span><span class="block text-[10px] font-mono text-slate-500 mt-0.5">Qty: ${row.amount} / Weight: ~${row.estimated_weight_kg} KG</span></td>
-                            <td class="p-4 font-medium"><a href="${row.photo_link}" target="_blank" class="text-brand-green font-bold hover:underline block mb-1"><i class="fa-solid fa-image"></i> View Direct Link</a><span class="block text-[10px] text-slate-500">Allergens: ${row.allergen_disclosures.join(', ')}</span></td>
-                            <td class="p-4 text-slate-400 font-semibold">${row.logistics_option}<span class="block text-[10px] text-slate-500 max-w-xs truncate mt-0.5">${row.pickup_address || 'HQ Drop-off'}</span></td>
-                            <td class="p-4 text-right pr-6 space-y-2"><div class="mb-1"><span class="inline-block px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded ${pillStyles[row.status]}">${row.status}</span></div>${controls}</td>
-                        </tr>`;
-                    });
-                    donationsContainer.innerHTML = html;
-                } else { donationsContainer.innerHTML = emptyRow(6, "No incoming corporate surplus donations records captured across platform."); }
-
-                // --- PROCESS VIEW 4: RECIPROCATE CLAIMS REQUESTS FLEET ALLOCATION CHAIN ---
-                const claimsContainer = document.getElementById('admin-claims-table');
-                if(claims && claims.length > 0) {
-                    let html = '';
-                    claims.forEach(row => {
-                        const date = new Date(row.created_at).toLocaleDateString();
-                        const targetListingTitle = row.food_listings ? row.food_listings.title : 'Claimed Food Supply Batch Container';
-                        
-                        let controlSelector = `
-                        <select onchange="modifyClaimFulfillmentPipeline('${row.id}', this.value)" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[10px] font-bold uppercase text-white focus:outline-none cursor-pointer">
-                            <option value="" disabled selected>Update state...</option>
-                            <option value="approved">Approve Allocation</option>
-                            <option value="ready_for_pickup">Ready for Pickup</option>
-                            <option value="out_for_delivery">Out for Delivery</option>
-                            <option value="completed">Complete Fulfillment</option>
-                            <option value="cancelled">Cancel Allocation</option>
-                        </select>`;
-
-                        html += `
-                        <tr class="border-b border-slate-800/60 hover:bg-slate-850/20 transition">
-                            <td class="p-4 pl-6 font-mono text-slate-500">${date}</td>
-                            <td class="p-4 font-bold text-white max-w-xs truncate">${targetListingTitle}</td>
-                            <td class="p-4 font-semibold text-slate-300">${row.full_name}<span class="block text-[10px] text-slate-500 mt-0.5">${row.email_address}</span><span class="block font-mono text-[10px] text-brand-green mt-0.5">${row.phone_number}</span></td>
-                            <td class="p-4 font-medium">${row.logistics_option}<span class="block text-[10px] text-slate-500 max-w-xs truncate mt-0.5">${row.physical_address}</span><span class="block text-[10px] font-bold mt-1 text-slate-400">House size: ${row.household_size} Pers.</span></td>
-                            <td class="p-4 font-bold text-[10px] space-y-1">
-                                <div><i class="fa-solid ${row.allergen_acknowledged ? 'fa-square-check text-brand-green' : 'fa-square-minus text-slate-600'} mr-1 text-xs"></i> Allergen Ack</div>
-                                <div><i class="fa-solid ${row.certified_no_resale ? 'fa-square-check text-brand-green' : 'fa-square-minus text-slate-600'} mr-1 text-xs"></i> Terms (No Resale)</div>
-                            </td>
-                            <td class="p-4 text-right pr-6 space-y-2"><div><span class="inline-block px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded ${pillStyles[row.status]}">${row.status.replace(/_/g, ' ')}</span></div>${controlSelector}</td>
-                        </tr>`;
-                    });
-                    claimsContainer.innerHTML = html;
-                } else { claimsContainer.innerHTML = emptyRow(6, "No client directory collection claims logs active in network records."); }
-
-                // --- PROCESS VIEW 5: HELP TICKET THREAD RESOLUTIONS ---
-                const supportContainer = document.getElementById('admin-support-table');
-                if(support && support.length > 0) {
-                    let html = '';
-                    support.forEach(row => {
-                        const date = new Date(row.created_at).toLocaleDateString();
-                        const mail = row.client_profiles ? row.client_profiles.email : 'Unknown Linked Account';
-
-                        let controls = `<span class="text-xs text-slate-600 italic">Ticket Thread Completed</span>`;
-                        if(row.status !== 'resolved') {
-                            controls = `
-                            <div class="flex justify-end gap-1">
-                                ${row.status === 'new' ? `<button onclick="modifyTicketInboxState('${row.id}', 'in_progress')" class="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded uppercase text-[9px]">Engage</button>` : ''}
-                                <button onclick="modifyTicketInboxState('${row.id}', 'resolved')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold rounded uppercase text-[9px]">Resolve Thread</button>
-                            </div>`;
-                        }
-
-                        html += `
-                        <tr class="border-b border-slate-800/60 hover:bg-slate-850/20 transition">
-                            <td class="p-4 pl-6 font-mono text-slate-500">${date}</td>
-                            <td class="p-4 font-bold text-white">${row.company_name || 'Individual Recipient'}<span class="block font-mono text-[10px] text-slate-400 font-medium normal-case mt-0.5">${mail}</span></td>
-                            <td class="p-4 font-bold text-slate-300 max-w-xs truncate">${row.subject}</td>
-                            <td class="p-4 text-slate-400 font-medium max-w-md truncate">${row.message}</td>
-                            <td class="p-4 text-right pr-6 space-y-2"><div><span class="inline-block px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded ${pillStyles[row.status]}">${row.status.replace(/_/g, ' ')}</span></div>${controls}</td>
-                        </tr>`;
-                    });
-                    supportContainer.innerHTML = html;
-                } else { supportContainer.innerHTML = emptyRow(5, "Inbox clear. No pending client inquiries filed on thread records."); }
-
-            } catch (err) { console.error("Database metrics gathering core compilation pipeline failure thread error", err); }
-        }
-
-        // --- PIPELINE UPDATE MUTATIONS ACTIONS EXECUTION METHODS ---
-        async function modifyDonationState(id, targetStateToken) {
-            try {
-                const { error } = await supabaseClient.from('food_donations').update({ status: targetStateToken }).eq('id', id);
-                if (error) throw error;
-                await compileNetworkDataLedgers();
-            } catch (err) { alert(err.message); }
-        }
-
-        async function modifyClaimFulfillmentPipeline(id, targetStateToken) {
-            try {
-                const { error } = await supabaseClient.from('food_requests').update({ status: targetStateToken }).eq('id', id);
-                if (error) throw error;
-                await compileNetworkDataLedgers();
-            } catch (err) { alert(err.message); }
-        }
-
-        async function modifyTicketInboxState(id, targetStateToken) {
-            try {
-                const { error } = await supabaseClient.from('contact_inquiries').update({ status: targetStateToken }).eq('id', id);
-                if (error) throw error;
-                await compileNetworkDataLedgers();
-            } catch (err) { alert(err.message); }
-        }
-
-        // Handle Admin None Allergen checkbox exclusivity properties parameters bounds loops structures
-        function handleAdminNoneAllergenExclusivity(noneCheckbox) {
-            if(noneCheckbox.checked) {
-                document.querySelectorAll('#admin-allergen-selectors input[type="checkbox"]').forEach(cb => {
-                    if(cb.value !== 'None') cb.checked = false;
-                });
+        async function viewVolunteer(id) {
+            const r = window.volsData.find(x => x.id === id);
+            if(!r) return;
+            
+            document.getElementById('modal-title').textContent = "Volunteer Application";
+            let specifics = '';
+            if(r.application_type === 'regular') {
+                specifics = `<p class="text-xs mt-2 text-brand-green">Skills: ${r.skills_offered?r.skills_offered.join(', '):'None'}</p>
+                             <p class="text-xs mt-1 text-amber-500 font-bold">BG Check Consented: ${r.background_check_consent ? 'Yes' : 'No'}</p>`;
+            } else {
+                specifics = `<p class="text-xs mt-2 font-bold">Applying for: ${r.volunteer_roles ? r.volunteer_roles.title : 'Custom'}</p>
+                             <p class="text-xs mt-1 text-brand-green">Available to start: ${new Date(r.available_to_start).toLocaleDateString()}</p>
+                             <a href="${r.resume_link}" target="_blank" class="inline-block mt-3 text-xs font-bold bg-slate-800 border border-slate-700 px-3 py-1 rounded text-white">View Resume</a>`;
             }
-        }
-        document.querySelectorAll('#admin-allergen-selectors input[type="checkbox"]').forEach(cb => {
-            if(cb.value !== 'None') {
-                cb.addEventListener('change', () => {
-                    if(cb.checked) document.querySelector('#admin-allergen-selectors input[value="None"]').checked = false;
-                });
-            }
-        });
 
-        // Write New Available Food Container Data Elements directly inside public food_listings table database ledger
-        async function handleCreateListing(e) {
+            document.getElementById('modal-content').innerHTML = `
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
+                    <p class="text-[10px] text-slate-500 uppercase font-bold">Applicant Info</p>
+                    <p class="font-bold text-white mt-1">${r.full_name}</p>
+                    <p class="text-xs font-mono text-slate-400 mt-1">${r.email_address} | ${r.phone_number}</p>
+                    <p class="text-xs text-slate-400 mt-2">Schedule: ${r.availability_schedule}</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <p class="text-[10px] text-slate-500 uppercase font-bold">Application Specifics</p>
+                    ${specifics}
+                </div>
+            `;
+            document.getElementById('view-modal').classList.remove('hidden');
+        }
+
+        // Form Posts
+        async function postInventory(e) {
             e.preventDefault();
-            const btn = document.getElementById('listing-submit-btn');
-            const feedback = document.getElementById('listing-form-feedback');
-
-            feedback.className = "text-xs font-bold text-slate-400";
-            feedback.textContent = "Writing entry parameters...";
-            feedback.classList.remove('hidden');
-            btn.disabled = true;
-
-            const allergens = Array.from(document.querySelectorAll('#admin-allergen-selectors input[type="checkbox"]:checked')).map(cb => cb.value);
-            if(allergens.length === 0) {
-                feedback.className = "text-xs font-bold text-red-500";
-                feedback.textContent = "Allergen Disclosures check constraint mapping arrays parameters values required.";
-                feedback.classList.remove('hidden');
-                btn.disabled = false;
-                return;
-            }
-
             const payload = {
-                title: document.getElementById('lst_title').value.trim(),
-                food_category: document.getElementById('lst_category').value,
-                weight_kg: parseFloat(document.getElementById('lst_weight').value),
-                storage_requirements: document.getElementById('lst_storage').value.trim(),
-                available_from: new Date(document.getElementById('lst_from').value).toISOString(),
-                available_to: new Date(document.getElementById('lst_to').value).toISOString(),
-                allergen_disclosures: allergens,
+                title: document.getElementById('inv_title').value,
+                food_category: document.getElementById('inv_cat').value,
+                weight_kg: parseFloat(document.getElementById('inv_weight').value),
+                storage_requirements: document.getElementById('inv_storage').value,
+                available_from: new Date(document.getElementById('inv_from').value).toISOString(),
+                available_to: new Date(document.getElementById('inv_to').value).toISOString(),
+                allergen_disclosures: document.getElementById('inv_allergens').value.split(',').map(s=>s.trim()),
                 is_available: true
             };
+            const {error} = await supabaseClient.from('food_listings').insert([payload]);
+            if(!error) { alert("Inventory Posted."); document.getElementById('frm-inventory').reset(); loadAllData(); }
+            else alert(error.message);
+        }
 
-            try {
-                const { error } = await supabaseClient.from('food_listings').insert([payload]);
-                if (error) throw error;
+        async function postNews(e) {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('news_title').value,
+                category: document.getElementById('news_cat').value,
+                featured_image_url: document.getElementById('news_img').value || null,
+                content: document.getElementById('news_content').value,
+                author_id: currentUser.id,
+                status: 'published',
+                slug: document.getElementById('news_title').value.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now(),
+                published_at: new Date().toISOString()
+            };
+            const {error} = await supabaseClient.from('news_articles').insert([payload]);
+            if(!error) { alert("News Published."); document.getElementById('frm-news').reset(); }
+            else alert(error.message);
+        }
 
-                feedback.className = "text-xs font-bold text-brand-green";
-                feedback.textContent = "Inventory allocation container committed successfully live on Client Directory maps ledger!";
-                document.getElementById('listing-generation-form').reset();
-                
-                await compileNetworkDataLedgers();
+        async function elevateRole(e) {
+            e.preventDefault();
+            const email = document.getElementById('role_email').value.trim();
+            const role = document.getElementById('role_select').value;
+            const fb = document.getElementById('role-feedback');
+            
+            const {error} = await supabaseClient.from('client_profiles').update({role: role}).eq('email', email);
+            if(error) { fb.className = "text-xs font-bold mt-2 text-center text-red-500"; fb.textContent = error.message; }
+            else { fb.className = "text-xs font-bold mt-2 text-center text-brand-green"; fb.textContent = `User role updated to ${role}.`; }
+        }
 
-            } catch (err) {
-                console.error(err);
-                feedback.className = "text-xs font-bold text-red-500";
-                feedback.textContent = err.message || "Database execution exception intercepted writing properties row profiles.";
-            } finally {
-                btn.disabled = false;
-                setTimeout(() => feedback.classList.add('hidden'), 5000);
+        async function updateProfile(e) {
+            e.preventDefault();
+            const payload = {
+                first_name: document.getElementById('prof_first').value,
+                last_name: document.getElementById('prof_last').value,
+                mobile_phone: document.getElementById('prof_phone').value
+            };
+            const {error} = await supabaseClient.from('client_profiles').update(payload).eq('id', currentUser.id);
+            if(!error) {
+                document.getElementById('prof-feedback').classList.remove('hidden');
+                setTimeout(()=>document.getElementById('prof-feedback').classList.add('hidden'), 3000);
             }
         }
 
-        // Initialize Core Security Sequence Router Loop Mapped Blocks On Window Event Readiness
-        document.addEventListener("DOMContentLoaded", runSecurityGateValidationCheck);
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
