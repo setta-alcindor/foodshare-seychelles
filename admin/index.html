@@ -51,10 +51,9 @@
                 <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
                 <div class="text-2xl font-black text-brand-slate tracking-tight">
                     FoodShare <span class="text-brand-green font-bold">Seychelles</span>
-                    <span class="ml-3 px-2.5 py-1 bg-gray-100 text-gray-500 border border-gray-200 rounded-md text-xs tracking-widest uppercase align-middle">Root Admin Node</span>
+                    <span class="ml-3 px-2.5 py-1 bg-gray-100 text-gray-500 border border-gray-200 rounded-md text-xs tracking-widest uppercase align-middle hidden sm:inline-block">Root Admin Node</span>
                 </div>
             </div>
-            
             <button onclick="handleLogout()" class="px-6 py-3 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">
                 Secure Sign Out
             </button>
@@ -72,17 +71,19 @@
                 </div>
 
                 <nav class="space-y-1" id="admin-nav">
-                    <button onclick="switchAdminTab('overview')" id="tab-btn-overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition"><i class="fa-solid fa-chart-pie w-5"></i> Network Overview</button>
-                    <button onclick="switchAdminTab('donations')" id="tab-btn-donations" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-hand-holding-heart w-5"></i> Donations Log</button>
-                    <button onclick="switchAdminTab('claims')" id="tab-btn-claims" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-box-open w-5"></i> Client Claims</button>
-                    <button onclick="switchAdminTab('inventory')" id="tab-btn-inventory" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-circle-plus w-5"></i> Post Inventory</button>
-                    <button onclick="switchAdminTab('volunteers')" id="tab-btn-volunteers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-users-gear w-5"></i> Volunteers</button>
-                    <button onclick="switchAdminTab('support')" id="tab-btn-support" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-headset w-5"></i> Support Inbox</button>
+                    <button onclick="switchAdminTab('overview')" id="tab-btn-overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Network Overview</button>
+                    <button onclick="switchAdminTab('homestats')" id="tab-btn-homestats" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-chart-line w-5 text-center"></i> Home Stats</button>
+                    <button onclick="switchAdminTab('donations')" id="tab-btn-donations" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-hand-holding-heart w-5 text-center"></i> Donations Log</button>
+                    <button onclick="switchAdminTab('claims')" id="tab-btn-claims" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-box-open w-5 text-center"></i> Client Claims</button>
+                    <button onclick="switchAdminTab('inventory')" id="tab-btn-inventory" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-circle-plus w-5 text-center"></i> Post Inventory</button>
+                    <button onclick="switchAdminTab('volroles')" id="tab-btn-volroles" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-briefcase w-5 text-center"></i> Manage Vol. Roles</button>
+                    <button onclick="switchAdminTab('volunteers')" id="tab-btn-volunteers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-users-gear w-5 text-center"></i> Review Apps</button>
+                    <button onclick="switchAdminTab('support')" id="tab-btn-support" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-headset w-5 text-center"></i> Support Inbox</button>
                     <div class="h-px bg-gray-800 my-2 mx-4"></div>
-                    <button onclick="switchAdminTab('news')" id="tab-btn-news" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-newspaper w-5"></i> Publish News</button>
-                    <button onclick="switchAdminTab('mailing')" id="tab-btn-mailing" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-envelope-open-text w-5"></i> Mailing List</button>
-                    <button onclick="switchAdminTab('staff')" id="tab-btn-staff" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-user-shield w-5"></i> Staff Roles</button>
-                    <button onclick="switchAdminTab('profile')" id="tab-btn-profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-user-gear w-5"></i> My Profile</button>
+                    <button onclick="switchAdminTab('news')" id="tab-btn-news" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-newspaper w-5 text-center"></i> Publish News</button>
+                    <button onclick="switchAdminTab('mailing')" id="tab-btn-mailing" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-envelope-open-text w-5 text-center"></i> Mailing List</button>
+                    <button onclick="switchAdminTab('staff')" id="tab-btn-staff" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-user-shield w-5 text-center"></i> Staff Roles</button>
+                    <button onclick="switchAdminTab('profile')" id="tab-btn-profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-user-gear w-5 text-center"></i> My Profile</button>
                 </nav>
             </div>
             <div class="p-3 text-[10px] font-mono text-gray-500 text-center uppercase tracking-widest mt-8">
@@ -130,6 +131,78 @@
                 </div>
             </div>
 
+            <div id="view-homestats" class="admin-panel hidden max-w-3xl space-y-6">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Homepage Statistics Board</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Manage the live numbers displayed on the public landing page.</p>
+                </div>
+                <form id="frm-stats" onsubmit="updateHomeStats(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2"><i class="fa-solid fa-utensils text-brand-green mr-1"></i> Meals Shared</label>
+                            <input type="number" id="stat_meals" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-gray-900 font-black text-lg">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2"><i class="fa-solid fa-users text-brand-green mr-1"></i> Active Volunteers</label>
+                            <input type="number" id="stat_vols" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-gray-900 font-black text-lg">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2"><i class="fa-solid fa-leaf text-brand-green mr-1"></i> Carbon Saved (KG)</label>
+                            <input type="number" id="stat_carbon" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-gray-900 font-black text-lg">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2"><i class="fa-solid fa-handshake text-brand-green mr-1"></i> Community Partners</label>
+                            <input type="number" id="stat_partners" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-gray-900 font-black text-lg">
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <p id="stat-feedback" class="text-xs font-bold text-brand-green hidden"></p>
+                        <button type="submit" id="stat-submit-btn" class="px-8 py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Update Public Stats</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="view-volroles" class="admin-panel hidden space-y-8">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Manage Volunteer Roles</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Publish custom specialized roles to the public volunteer portal.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1">
+                        <form id="frm-volrole" onsubmit="postVolunteerRole(event)" class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
+                            <h3 class="font-black text-brand-slate text-lg mb-2">Create New Role</h3>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Role Title *</label>
+                                <input type="text" id="vr_title" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-gray-900 font-medium text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Description *</label>
+                                <textarea id="vr_desc" rows="3" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-gray-900 font-medium text-sm resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Requirements *</label>
+                                <textarea id="vr_reqs" rows="2" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-gray-900 font-medium text-sm resize-none"></textarea>
+                            </div>
+                            <button type="submit" id="vr-btn" class="w-full py-3.5 bg-brand-green hover:bg-brand-darkgreen text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Publish Role</button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                            <h3 class="font-black text-brand-slate text-lg">Active Directory</h3>
+                            <span class="text-xs font-bold bg-white border border-gray-200 px-2 py-1 rounded text-gray-500">Toggle Visibility</span>
+                        </div>
+                        <div class="overflow-x-auto flex-1">
+                            <table class="w-full text-left border-collapse">
+                                <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Role Title</th><th class="p-4 text-center">Status</th><th class="p-4 text-right pr-6">Action</th></tr></thead>
+                                <tbody id="tbl-volroles" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="view-donations" class="admin-panel hidden space-y-6">
                 <div>
                     <h2 class="text-2xl font-black text-brand-slate tracking-tight">Donations Registry</h2>
@@ -168,30 +241,30 @@
                 <form id="frm-inventory" onsubmit="postInventory(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Listing Title / Container Batch Label *</label>
-                        <input type="text" id="inv_title" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="E.g., 50KG Checked Fresh Organic Tomatoes Batch">
+                        <input type="text" id="inv_title" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Food Category *</label>
-                            <select id="inv_cat" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm appearance-none cursor-pointer"><option value="produce">Produce</option><option value="prepared meals">Prepared Meals</option><option value="pantry items">Pantry Items</option><option value="baby food">Baby Food</option></select>
+                            <select id="inv_cat" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm appearance-none cursor-pointer"><option value="produce">Produce</option><option value="prepared meals">Prepared Meals</option><option value="pantry items">Pantry Items</option><option value="baby food">Baby Food</option></select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Weight (KG) *</label>
-                            <input type="number" step="0.1" id="inv_weight" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="0.0">
+                            <input type="number" step="0.1" id="inv_weight" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Storage Requirements *</label>
-                        <input type="text" id="inv_storage" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="E.g. Keep Chilled at 4°C">
+                        <input type="text" id="inv_storage" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Available From *</label>
-                            <input type="datetime-local" id="inv_from" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                            <input type="datetime-local" id="inv_from" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Available To *</label>
-                            <input type="datetime-local" id="inv_to" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                            <input type="datetime-local" id="inv_to" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                         </div>
                     </div>
                     <div>
@@ -214,13 +287,13 @@
 
             <div id="view-volunteers" class="admin-panel hidden space-y-6">
                 <div>
-                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Volunteer Applications</h2>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Review Applications</h2>
                     <p class="text-sm text-gray-500 font-medium mt-0.5">Review general and custom role submissions from community members.</p>
                 </div>
                 <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[900px]">
-                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date</th><th class="p-4">Applicant</th><th class="p-4">Type/Role</th><th class="p-4">Skills/Resume</th><th class="p-4 text-right pr-6">Action</th></tr></thead>
+                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date</th><th class="p-4">Applicant</th><th class="p-4">Type/Role</th><th class="p-4">Status Pipeline</th><th class="p-4 text-right pr-6">Action</th></tr></thead>
                             <tbody id="tbl-volunteers" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
                         </table>
                     </div>
@@ -250,21 +323,21 @@
                 <form id="frm-news" onsubmit="postNews(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Article Title *</label>
-                        <input type="text" id="news_title" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                        <input type="text" id="news_title" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Category *</label>
-                            <select id="news_cat" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm appearance-none cursor-pointer"><option value="Impact Stories">Impact Stories</option><option value="Program Updates">Program Updates</option><option value="Events">Events</option><option value="Media & Press Release">Press Release</option><option value="Newsletter From The Founder">Founder Newsletter</option></select>
+                            <select id="news_cat" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm appearance-none cursor-pointer"><option value="Impact Stories">Impact Stories</option><option value="Program Updates">Program Updates</option><option value="Events">Events</option><option value="Media & Press Release">Press Release</option><option value="Newsletter From The Founder">Founder Newsletter</option></select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Image Direct URL <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
-                            <input type="url" id="news_img" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="https://i.ibb.co/...">
+                            <input type="url" id="news_img" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Article Content *</label>
-                        <textarea id="news_content" rows="6" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm resize-none" placeholder="HTML formatting allowed..."></textarea>
+                        <textarea id="news_content" rows="6" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm resize-none"></textarea>
                     </div>
                     <div class="pt-4 border-t border-gray-100 text-right">
                         <button type="submit" class="px-8 py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Publish Article</button>
@@ -293,11 +366,11 @@
                 <form id="frm-roles" onsubmit="elevateRole(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Target Account Email *</label>
-                        <input type="email" id="role_email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="Exact verified email address">
+                        <input type="email" id="role_email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm" placeholder="Exact verified email address">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Authority Level *</label>
-                        <select id="role_select" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm appearance-none cursor-pointer">
+                        <select id="role_select" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm appearance-none cursor-pointer">
                             <option value="staff">Elevate to Staff Tier</option>
                             <option value="admin">Elevate to Root Admin</option>
                             <option value="client">Demote to Standard Client</option>
@@ -319,11 +392,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">First Name</label>
-                            <input type="text" id="prof_first" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                            <input type="text" id="prof_first" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Last Name</label>
-                            <input type="text" id="prof_last" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                            <input type="text" id="prof_last" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                         </div>
                     </div>
                     <div>
@@ -332,7 +405,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Contact Phone</label>
-                        <input type="tel" id="prof_phone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                        <input type="tel" id="prof_phone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 transition text-gray-900 font-medium text-sm">
                     </div>
                     <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
                         <p id="prof-feedback" class="text-xs font-bold text-brand-green text-center hidden">Configuration Saved</p>
@@ -352,7 +425,7 @@
             </div>
             <div class="p-8 overflow-y-auto space-y-6 text-sm text-gray-600" id="modal-content">
                 </div>
-            <div class="p-6 border-t border-gray-100 bg-gray-50 text-right" id="modal-actions">
+            <div class="p-6 border-t border-gray-100 bg-gray-50 text-right">
                 <button onclick="closeModal()" class="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-100 transition shadow-sm">Close Window</button>
             </div>
         </div>
@@ -375,8 +448,9 @@
             'completed': 'bg-gray-100 text-gray-600 border border-gray-200',
             'resolved': 'bg-green-50 text-green-700 border border-green-200',
             'cancelled': 'bg-gray-100 text-gray-500 border border-gray-200',
-            'out_for_delivery': 'bg-purple-50 text-purple-700 border border-purple-200',
-            'ready_for_pickup': 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+            'under_review': 'bg-amber-50 text-amber-700 border border-amber-200',
+            'interviewing': 'bg-purple-50 text-purple-700 border border-purple-200',
+            'rejected': 'bg-red-50 text-red-700 border border-red-200'
         };
 
         function closeModal() { 
@@ -421,18 +495,40 @@
         async function handleLogout() { await supabaseClient.auth.signOut(); window.location.href = '/login/'; }
 
         async function loadAllData() {
-            const [dons, reqs, vols, sups, mails] = await Promise.all([
+            const [dons, reqs, vols, sups, mails, stats, roles] = await Promise.all([
                 supabaseClient.from('food_donations').select('*').order('created_at', {ascending: false}),
                 supabaseClient.from('food_requests').select('*, food_listings(title)').order('created_at', {ascending: false}),
                 supabaseClient.from('volunteer_applications').select('*, volunteer_roles(title)').order('created_at', {ascending: false}),
                 supabaseClient.from('contact_inquiries').select('*').order('created_at', {ascending: false}),
-                supabaseClient.from('newsletter_subscribers').select('*').order('created_at', {ascending: false})
+                supabaseClient.from('newsletter_subscribers').select('*').order('created_at', {ascending: false}),
+                supabaseClient.from('platform_statistics').select('*').eq('id', 1).single(),
+                supabaseClient.from('volunteer_roles').select('*').order('created_at', {ascending: false})
             ]);
 
             document.getElementById('met-donations').textContent = dons.data ? dons.data.length : 0;
             document.getElementById('met-claims').textContent = reqs.data ? reqs.data.length : 0;
             document.getElementById('met-volunteers').textContent = vols.data ? vols.data.length : 0;
             document.getElementById('met-tickets').textContent = sups.data ? sups.data.filter(x => x.status !== 'resolved').length : 0;
+
+            // Load Stats into Form
+            if(stats.data) {
+                document.getElementById('stat_meals').value = stats.data.meals_shared;
+                document.getElementById('stat_vols').value = stats.data.active_volunteers;
+                document.getElementById('stat_carbon').value = stats.data.carbon_saved_kg;
+                document.getElementById('stat_partners').value = stats.data.community_partners;
+            }
+
+            // Render Vol Roles Table
+            const tRoles = document.getElementById('tbl-volroles');
+            if(roles.data && roles.data.length > 0) {
+                tRoles.innerHTML = roles.data.map(r => `
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 pl-6 font-bold text-brand-slate">${r.title}</td>
+                        <td class="p-4 text-center">${r.is_active ? stPill('Live', 'bg-green-50 text-brand-green border border-green-200') : stPill('Hidden', 'bg-gray-100 text-gray-500 border border-gray-200')}</td>
+                        <td class="p-4 text-right pr-6"><button onclick="toggleRoleStatus('${r.id}', ${r.is_active})" class="text-xs font-bold text-brand-slate hover:underline border border-gray-200 px-3 py-1 rounded bg-white">${r.is_active ? 'Hide Role' : 'Publish Role'}</button></td>
+                    </tr>
+                `).join('');
+            } else tRoles.innerHTML = eRow(3, "No custom roles created yet.");
 
             // Donations
             const tDons = document.getElementById('tbl-donations');
@@ -478,8 +574,16 @@
                         <td class="p-4 pl-6 font-mono text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString()}</td>
                         <td class="p-4 font-bold text-brand-slate">${r.full_name}</td>
                         <td class="p-4 text-xs font-bold uppercase tracking-wider text-brand-green">${r.application_type === 'regular' ? 'General' : (r.volunteer_roles ? r.volunteer_roles.title : 'Custom')}</td>
-                        <td class="p-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">${r.application_type === 'regular' ? (r.skills_offered?r.skills_offered.join(', '):'N/A') : 'View Resume Inside'}</td>
-                        <td class="p-4 text-right pr-6"><button onclick="viewVolunteer('${r.id}')" class="px-4 py-2 bg-brand-slate hover:bg-brand-green text-white text-xs font-bold uppercase tracking-wider rounded-lg transition shadow-sm">Review App</button></td>
+                        <td class="p-4 text-right pr-6 space-y-1">
+                            <select onchange="updateStatus('volunteer_applications', '${r.id}', this.value)" class="bg-gray-50 border border-gray-200 text-[10px] uppercase font-bold text-gray-700 px-2 py-1 rounded-lg focus:outline-none mb-1 block w-full">
+                                <option value="pending" ${r.status==='pending'?'selected':''}>Pending</option>
+                                <option value="under_review" ${r.status==='under_review'?'selected':''}>Under Review</option>
+                                <option value="interviewing" ${r.status==='interviewing'?'selected':''}>Interviewing</option>
+                                <option value="approved" ${r.status==='approved'?'selected':''}>Approved</option>
+                                <option value="rejected" ${r.status==='rejected'?'selected':''}>Rejected</option>
+                            </select>
+                            <button onclick="viewVolunteer('${r.id}')" class="w-full px-3 py-1.5 bg-brand-slate hover:bg-brand-green text-white text-[10px] font-bold uppercase tracking-wider rounded-lg transition shadow-sm">View Form</button>
+                        </td>
                     </tr>`).join('');
             } else tVols.innerHTML = eRow(5, "No volunteer applications.");
 
@@ -514,6 +618,57 @@
 
         async function updateStatus(table, id, status) {
             await supabaseClient.from(table).update({status: status}).eq('id', id);
+            // Optionally reload data here if UI needs strict sync
+        }
+
+        async function updateHomeStats(e) {
+            e.preventDefault();
+            const btn = document.getElementById('stat-submit-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            const payload = {
+                meals_shared: parseInt(document.getElementById('stat_meals').value),
+                active_volunteers: parseInt(document.getElementById('stat_vols').value),
+                carbon_saved_kg: parseInt(document.getElementById('stat_carbon').value),
+                community_partners: parseInt(document.getElementById('stat_partners').value),
+                updated_at: new Date().toISOString()
+            };
+
+            const {error} = await supabaseClient.from('platform_statistics').update(payload).eq('id', 1);
+            
+            btn.innerHTML = 'Update Public Stats';
+            btn.disabled = false;
+
+            const fb = document.getElementById('stat-feedback');
+            fb.classList.remove('hidden');
+            if(error) { fb.className = "text-xs font-bold text-red-500"; fb.textContent = error.message; }
+            else { fb.className = "text-xs font-bold text-brand-green"; fb.textContent = "Stats updated live."; }
+            setTimeout(()=> fb.classList.add('hidden'), 3000);
+        }
+
+        async function postVolunteerRole(e) {
+            e.preventDefault();
+            const btn = document.getElementById('vr-btn');
+            btn.disabled = true; btn.innerHTML = 'Publishing...';
+            
+            const payload = {
+                title: document.getElementById('vr_title').value.trim(),
+                description: document.getElementById('vr_desc').value.trim(),
+                requirements: document.getElementById('vr_reqs').value.trim(),
+                is_active: true
+            };
+
+            const {error} = await supabaseClient.from('volunteer_roles').insert([payload]);
+            btn.disabled = false; btn.innerHTML = 'Publish Role';
+            
+            if(!error) { document.getElementById('frm-volrole').reset(); loadAllData(); }
+            else alert(error.message);
+        }
+
+        async function toggleRoleStatus(id, currentStatus) {
+            await supabaseClient.from('volunteer_roles').update({is_active: !currentStatus}).eq('id', id);
+            loadAllData();
         }
 
         async function viewDonation(id) {
