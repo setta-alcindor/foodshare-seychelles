@@ -81,20 +81,20 @@
         </div>
     </nav>
 
-    <header class="w-full py-20 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
+    <header class="w-full py-16 bg-brand-slate relative overflow-hidden border-b-4 border-brand-green">
         <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight mb-6">Join the Movement</h1>
-            <p class="text-xl text-gray-300 font-medium max-w-2xl mx-auto leading-relaxed">
+            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Join the Movement</h1>
+            <p class="text-lg text-gray-300 font-medium max-w-2xl mx-auto leading-relaxed">
                 FoodShare relies on community members like you. Apply below to become a general volunteer or fulfill a specialized role within our operations.
             </p>
         </div>
     </header>
 
-    <main class="flex-grow bg-gray-50 py-16">
+    <main class="flex-grow bg-gray-50 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div id="auth-wall" class="hidden bg-white p-12 rounded-3xl shadow-md border border-gray-200 text-center max-w-xl mx-auto">
+            <div id="view-auth-wall" class="hidden bg-white p-12 rounded-3xl shadow-md border border-gray-200 text-center max-w-xl mx-auto">
                 <div class="w-20 h-20 bg-blue-50 text-brand-blue rounded-full flex items-center justify-center text-4xl mx-auto mb-6"><i class="fa-solid fa-lock"></i></div>
                 <h2 class="text-3xl font-black text-brand-slate mb-4">Portal Access Secured</h2>
                 <p class="text-gray-600 font-medium mb-8 max-w-sm mx-auto leading-relaxed">
@@ -106,7 +106,7 @@
                 </div>
             </div>
 
-            <div id="application-success" class="hidden bg-white p-12 rounded-3xl shadow-lg border border-brand-green text-center max-w-2xl mx-auto">
+            <div id="view-success" class="hidden bg-white p-12 rounded-3xl shadow-lg border border-brand-green text-center max-w-2xl mx-auto">
                 <div class="w-24 h-24 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-5xl mx-auto mb-6">
                     <i class="fa-solid fa-file-circle-check"></i>
                 </div>
@@ -117,20 +117,21 @@
                 <div class="bg-gray-50 text-brand-slate p-6 rounded-2xl border border-gray-200 max-w-lg mx-auto text-left space-y-4">
                     <p class="text-brand-green font-bold uppercase tracking-widest text-xs mb-2 text-center">Processing Timeline</p>
                     <div class="flex items-center gap-4 text-sm font-medium text-gray-600">
-                        <i class="fa-solid fa-hourglass-half text-brand-green text-xl"></i>
+                        <i class="fa-solid fa-hourglass-half text-brand-green text-xl w-6 text-center"></i>
                         <p>Applications are reviewed by our operations team between <strong>6 and 48 hours</strong>.</p>
                     </div>
                     <div class="flex items-center gap-4 text-sm font-medium text-gray-600">
-                        <i class="fa-solid fa-calendar-check text-brand-green text-xl"></i>
+                        <i class="fa-solid fa-calendar-check text-brand-green text-xl w-6 text-center"></i>
                         <p>Expect a formal response regarding next steps within <strong>2-3 Business Days</strong>.</p>
                     </div>
                 </div>
-                <div class="mt-8">
-                    <a href="/client/dashboard/" class="text-brand-slate font-bold hover:text-brand-green transition">Track Status in Dashboard <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                <div class="mt-8 flex justify-center gap-4">
+                    <a href="/client/dashboard/" class="px-6 py-3 bg-brand-slate text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition shadow-md">Track in Dashboard</a>
+                    <button onclick="window.location.reload()" class="px-6 py-3 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition shadow-sm">Back to Roles</button>
                 </div>
             </div>
 
-            <div id="roles-layout" class="hidden">
+            <div id="view-roles" class="hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     <div class="lg:col-span-1">
@@ -141,7 +142,7 @@
                             <p class="text-gray-300 font-medium leading-relaxed mb-8 flex-grow">
                                 Join our core community network. General volunteers form the backbone of our operations—helping sort rescued food, managing community distributions, and assisting with local outreach.
                             </p>
-                            <button onclick="openAppModal('regular', null)" class="w-full py-4 bg-brand-green hover:bg-brand-darkgreen text-white text-sm font-black uppercase tracking-widest rounded-xl transition shadow-lg">Apply Now</button>
+                            <button onclick="openApplicationForm('regular', null)" class="w-full py-4 bg-brand-green hover:bg-brand-darkgreen text-white text-sm font-black uppercase tracking-widest rounded-xl transition shadow-lg">Apply Now</button>
                         </div>
                     </div>
 
@@ -157,93 +158,107 @@
                 </div>
             </div>
 
-        </div>
-    </main>
-
-    <div id="app-modal" class="fixed inset-0 z-50 overflow-y-auto hidden bg-brand-slate/60 backdrop-blur-sm items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100 overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-card">
-            
-            <div class="bg-brand-slate text-white p-6 flex justify-between items-center border-b border-gray-800">
-                <div>
-                    <span class="inline-block px-2.5 py-1 bg-brand-green text-white text-[10px] font-black uppercase tracking-wider rounded mb-1">Application Form</span>
-                    <h3 class="text-2xl font-black tracking-tight" id="modal-role-title">Loading Role...</h3>
+            <div id="view-form" class="hidden max-w-3xl mx-auto">
+                
+                <div class="flex items-center justify-between mb-6">
+                    <button onclick="closeApplicationForm()" class="text-gray-500 font-bold hover:text-brand-green transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Roles
+                    </button>
+                    <span class="inline-block px-3 py-1 bg-green-50 text-brand-darkgreen text-[10px] font-black uppercase tracking-wider rounded-md">Secure Application</span>
                 </div>
-                <button onclick="closeAppModal()" class="text-gray-400 hover:text-white transition text-2xl"><i class="fa-solid fa-xmark"></i></button>
+
+                <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+                    
+                    <div class="bg-brand-slate text-white p-8 md:px-10 border-b-4 border-brand-green">
+                        <h2 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Applying For Position</h2>
+                        <h3 class="text-3xl md:text-4xl font-black tracking-tight" id="form-role-title">Loading Role...</h3>
+                    </div>
+
+                    <form id="volunteer-form" onsubmit="handleApplicationSubmit(event)" class="p-8 md:p-10 space-y-8">
+                        <input type="hidden" id="app_type">
+                        <input type="hidden" id="app_role_id">
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Applicant Core Details</label>
+                            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <i class="fa-solid fa-id-card absolute -right-4 -bottom-4 text-7xl text-gray-200/50 pointer-events-none"></i>
+                                
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="text-xl font-black text-brand-slate" id="disp_name">Loading...</h4>
+                                        <i class="fa-solid fa-circle-check text-brand-green text-sm" title="Verified User"></i>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-500" id="disp_email">Loading...</p>
+                                </div>
+
+                                <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm relative z-10">
+                                    <p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">Primary Phone</p>
+                                    <p class="text-sm font-bold text-gray-700 font-mono" id="disp_phone">Loading...</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 font-medium mt-2"><i class="fa-solid fa-circle-info mr-1"></i> This data is securely pulled from your profile. You can update it in your dashboard settings.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Other Phone Number <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
+                                <input type="text" id="req_other_phone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="Alternative contact number">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Availability Schedule *</label>
+                                <textarea id="app_schedule" rows="3" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm resize-none" placeholder="E.g., Available weekends only, or Monday-Wednesday mornings..."></textarea>
+                            </div>
+                        </div>
+
+                        <div id="block-regular" class="space-y-8 hidden pt-6 border-t border-gray-100">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Areas of Assistance: What can you help with? *</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="skills-container">
+                                    <label class="cursor-pointer relative"><input type="checkbox" value="Social Media" class="skill-checkbox sr-only"><div class="w-full h-full p-3 border border-gray-200 bg-gray-50 rounded-xl flex items-center justify-center text-center text-xs font-bold text-gray-600 hover:bg-white transition">Social Media</div></label>
+                                    <label class="cursor-pointer relative"><input type="checkbox" value="Communications & Outreach" class="skill-checkbox sr-only"><div class="w-full h-full p-3 border border-gray-200 bg-gray-50 rounded-xl flex items-center justify-center text-center text-xs font-bold text-gray-600 hover:bg-white transition">Comms & Outreach</div></label>
+                                    <label class="cursor-pointer relative"><input type="checkbox" value="Driver" class="skill-checkbox sr-only"><div class="w-full h-full p-3 border border-gray-200 bg-gray-50 rounded-xl flex items-center justify-center text-center text-xs font-bold text-gray-600 hover:bg-white transition">Fleet Driver</div></label>
+                                    <label class="cursor-pointer relative"><input type="checkbox" value="Dispatch" class="skill-checkbox sr-only"><div class="w-full h-full p-3 border border-gray-200 bg-gray-50 rounded-xl flex items-center justify-center text-center text-xs font-bold text-gray-600 hover:bg-white transition">Dispatch & Sorting</div></label>
+                                </div>
+                                <p id="skill-error" class="text-red-500 text-xs font-bold mt-2 hidden">Please select at least one area where you can assist.</p>
+                            </div>
+
+                            <div class="bg-blue-50/60 border border-blue-100 p-5 rounded-2xl">
+                                <label class="flex items-start gap-3 cursor-pointer group">
+                                    <div class="mt-0.5"><input type="checkbox" id="bg_consent" class="w-5 h-5 text-brand-green border-gray-300 rounded focus:ring-brand-green cursor-pointer transition"></div>
+                                    <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900 transition leading-relaxed">
+                                        <strong>Mandatory Safety Protocol:</strong> I consent to a standard background safety check prior to working on-site or interfacing directly with community dependents. *
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="block-custom" class="hidden pt-6 border-t border-gray-100 space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Available To Start *</label>
+                                    <input type="date" id="app_start_date" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Resume Direct Link *</label>
+                                    <input type="url" id="app_resume" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="e.g. Google Drive or Dropbox Link">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-100 flex flex-col items-center">
+                            <button type="submit" id="submit-app-btn" class="w-full md:w-auto px-12 py-4 bg-brand-green text-white font-black uppercase tracking-widest rounded-xl hover:bg-brand-darkgreen transition shadow-lg shadow-green-600/20 text-sm">
+                                Submit Official Application
+                            </button>
+                            <p id="form-err-msg" class="text-red-500 text-xs font-bold mt-4 hidden text-center"></p>
+                        </div>
+
+                    </form>
+                </div>
             </div>
 
-            <form id="volunteer-form" onsubmit="handleApplicationSubmit(event)" class="p-8 space-y-6">
-                <input type="hidden" id="app_type">
-                <input type="hidden" id="app_role_id">
-
-                <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium text-gray-600">
-                    <div class="md:col-span-2 border-b border-gray-200 pb-2 flex justify-between items-center">
-                        <span class="font-bold uppercase tracking-wider text-gray-400 text-[10px]">Verified Profile Link</span>
-                        <span class="text-brand-green text-[10px] font-bold uppercase tracking-wider"><i class="fa-solid fa-circle-check"></i> Connected</span>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Full Name</label>
-                        <input type="text" id="req_full_name" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Email Address</label>
-                        <input type="email" id="req_email" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1 font-bold uppercase tracking-wider text-[10px]">Primary Phone</label>
-                        <input type="tel" id="req_phone" required readonly class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-bold focus:outline-none cursor-not-allowed">
-                    </div>
-                    <div>
-                        <label class="block text-gray-500 mb-1 font-bold uppercase tracking-wider text-[10px]">Other Phone <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
-                        <input type="text" id="req_other_phone" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-brand-green">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Availability Schedule *</label>
-                    <textarea id="app_schedule" rows="2" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm resize-none" placeholder="E.g., Weekends only, Monday-Wednesday mornings..."></textarea>
-                </div>
-
-                <div id="block-regular" class="space-y-6 hidden">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">What can you help with? *</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="skills-container">
-                            <label class="cursor-pointer relative"><input type="checkbox" value="Social Media" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Social Media</div></label>
-                            <label class="cursor-pointer relative"><input type="checkbox" value="Communications & Outreach" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Comms & Outreach</div></label>
-                            <label class="cursor-pointer relative"><input type="checkbox" value="Driver" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Fleet Driver</div></label>
-                            <label class="cursor-pointer relative"><input type="checkbox" value="Dispatch" class="skill-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Dispatch & Sorting</div></label>
-                        </div>
-                        <p id="skill-error" class="text-red-500 text-xs font-bold mt-2 hidden">Select at least one area of assistance.</p>
-                    </div>
-
-                    <div class="bg-blue-50/60 border border-blue-100 p-5 rounded-2xl">
-                        <label class="flex items-start gap-3 cursor-pointer group">
-                            <div class="mt-0.5"><input type="checkbox" id="bg_consent" class="w-5 h-5 text-brand-green border-gray-300 rounded focus:ring-brand-green cursor-pointer transition"></div>
-                            <span class="text-sm text-gray-700 font-medium group-hover:text-gray-900 transition">
-                                I consent to a standard background safety check prior to working on-site or interfacing with community dependents. *
-                            </span>
-                        </label>
-                    </div>
-                </div>
-
-                <div id="block-custom" class="grid grid-cols-1 sm:grid-cols-2 gap-6 hidden">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Available To Start *</label>
-                        <input type="date" id="app_start_date" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Resume Direct Link *</label>
-                        <input type="url" id="app_resume" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="URL to PDF (Drive, Dropbox)">
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                    <p id="form-err-msg" class="text-red-500 text-xs font-bold mr-auto hidden">System Error</p>
-                    <button type="button" onclick="closeAppModal()" class="px-5 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition text-sm">Cancel</button>
-                    <button type="submit" id="submit-app-btn" class="px-6 py-3 bg-brand-green text-white font-black uppercase tracking-wider rounded-xl hover:bg-brand-darkgreen transition text-sm shadow-md">Submit Application</button>
-                </div>
-            </form>
         </div>
-    </div>
+    </main>
 
     <footer class="bg-brand-slate text-white pt-10 pb-8 border-t border-gray-800 flex-shrink-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500 font-medium">
@@ -260,6 +275,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
+        let userProfile = null;
         let globalRolesData = [];
 
         function removeLoader() {
@@ -279,18 +295,21 @@
 
                     const { data: profile } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
                     if (profile) {
+                        userProfile = profile;
                         const compiledName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'User Profile';
-                        document.getElementById('req_full_name').value = compiledName;
-                        document.getElementById('req_email').value = profile.email || '';
-                        document.getElementById('req_phone').value = profile.mobile_phone || '';
+                        
+                        // Populate the visual ID card
+                        document.getElementById('disp_name').textContent = compiledName;
+                        document.getElementById('disp_email').textContent = profile.email || 'No email associated';
+                        document.getElementById('disp_phone').textContent = profile.mobile_phone || 'Missing phone parameter';
                     }
 
-                    document.getElementById('auth-wall').classList.add('hidden');
-                    document.getElementById('roles-layout').classList.remove('hidden');
+                    document.getElementById('view-auth-wall').classList.add('hidden');
+                    document.getElementById('view-roles').classList.remove('hidden');
                     
                     await loadCustomRoles();
                 } else {
-                    document.getElementById('auth-wall').classList.remove('hidden');
+                    document.getElementById('view-auth-wall').classList.remove('hidden');
                 }
             } catch (err) { console.error("Init Error", err); } 
             finally { removeLoader(); }
@@ -298,7 +317,12 @@
 
         async function handleLogout() { await supabaseClient.auth.signOut(); window.location.reload(); }
 
-        const emptyHTML = `<div class="col-span-full bg-white border border-gray-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center"><div class="w-12 h-12 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-briefcase"></i></div><p class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">No Custom Roles</p><p class="text-sm text-gray-400 font-medium">There are currently no specialized positions available. Please apply as a General Volunteer.</p></div>`;
+        const emptyHTML = `
+            <div class="col-span-full bg-white border border-gray-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-briefcase"></i></div>
+                <p class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-1">No Custom Roles Open</p>
+                <p class="text-sm text-gray-400 font-medium">There are currently no specialized positions available. Please apply as a General Volunteer.</p>
+            </div>`;
 
         async function loadCustomRoles() {
             const grid = document.getElementById('custom-roles-grid');
@@ -314,14 +338,14 @@
                 let html = '';
                 globalRolesData.forEach(role => {
                     html += `
-                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-brand-green transition flex flex-col h-full">
+                    <div class="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-brand-green transition duration-300 flex flex-col h-full">
                         <div class="mb-4">
                             <span class="inline-block px-2.5 py-1 bg-green-50 text-brand-darkgreen text-[10px] font-black uppercase tracking-wider rounded-md mb-3">Specialized Need</span>
                             <h4 class="text-xl font-black text-brand-slate leading-tight">${role.title}</h4>
                         </div>
-                        <p class="text-sm text-gray-500 font-medium mb-4 flex-grow line-clamp-3">${role.description}</p>
-                        <div class="pt-4 border-t border-gray-100">
-                            <button onclick="openAppModal('custom', '${role.id}')" class="w-full py-2.5 bg-white border-2 border-brand-slate text-brand-slate text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-slate hover:text-white transition">Apply for Role</button>
+                        <p class="text-sm text-gray-500 font-medium mb-6 flex-grow line-clamp-3">${role.description}</p>
+                        <div class="pt-4 border-t border-gray-100 mt-auto">
+                            <button onclick="openApplicationForm('custom', '${role.id}')" class="w-full py-3 bg-white border-2 border-brand-slate text-brand-slate text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-slate hover:text-white transition">Apply for Role</button>
                         </div>
                     </div>`;
                 });
@@ -329,41 +353,50 @@
             } catch (err) { grid.innerHTML = emptyHTML; }
         }
 
-        function openAppModal(type, roleId) {
+        // Toggles between the Grid View and the Form View directly on the page
+        function openApplicationForm(type, roleId) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             document.getElementById('app_type').value = type;
             document.getElementById('form-err-msg').classList.add('hidden');
             
             const bReg = document.getElementById('block-regular');
             const bCus = document.getElementById('block-custom');
 
+            // Configure Form based on Application Type
             if(type === 'regular') {
-                document.getElementById('modal-role-title').textContent = "General Volunteer";
+                document.getElementById('form-role-title').textContent = "General Volunteer";
                 document.getElementById('app_role_id').value = '';
-                bReg.classList.remove('hidden'); bCus.classList.add('hidden');
+                
+                bReg.classList.remove('hidden'); 
+                bCus.classList.add('hidden');
+                
                 document.getElementById('bg_consent').required = true;
                 document.getElementById('app_start_date').required = false;
                 document.getElementById('app_resume').required = false;
             } else {
                 const role = globalRolesData.find(x => x.id === roleId);
-                document.getElementById('modal-role-title').textContent = role ? role.title : "Custom Role";
+                document.getElementById('form-role-title').textContent = role ? role.title : "Custom Specialized Role";
                 document.getElementById('app_role_id').value = roleId;
-                bReg.classList.add('hidden'); bCus.classList.remove('hidden');
+                
+                bReg.classList.add('hidden'); 
+                bCus.classList.remove('hidden');
+                
                 document.getElementById('bg_consent').required = false;
                 document.getElementById('app_start_date').required = true;
                 document.getElementById('app_resume').required = true;
             }
 
-            const modal = document.getElementById('app-modal');
-            const card = document.getElementById('modal-card');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-            setTimeout(() => { card.classList.remove('scale-95', 'opacity-0'); }, 10);
+            // Hide roles layout, reveal form layout
+            document.getElementById('view-roles').classList.add('hidden');
+            document.getElementById('view-form').classList.remove('hidden');
         }
 
-        function closeAppModal() {
-            const modal = document.getElementById('app-modal');
-            const card = document.getElementById('modal-card');
-            card.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.getElementById('volunteer-form').reset(); }, 300);
+        function closeApplicationForm() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('view-form').classList.add('hidden');
+            document.getElementById('view-roles').classList.remove('hidden');
+            document.getElementById('volunteer-form').reset();
         }
 
         async function handleApplicationSubmit(e) {
@@ -373,24 +406,33 @@
             const type = document.getElementById('app_type').value;
             errEl.classList.add('hidden');
 
+            // Enforce Skills Array if Regular Application
             let skills = [];
             if(type === 'regular') {
                 skills = Array.from(document.querySelectorAll('.skill-checkbox:checked')).map(cb => cb.value);
                 if(skills.length === 0) {
-                    document.getElementById('skill-error').classList.remove('hidden'); return;
+                    document.getElementById('skill-error').classList.remove('hidden'); 
+                    return;
                 }
                 document.getElementById('skill-error').classList.add('hidden');
             }
 
-            btn.disabled = true; btn.textContent = 'Submitting...';
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
+            // Extract Name explicitly mapped from the profile
+            const compiledName = `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || 'Verified Applicant';
 
             const payload = {
                 client_id: currentUser.id,
                 application_type: type === 'regular' ? 'regular' : 'custom_role',
                 role_id: type === 'regular' ? null : document.getElementById('app_role_id').value,
-                full_name: document.getElementById('req_full_name').value,
-                email_address: document.getElementById('req_email').value,
-                phone_number: document.getElementById('req_phone').value,
+                
+                // Pulled dynamically from verified session object instead of hidden inputs
+                full_name: compiledName,
+                email_address: userProfile.email,
+                phone_number: userProfile.mobile_phone || 'N/A',
+                
                 other_phone: document.getElementById('req_other_phone').value.trim() || null,
                 availability_schedule: document.getElementById('app_schedule').value.trim(),
                 
@@ -407,16 +449,16 @@
                 const { error } = await supabaseClient.from('volunteer_applications').insert([payload]);
                 if (error) throw error;
 
-                closeAppModal();
-                document.getElementById('roles-layout').classList.add('hidden');
-                document.getElementById('application-success').classList.remove('hidden');
+                document.getElementById('view-form').classList.add('hidden');
+                document.getElementById('view-success').classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
             } catch (err) {
                 console.error(err);
                 errEl.textContent = "Data compliance error. Ensure all required fields are valid.";
                 errEl.classList.remove('hidden');
-                btn.disabled = false; btn.textContent = 'Submit Application';
+                btn.disabled = false; 
+                btn.innerHTML = 'Submit Official Application';
             }
         }
 
