@@ -88,9 +88,9 @@
         
         <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#16a34a 1px, transparent 1px); background-size: 24px 24px;"></div>
 
-        <div class="flex-1 overflow-y-auto p-6 flex items-center justify-center relative z-10">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10 flex flex-col">
             
-            <div class="w-full max-w-xl bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100">
+            <div class="w-full max-w-xl bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100 m-auto">
                 
                 <div id="signup-success" class="hidden text-center space-y-6">
                     <div class="w-24 h-24 bg-green-50 text-brand-green rounded-full flex items-center justify-center text-5xl mx-auto shadow-sm">
@@ -158,7 +158,7 @@
                                 <div class="mt-0.5">
                                     <input type="checkbox" id="terms" required class="w-5 h-5 text-brand-green border-gray-300 rounded focus:ring-brand-green cursor-pointer transition">
                                 </div>
-                                <span class="text-xs text-gray-500 font-medium group-hover:text-gray-800 transition">
+                                <span class="text-xs text-gray-500 font-medium group-hover:text-gray-800 transition leading-relaxed">
                                     I agree to the FoodShare Seychelles platform Terms of Use and certify that all information submitted is factually accurate. *
                                 </span>
                             </label>
@@ -214,7 +214,7 @@
         // Supabase Instantiation Parameters
         const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM');
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Main Auth Registration Controller Loop
         async function handleRegistration(e) {
@@ -234,7 +234,6 @@
             const address = document.getElementById('physical_address').value.trim();
 
             try {
-                // Execute registration with parameters passed cleanly inside the options object
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
