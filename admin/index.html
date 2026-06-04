@@ -3,205 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration | FoodShare Seychelles</title>
+    <title>Executive Admin Control Panel | FoodShare Seychelles</title>
+    
     <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
         tailwind.config = {
-            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' } } } }
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
         }
     </script>
+
     <style>
         .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+        
         body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
         input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
         .admin-checkbox:checked + div { background-color: #16a34a; border-color: #16a34a; color: white; }
     </style>
 </head>
-<body class="font-sans bg-slate-900 text-slate-100 antialiased overflow-hidden flex flex-col h-screen" id="body" oncontextmenu="return false;">
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden flex flex-col h-screen" id="body" oncontextmenu="return false;">
 
-    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 transition-opacity duration-500">
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
         <div class="flex flex-col items-center">
             <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
-            <p class="text-slate-400 font-bold tracking-widest uppercase text-xs">Authenticating Root Node</p>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Authenticating Root Node</p>
         </div>
     </div>
 
-    <nav class="bg-slate-950 border-b border-slate-800 flex-shrink-0 z-40 relative px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-10 h-10 object-contain pointer-events-none">
-            <div class="text-xl font-black text-white tracking-tight">FoodShare Seychelles <span class="text-brand-green font-bold text-sm bg-brand-green/10 border border-brand-green/20 px-2 py-0.5 rounded ml-2">Root Admin</span></div>
+    <nav class="bg-white border-b border-gray-100 flex-shrink-0 shadow-sm z-40 relative px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-24 items-center">
+            <div class="flex-shrink-0 flex items-center gap-3">
+                <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                <div class="text-2xl font-black text-brand-slate tracking-tight">
+                    FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    <span class="ml-3 px-2.5 py-1 bg-gray-100 text-gray-500 border border-gray-200 rounded-md text-xs tracking-widest uppercase align-middle">Root Admin Node</span>
+                </div>
+            </div>
+            
+            <button onclick="handleLogout()" class="px-6 py-3 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">
+                Secure Sign Out
+            </button>
         </div>
-        <button onclick="handleLogout()" class="px-4 py-2 bg-slate-800 hover:bg-red-600 border border-slate-700 hover:border-red-500 text-white text-xs font-bold uppercase rounded-lg tracking-wider transition shadow-sm">Sign Out</button>
     </nav>
 
     <div class="flex-1 flex overflow-hidden">
         
-        <aside class="w-64 bg-slate-950 flex flex-col justify-between p-4 flex-shrink-0 border-r border-slate-800 overflow-y-auto">
-            <div class="space-y-6">
-                <div class="px-3 py-2 bg-slate-900/50 rounded-xl border border-slate-800 flex items-center gap-3">
-                    <div class="w-8 h-8 bg-brand-green text-white font-black text-xs rounded-full flex items-center justify-center">ADM</div>
-                    <div class="overflow-hidden">
-                        <p class="text-xs font-black text-white truncate" id="admin-display-email">admin@foodshare</p>
-                    </div>
+        <aside class="w-64 bg-brand-slate text-white flex flex-col justify-between p-4 flex-shrink-0 border-r border-gray-800 overflow-y-auto">
+            <div class="space-y-6 pt-4">
+                
+                <div class="px-4 border-b border-gray-800 pb-5">
+                    <p class="font-black text-xl text-white truncate" id="admin-display-name">Loading...</p>
+                    <span class="text-[10px] uppercase font-bold text-brand-green tracking-widest block mt-0.5">System Administrator</span>
                 </div>
 
                 <nav class="space-y-1" id="admin-nav">
-                    <button onclick="switchAdminTab('overview')" id="tab-btn-overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl bg-brand-green text-white transition"><i class="fa-solid fa-gauge-high w-4"></i> Overview</button>
-                    <button onclick="switchAdminTab('donations')" id="tab-btn-donations" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-hand-holding-heart w-4"></i> Donations Log</button>
-                    <button onclick="switchAdminTab('claims')" id="tab-btn-claims" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-truck-ramp-box w-4"></i> Client Claims</button>
-                    <button onclick="switchAdminTab('inventory')" id="tab-btn-inventory" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-circle-plus w-4"></i> Post Inventory</button>
-                    <button onclick="switchAdminTab('volunteers')" id="tab-btn-volunteers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-users-gear w-4"></i> Volunteers</button>
-                    <button onclick="switchAdminTab('support')" id="tab-btn-support" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-inbox w-4"></i> Support Inbox</button>
-                    <button onclick="switchAdminTab('news')" id="tab-btn-news" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-newspaper w-4"></i> Publish News</button>
-                    <button onclick="switchAdminTab('mailing')" id="tab-btn-mailing" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-envelope-open-text w-4"></i> Mailing List</button>
-                    <button onclick="switchAdminTab('staff')" id="tab-btn-staff" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-user-shield w-4"></i> Staff Roles</button>
-                    <button onclick="switchAdminTab('profile')" id="tab-btn-profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-user-gear w-4"></i> My Profile</button>
+                    <button onclick="switchAdminTab('overview')" id="tab-btn-overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition"><i class="fa-solid fa-chart-pie w-5"></i> Network Overview</button>
+                    <button onclick="switchAdminTab('donations')" id="tab-btn-donations" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-hand-holding-heart w-5"></i> Donations Log</button>
+                    <button onclick="switchAdminTab('claims')" id="tab-btn-claims" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-box-open w-5"></i> Client Claims</button>
+                    <button onclick="switchAdminTab('inventory')" id="tab-btn-inventory" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-circle-plus w-5"></i> Post Inventory</button>
+                    <button onclick="switchAdminTab('volunteers')" id="tab-btn-volunteers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-users-gear w-5"></i> Volunteers</button>
+                    <button onclick="switchAdminTab('support')" id="tab-btn-support" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-headset w-5"></i> Support Inbox</button>
+                    <div class="h-px bg-gray-800 my-2 mx-4"></div>
+                    <button onclick="switchAdminTab('news')" id="tab-btn-news" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-newspaper w-5"></i> Publish News</button>
+                    <button onclick="switchAdminTab('mailing')" id="tab-btn-mailing" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-envelope-open-text w-5"></i> Mailing List</button>
+                    <button onclick="switchAdminTab('staff')" id="tab-btn-staff" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-user-shield w-5"></i> Staff Roles</button>
+                    <button onclick="switchAdminTab('profile')" id="tab-btn-profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-user-gear w-5"></i> My Profile</button>
                 </nav>
+            </div>
+            <div class="p-3 text-[10px] font-mono text-gray-500 text-center uppercase tracking-widest mt-8">
+                Supabase Admin Protocol
             </div>
         </aside>
 
-        <main class="flex-1 bg-slate-900 overflow-y-auto p-6 md:p-10 text-slate-300">
-
+        <main class="flex-1 bg-gray-50 overflow-y-auto p-6 md:p-10" id="main-viewport">
+            
             <div id="view-overview" class="admin-panel block space-y-8">
-                <h1 class="text-3xl font-black text-white tracking-tight">Root Command Center</h1>
+                <div>
+                    <h1 class="text-3xl font-black text-brand-slate tracking-tight mb-1">Root Command Center</h1>
+                    <p class="text-sm text-gray-500 font-medium">Live master analytics snapshot monitoring global transactions arrays.</p>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-donations">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Donations Logged</span></div>
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-claims">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Claims Made</span></div>
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-volunteers">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Volunteer Apps</span></div>
-                    <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800"><p class="text-2xl font-black text-white" id="met-tickets">0</p><span class="text-[10px] font-bold text-slate-500 uppercase">Open Tickets</span></div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-center">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Donations Logged</span>
+                            <div class="w-10 h-10 rounded-xl bg-green-50 text-brand-green flex items-center justify-center shadow-inner"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        </div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-donations">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-center">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Claims Made</span>
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner"><i class="fa-solid fa-box-open"></i></div>
+                        </div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-claims">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-center">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Volunteer Apps</span>
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shadow-inner"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-volunteers">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-center">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Open Tickets</span>
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shadow-inner"><i class="fa-solid fa-headset"></i></div>
+                        </div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-tickets">0</p>
+                    </div>
                 </div>
             </div>
 
             <div id="view-donations" class="admin-panel hidden space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Donations Registry</h2>
-                <p class="text-sm text-slate-400 mb-4">View incoming surplus details. Mark as Read/Acknowledged once reviewed.</p>
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
-                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Donor/Org</th><th class="p-4">Food Type & Qty</th><th class="p-4">Logistics</th><th class="p-4">Status</th><th class="p-4 text-right">Actions</th></tr></thead>
-                        <tbody id="tbl-donations" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
-                    </table>
+                <div>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Donations Registry</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">View incoming surplus details. Mark as Read/Acknowledged once reviewed.</p>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[900px]">
+                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date</th><th class="p-4">Donor/Org</th><th class="p-4">Food Type & Qty</th><th class="p-4">Logistics</th><th class="p-4">Status</th><th class="p-4 text-right pr-6">Actions</th></tr></thead>
+                            <tbody id="tbl-donations" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="view-claims" class="admin-panel hidden space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Client Claims & Requests</h2>
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[1000px]">
-                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Client Info</th><th class="p-4">Requested Item</th><th class="p-4">Logistics & Size</th><th class="p-4 text-right">Status Pipeline</th></tr></thead>
-                        <tbody id="tbl-claims" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
-                    </table>
+                <div>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Client Claims & Requests</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Monitor public package claims requests and manage fulfillment statuses.</p>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[1000px]">
+                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date</th><th class="p-4">Client Info</th><th class="p-4">Requested Item</th><th class="p-4">Logistics & Size</th><th class="p-4 text-right pr-6">Status Pipeline</th></tr></thead>
+                            <tbody id="tbl-claims" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="view-inventory" class="admin-panel hidden max-w-3xl space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Post Available Inventory</h2>
-                <form id="frm-inventory" onsubmit="postInventory(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
-                    <input type="text" id="inv_title" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Title (e.g. 50KG Carrots)">
-                    <div class="grid grid-cols-2 gap-4">
-                        <select id="inv_cat" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm"><option value="produce">Produce</option><option value="prepared meals">Prepared Meals</option><option value="pantry items">Pantry Items</option><option value="baby food">Baby Food</option></select>
-                        <input type="number" step="0.1" id="inv_weight" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Weight (KG)">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Post Available Inventory</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Input verified food supplies into the public ledger directory for client claiming cycles.</p>
+                </div>
+                <form id="frm-inventory" onsubmit="postInventory(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Listing Title / Container Batch Label *</label>
+                        <input type="text" id="inv_title" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="E.g., 50KG Checked Fresh Organic Tomatoes Batch">
                     </div>
-                    <input type="text" id="inv_storage" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Storage Req (e.g. Keep Chilled)">
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="datetime-local" id="inv_from" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm">
-                        <input type="datetime-local" id="inv_to" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Food Category *</label>
+                            <select id="inv_cat" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm appearance-none cursor-pointer"><option value="produce">Produce</option><option value="prepared meals">Prepared Meals</option><option value="pantry items">Pantry Items</option><option value="baby food">Baby Food</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Weight (KG) *</label>
+                            <input type="number" step="0.1" id="inv_weight" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="0.0">
+                        </div>
                     </div>
-                    <input type="text" id="inv_allergens" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Allergens (comma separated) or 'None'">
-                    <button type="submit" class="w-full py-3 bg-brand-green text-white font-bold rounded-xl text-sm">Post to Directory</button>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Storage Requirements *</label>
+                        <input type="text" id="inv_storage" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="E.g. Keep Chilled at 4°C">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Available From *</label>
+                            <input type="datetime-local" id="inv_from" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Available To *</label>
+                            <input type="datetime-local" id="inv_to" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Allergens Matrix *</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="admin-allergen-selectors">
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Nuts" class="admin-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Nuts</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Dairy" class="admin-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Dairy</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Gluten" class="admin-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Gluten</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Soy" class="admin-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Soy</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="Shellfish" class="admin-checkbox sr-only"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">Shellfish</div></label>
+                            <label class="cursor-pointer relative"><input type="checkbox" value="None" class="admin-checkbox sr-only" onchange="handleAdminNoneAllergenExclusivity(this)"><div class="w-full px-4 py-3 border border-gray-200 bg-gray-50 rounded-xl text-center text-sm font-bold text-gray-600 hover:bg-white transition">None</div></label>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <p id="listing-form-feedback" class="text-xs font-bold text-brand-green hidden"></p>
+                        <button type="submit" id="listing-submit-btn" class="px-8 py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Post to Directory</button>
+                    </div>
                 </form>
             </div>
 
             <div id="view-volunteers" class="admin-panel hidden space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Volunteer Applications</h2>
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
-                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Applicant</th><th class="p-4">Type/Role</th><th class="p-4">Skills/Resume</th><th class="p-4 text-right">Action</th></tr></thead>
-                        <tbody id="tbl-volunteers" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
-                    </table>
+                <div>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Volunteer Applications</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Review general and custom role submissions from community members.</p>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[900px]">
+                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date</th><th class="p-4">Applicant</th><th class="p-4">Type/Role</th><th class="p-4">Skills/Resume</th><th class="p-4 text-right pr-6">Action</th></tr></thead>
+                            <tbody id="tbl-volunteers" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="view-support" class="admin-panel hidden space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Support Inbox</h2>
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[800px]">
-                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date</th><th class="p-4">Sender</th><th class="p-4">Subject & Msg</th><th class="p-4 text-right">Status</th></tr></thead>
-                        <tbody id="tbl-support" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
-                    </table>
+                <div>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Support Inbox</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Process public support requests logged via client profile channels.</p>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
+                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date</th><th class="p-4">Sender</th><th class="p-4">Subject & Msg</th><th class="p-4 text-right pr-6">Status</th></tr></thead>
+                            <tbody id="tbl-support" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="view-news" class="admin-panel hidden max-w-3xl space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Publish News Article</h2>
-                <form id="frm-news" onsubmit="postNews(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
-                    <input type="text" id="news_title" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Article Title">
-                    <select id="news_cat" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm"><option value="Impact Stories">Impact Stories</option><option value="Program Updates">Program Updates</option><option value="Events">Events</option><option value="Media & Press Release">Press Release</option><option value="Newsletter From The Founder">Founder Newsletter</option></select>
-                    <input type="url" id="news_img" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Image Direct Link URL (Optional)">
-                    <textarea id="news_content" rows="6" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Article Content (HTML allowed)"></textarea>
-                    <button type="submit" class="w-full py-3 bg-brand-green text-white font-bold rounded-xl text-sm">Publish Article</button>
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Publish News Article</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Author updates and impact stories directly to the public newsroom feed.</p>
+                </div>
+                <form id="frm-news" onsubmit="postNews(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Article Title *</label>
+                        <input type="text" id="news_title" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Category *</label>
+                            <select id="news_cat" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm appearance-none cursor-pointer"><option value="Impact Stories">Impact Stories</option><option value="Program Updates">Program Updates</option><option value="Events">Events</option><option value="Media & Press Release">Press Release</option><option value="Newsletter From The Founder">Founder Newsletter</option></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Image Direct URL <span class="text-gray-400 font-normal lowercase">(Optional)</span></label>
+                            <input type="url" id="news_img" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="https://i.ibb.co/...">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Article Content *</label>
+                        <textarea id="news_content" rows="6" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm resize-none" placeholder="HTML formatting allowed..."></textarea>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 text-right">
+                        <button type="submit" class="px-8 py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Publish Article</button>
+                    </div>
                 </form>
             </div>
 
             <div id="view-mailing" class="admin-panel hidden max-w-2xl space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Newsletter Subscribers</h2>
-                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden">
+                <div>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Newsletter Subscribers</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">List of verified emails subscribed to the public platform mailing feed.</p>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
                     <table class="w-full text-left border-collapse">
-                        <thead><tr class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase"><th class="p-4">Date Subscribed</th><th class="p-4">Email Address</th></tr></thead>
-                        <tbody id="tbl-mailing" class="text-xs divide-y divide-slate-800/60 text-slate-400"></tbody>
+                        <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date Subscribed</th><th class="p-4 pr-6">Email Address</th></tr></thead>
+                        <tbody id="tbl-mailing" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
                     </table>
                 </div>
             </div>
 
             <div id="view-staff" class="admin-panel hidden max-w-2xl space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Elevate Staff & Admins</h2>
-                <p class="text-sm text-slate-400">Grant administrative or staff dashboard access to an existing user via their registered email.</p>
-                <form id="frm-roles" onsubmit="elevateRole(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
-                    <input type="email" id="role_email" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="User's exact email address">
-                    <select id="role_select" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm">
-                        <option value="staff">Elevate to Staff</option>
-                        <option value="admin">Elevate to Root Admin</option>
-                        <option value="client">Demote to Standard Client</option>
-                    </select>
-                    <button type="submit" class="w-full py-3 bg-brand-green text-white font-bold rounded-xl text-sm">Update Authority Role</button>
-                    <p id="role-feedback" class="text-xs font-bold mt-2 text-center"></p>
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Elevate Staff & Admins</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Grant administrative or staff dashboard access to an existing client user via their registered email.</p>
+                </div>
+                <form id="frm-roles" onsubmit="elevateRole(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Target Account Email *</label>
+                        <input type="email" id="role_email" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm" placeholder="Exact verified email address">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Authority Level *</label>
+                        <select id="role_select" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm appearance-none cursor-pointer">
+                            <option value="staff">Elevate to Staff Tier</option>
+                            <option value="admin">Elevate to Root Admin</option>
+                            <option value="client">Demote to Standard Client</option>
+                        </select>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 flex flex-col items-center">
+                        <button type="submit" class="w-full py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Update Authority Role</button>
+                        <p id="role-feedback" class="text-xs font-bold mt-4 text-center hidden"></p>
+                    </div>
                 </form>
             </div>
 
             <div id="view-profile" class="admin-panel hidden max-w-2xl space-y-6">
-                <h2 class="text-2xl font-black text-white tracking-tight">Admin Profile</h2>
-                <form id="frm-profile" onsubmit="updateProfile(event)" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Admin Profile Configuration</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Manage your personal verification credentials and contact structure.</p>
+                </div>
+                <form id="frm-profile" onsubmit="updateProfile(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="prof_first" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="First Name">
-                        <input type="text" id="prof_last" required class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Last Name">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">First Name</label>
+                            <input type="text" id="prof_first" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Last Name</label>
+                            <input type="text" id="prof_last" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                        </div>
                     </div>
-                    <input type="email" id="prof_email" readonly class="w-full p-3 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-500 text-sm cursor-not-allowed">
-                    <input type="tel" id="prof_phone" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm" placeholder="Phone">
-                    <button type="submit" class="w-full py-3 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition">Save Changes</button>
-                    <p id="prof-feedback" class="text-xs font-bold text-brand-green text-center hidden">Saved</p>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Secure Identifier Email</label>
+                        <input type="email" id="prof_email" readonly class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-gray-400 font-bold text-sm cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Contact Phone</label>
+                        <input type="tel" id="prof_phone" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-green/50 focus:border-brand-green transition text-gray-900 font-medium text-sm">
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <p id="prof-feedback" class="text-xs font-bold text-brand-green text-center hidden">Configuration Saved</p>
+                        <button type="submit" class="px-8 py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Save Changes</button>
+                    </div>
                 </form>
             </div>
 
         </main>
     </div>
 
-    <div id="view-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl max-w-xl w-full flex flex-col max-h-[90vh]">
-            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950 rounded-t-2xl">
-                <h3 class="font-black text-white" id="modal-title">Details Record</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="view-modal" class="fixed inset-0 z-50 hidden bg-brand-slate/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-2xl max-w-xl w-full flex flex-col max-h-[90vh] overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-card">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-black text-brand-slate tracking-tight" id="modal-title">Details Record</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition text-2xl"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-4 text-sm text-slate-300" id="modal-content">
+            <div class="p-8 overflow-y-auto space-y-6 text-sm text-gray-600" id="modal-content">
                 </div>
-            <div class="p-4 border-t border-slate-800 bg-slate-950 rounded-b-2xl text-right" id="modal-actions">
-                <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 text-white font-bold rounded-lg text-xs">Close Window</button>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 text-right" id="modal-actions">
+                <button onclick="closeModal()" class="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-100 transition shadow-sm">Close Window</button>
             </div>
         </div>
     </div>
@@ -212,15 +364,32 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentUser = null;
 
-        const eRow = (cols, txt) => `<tr><td colspan="${cols}" class="p-6 text-center text-slate-600 italic">${txt}</td></tr>`;
-        const stPill = (txt, cl) => `<span class="px-2 py-1 text-[9px] font-black uppercase rounded ${cl}">${txt}</span>`;
+        const eRow = (cols, txt) => `<tr><td colspan="${cols}" class="p-8 text-center text-gray-400 font-medium italic">${txt}</td></tr>`;
+        const stPill = (txt, cl) => `<span class="inline-block px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md ${cl}">${txt}</span>`;
+        
+        const statusMap = {
+            'pending': 'bg-amber-50 text-amber-700 border border-amber-200',
+            'new': 'bg-blue-50 text-blue-700 border border-blue-200',
+            'approved': 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+            'in_progress': 'bg-amber-50 text-amber-700 border border-amber-200',
+            'completed': 'bg-gray-100 text-gray-600 border border-gray-200',
+            'resolved': 'bg-green-50 text-green-700 border border-green-200',
+            'cancelled': 'bg-gray-100 text-gray-500 border border-gray-200',
+            'out_for_delivery': 'bg-purple-50 text-purple-700 border border-purple-200',
+            'ready_for_pickup': 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+        };
 
-        function closeModal() { document.getElementById('view-modal').classList.add('hidden'); }
+        function closeModal() { 
+            const card = document.getElementById('modal-card');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { document.getElementById('view-modal').classList.add('hidden'); document.getElementById('view-modal').classList.remove('flex'); }, 300);
+        }
+        
         function switchAdminTab(tid) {
             document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
             document.getElementById('view-' + tid).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(b => b.className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition");
-            document.getElementById('tab-btn-' + tid).className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-wider rounded-xl bg-brand-green text-white transition";
+            document.querySelectorAll('.nav-btn').forEach(b => b.className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition");
+            document.getElementById('tab-btn-' + tid).className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition";
         }
 
         async function init() {
@@ -232,7 +401,9 @@
                 const { data: prof } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
                 if (!prof || prof.role !== 'admin') return window.location.href = '/login/';
                 
-                document.getElementById('admin-display-email').textContent = prof.email;
+                const compiledName = `${prof.first_name || ''} ${prof.last_name || ''}`.trim() || 'System Admin';
+                document.getElementById('admin-display-name').textContent = compiledName;
+                
                 document.getElementById('prof_first').value = prof.first_name || '';
                 document.getElementById('prof_last').value = prof.last_name || '';
                 document.getElementById('prof_email').value = prof.email;
@@ -240,13 +411,16 @@
 
                 await loadAllData();
             } catch (err) { window.location.href = '/login/'; }
-            finally { document.getElementById('loader').style.display = 'none'; }
+            finally { 
+                const loader = document.getElementById('loader');
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500);
+            }
         }
 
         async function handleLogout() { await supabaseClient.auth.signOut(); window.location.href = '/login/'; }
 
         async function loadAllData() {
-            // Fetch everything concurrently
             const [dons, reqs, vols, sups, mails] = await Promise.all([
                 supabaseClient.from('food_donations').select('*').order('created_at', {ascending: false}),
                 supabaseClient.from('food_requests').select('*, food_listings(title)').order('created_at', {ascending: false}),
@@ -260,32 +434,32 @@
             document.getElementById('met-volunteers').textContent = vols.data ? vols.data.length : 0;
             document.getElementById('met-tickets').textContent = sups.data ? sups.data.filter(x => x.status !== 'resolved').length : 0;
 
-            // Render Donations
+            // Donations
             const tDons = document.getElementById('tbl-donations');
             if(dons.data && dons.data.length > 0) {
-                window.donationsData = dons.data; // store for modal
+                window.donationsData = dons.data; 
                 tDons.innerHTML = dons.data.map(r => `
-                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40 transition">
-                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
-                        <td class="p-4 font-bold text-white">${r.contact_name}<br><span class="text-[10px] text-brand-green font-mono">${r.organization_name || 'Individual'}</span></td>
-                        <td class="p-4 font-medium">${r.food_type}<br><span class="text-[10px] text-slate-500">${r.amount} (~${r.estimated_weight_kg}kg)</span></td>
-                        <td class="p-4 text-xs">${r.logistics_option}</td>
-                        <td class="p-4">${r.status === 'pending' ? stPill('Unread', 'bg-amber-500/10 text-amber-400') : stPill('Read', 'bg-slate-700 text-slate-300')}</td>
-                        <td class="p-4 text-right"><button onclick="viewDonation('${r.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-brand-green text-white text-[10px] font-bold rounded transition">View Details</button></td>
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 pl-6 font-mono text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-brand-slate">${r.contact_name}<br><span class="text-[10px] font-bold text-brand-green uppercase tracking-wider">${r.organization_name || 'Individual'}</span></td>
+                        <td class="p-4 font-semibold text-gray-600">${r.food_type}<br><span class="text-[10px] text-gray-400 uppercase tracking-widest">${r.amount} (~${r.estimated_weight_kg}kg)</span></td>
+                        <td class="p-4 text-xs font-semibold text-gray-500">${r.logistics_option}</td>
+                        <td class="p-4">${r.status === 'pending' ? stPill('Unread', statusMap['pending']) : stPill('Read', statusMap['completed'])}</td>
+                        <td class="p-4 text-right pr-6"><button onclick="viewDonation('${r.id}')" class="px-4 py-2 bg-brand-slate hover:bg-brand-green text-white text-xs font-bold uppercase tracking-wider rounded-lg transition shadow-sm">View Details</button></td>
                     </tr>`).join('');
-            } else tDons.innerHTML = eRow(6, "No donations.");
+            } else tDons.innerHTML = eRow(6, "No donations logged.");
 
-            // Render Claims (with update states)
+            // Claims
             const tReqs = document.getElementById('tbl-claims');
             if(reqs.data && reqs.data.length > 0) {
                 tReqs.innerHTML = reqs.data.map(r => `
-                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
-                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
-                        <td class="p-4 font-bold text-white">${r.full_name}<br><span class="text-[10px] font-mono text-slate-400">${r.phone_number}</span></td>
-                        <td class="p-4 text-xs">${r.food_listings ? r.food_listings.title : 'Deleted Listing'}</td>
-                        <td class="p-4 text-xs">${r.logistics_option} (Size: ${r.household_size})</td>
-                        <td class="p-4 text-right">
-                            <select onchange="updateStatus('food_requests', '${r.id}', this.value)" class="bg-slate-900 border border-slate-700 text-[10px] uppercase font-bold text-white p-1 rounded">
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 pl-6 font-mono text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-brand-slate">${r.full_name}<br><span class="text-[10px] font-mono text-gray-400">${r.phone_number}</span></td>
+                        <td class="p-4 text-sm font-semibold text-gray-600">${r.food_listings ? r.food_listings.title : 'Deleted Listing'}</td>
+                        <td class="p-4 text-xs font-semibold text-gray-500">${r.logistics_option} <span class="font-bold text-brand-slate">(Size: ${r.household_size})</span></td>
+                        <td class="p-4 text-right pr-6">
+                            <select onchange="updateStatus('food_requests', '${r.id}', this.value)" class="bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 px-3 py-1.5 rounded-lg focus:outline-none cursor-pointer">
                                 <option value="pending" ${r.status==='pending'?'selected':''}>Pending</option>
                                 <option value="approved" ${r.status==='approved'?'selected':''}>Approved</option>
                                 <option value="completed" ${r.status==='completed'?'selected':''}>Completed</option>
@@ -293,34 +467,32 @@
                             </select>
                         </td>
                     </tr>`).join('');
-            } else tReqs.innerHTML = eRow(5, "No claims.");
+            } else tReqs.innerHTML = eRow(5, "No client claims.");
 
-            // Render Volunteers
+            // Volunteers
             const tVols = document.getElementById('tbl-volunteers');
             if(vols.data && vols.data.length > 0) {
                 window.volsData = vols.data;
                 tVols.innerHTML = vols.data.map(r => `
-                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
-                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
-                        <td class="p-4 font-bold text-white">${r.full_name}</td>
-                        <td class="p-4 text-xs uppercase">${r.application_type === 'regular' ? 'General' : (r.volunteer_roles ? r.volunteer_roles.title : 'Custom')}</td>
-                        <td class="p-4 text-[10px] text-slate-400">${r.application_type === 'regular' ? (r.skills_offered?r.skills_offered.join(','):'N/A') : 'View Resume'}</td>
-                        <td class="p-4 text-right">
-                            <button onclick="viewVolunteer('${r.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-brand-green text-white text-[10px] font-bold rounded transition">Review App</button>
-                        </td>
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 pl-6 font-mono text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-brand-slate">${r.full_name}</td>
+                        <td class="p-4 text-xs font-bold uppercase tracking-wider text-brand-green">${r.application_type === 'regular' ? 'General' : (r.volunteer_roles ? r.volunteer_roles.title : 'Custom')}</td>
+                        <td class="p-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">${r.application_type === 'regular' ? (r.skills_offered?r.skills_offered.join(', '):'N/A') : 'View Resume Inside'}</td>
+                        <td class="p-4 text-right pr-6"><button onclick="viewVolunteer('${r.id}')" class="px-4 py-2 bg-brand-slate hover:bg-brand-green text-white text-xs font-bold uppercase tracking-wider rounded-lg transition shadow-sm">Review App</button></td>
                     </tr>`).join('');
-            } else tVols.innerHTML = eRow(5, "No apps.");
+            } else tVols.innerHTML = eRow(5, "No volunteer applications.");
 
-            // Render Support
+            // Support
             const tSups = document.getElementById('tbl-support');
             if(sups.data && sups.data.length > 0) {
                 tSups.innerHTML = sups.data.map(r => `
-                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
-                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
-                        <td class="p-4 font-bold text-white">${r.first_name} ${r.last_name}<br><span class="text-[10px] font-mono text-slate-400">${r.email_address}</span></td>
-                        <td class="p-4 text-xs"><strong>${r.subject}</strong><br><span class="text-slate-500">${r.message}</span></td>
-                        <td class="p-4 text-right">
-                            <select onchange="updateStatus('contact_inquiries', '${r.id}', this.value)" class="bg-slate-900 border border-slate-700 text-[10px] uppercase font-bold text-white p-1 rounded">
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 pl-6 font-mono text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 font-bold text-brand-slate">${r.first_name} ${r.last_name}<br><span class="text-[10px] font-mono text-gray-400">${r.email_address}</span></td>
+                        <td class="p-4 text-sm font-semibold text-gray-600 max-w-xs truncate"><strong>${r.subject}</strong><br><span class="text-xs text-gray-500 font-medium">${r.message}</span></td>
+                        <td class="p-4 text-right pr-6">
+                            <select onchange="updateStatus('contact_inquiries', '${r.id}', this.value)" class="bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 px-3 py-1.5 rounded-lg focus:outline-none cursor-pointer">
                                 <option value="new" ${r.status==='new'?'selected':''}>New</option>
                                 <option value="in_progress" ${r.status==='in_progress'?'selected':''}>In Progress</option>
                                 <option value="resolved" ${r.status==='resolved'?'selected':''}>Resolved</option>
@@ -329,18 +501,17 @@
                     </tr>`).join('');
             } else tSups.innerHTML = eRow(4, "Inbox empty.");
 
-            // Render Mailing
+            // Mailing
             const tMails = document.getElementById('tbl-mailing');
             if(mails.data && mails.data.length > 0) {
                 tMails.innerHTML = mails.data.map(r => `
-                    <tr class="border-b border-slate-800/60 hover:bg-slate-800/40">
-                        <td class="p-4 font-mono">${new Date(r.created_at).toLocaleDateString()}</td>
-                        <td class="p-4 font-bold text-brand-green">${r.email}</td>
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 pl-6 font-mono text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 pr-6 font-bold text-brand-slate">${r.email}</td>
                     </tr>`).join('');
             } else tMails.innerHTML = eRow(2, "No subscribers yet.");
         }
 
-        // View Modals & Updates
         async function updateStatus(table, id, status) {
             await supabaseClient.from(table).update({status: status}).eq('id', id);
         }
@@ -348,73 +519,95 @@
         async function viewDonation(id) {
             const r = window.donationsData.find(x => x.id === id);
             if(!r) return;
-            // Mark as read immediately
-            if(r.status === 'pending') {
-                await updateStatus('food_donations', id, 'completed'); // 'completed' acts as 'read'
-                loadAllData();
-            }
+            if(r.status === 'pending') { await updateStatus('food_donations', id, 'completed'); loadAllData(); }
             
-            document.getElementById('modal-title').textContent = "Donation Details";
+            document.getElementById('modal-title').textContent = "Donation Review Ledger";
             document.getElementById('modal-content').innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                        <p class="text-[10px] text-slate-500 uppercase font-bold">Donor Info</p>
-                        <p class="font-bold text-white mt-1">${r.contact_name}</p>
-                        <p class="text-xs mt-1">${r.organization_name || 'Individual'}</p>
-                        <p class="text-xs font-mono text-brand-green mt-1">${r.phone_number}</p>
-                        <p class="text-xs font-mono text-slate-400 mt-1">${r.email_address}</p>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest border-b border-gray-200 pb-2 mb-3">Donor Entity Info</p>
+                        <p class="font-black text-brand-slate text-lg">${r.contact_name}</p>
+                        <p class="text-sm font-bold text-brand-green uppercase tracking-wider mb-3">${r.organization_name || 'Individual'}</p>
+                        <p class="text-xs font-mono font-bold text-gray-600 mb-1"><i class="fa-solid fa-phone w-4 text-gray-400"></i> ${r.phone_number}</p>
+                        <p class="text-xs font-mono font-bold text-gray-600"><i class="fa-solid fa-envelope w-4 text-gray-400"></i> ${r.email_address}</p>
                     </div>
-                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                        <p class="text-[10px] text-slate-500 uppercase font-bold">Logistics</p>
-                        <p class="font-bold text-white mt-1">${r.logistics_option}</p>
-                        ${r.pickup_address ? `<p class="text-xs mt-1 text-slate-400">Address: ${r.pickup_address}</p>` : ''}
+                    <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest border-b border-gray-200 pb-2 mb-3">Logistics Framework</p>
+                        <p class="font-bold text-brand-slate">${r.logistics_option}</p>
+                        ${r.pickup_address ? `<p class="text-xs font-medium text-gray-500 mt-2 bg-white p-3 rounded-xl border border-gray-100"><strong>Address:</strong><br>${r.pickup_address}</p>` : ''}
                     </div>
-                    <div class="col-span-2 bg-slate-950 p-4 rounded-xl border border-slate-800">
-                        <p class="text-[10px] text-slate-500 uppercase font-bold">Food Details</p>
-                        <p class="font-bold text-white mt-1">${r.food_type} - ${r.amount} (~${r.estimated_weight_kg}kg)</p>
-                        <p class="text-sm mt-2">${r.detailed_description}</p>
-                        <p class="text-xs mt-2 text-amber-500 font-bold">Allergens: ${r.allergen_disclosures.join(', ')}</p>
-                        <p class="text-xs mt-2 text-slate-400">Storage: ${r.storage_history} | Expires: ${new Date(r.expiration_date).toLocaleDateString()}</p>
-                        <a href="${r.photo_link}" target="_blank" class="inline-block mt-4 text-xs font-bold bg-brand-green px-3 py-1 rounded text-white"><i class="fa-solid fa-image"></i> View Photo</a>
+                    <div class="col-span-2 bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest border-b border-gray-200 pb-2 mb-3">Inventory Details</p>
+                        <p class="font-black text-brand-slate text-xl">${r.food_type}</p>
+                        <p class="text-sm font-bold text-gray-600 mb-4">${r.amount} <span class="text-gray-400 font-normal">(~${r.estimated_weight_kg}kg)</span></p>
+                        <p class="text-sm font-medium text-gray-600 bg-white p-4 rounded-xl border border-gray-100 mb-4">${r.detailed_description}</p>
+                        <div class="grid grid-cols-2 gap-4 text-xs font-bold text-gray-600 mb-4">
+                            <div><span class="block text-gray-400 font-normal uppercase tracking-wider text-[10px] mb-1">Storage Rules</span>${r.storage_history}</div>
+                            <div><span class="block text-gray-400 font-normal uppercase tracking-wider text-[10px] mb-1">Expiration Date</span>${new Date(r.expiration_date).toLocaleDateString()}</div>
+                        </div>
+                        <p class="text-xs font-bold text-amber-700 bg-amber-50 p-3 rounded-xl border border-amber-200">Allergen Hazards: ${r.allergen_disclosures.join(', ')}</p>
+                        <div class="mt-5 pt-4 border-t border-gray-200">
+                            <a href="${r.photo_link}" target="_blank" class="inline-block text-xs font-black uppercase tracking-widest bg-brand-green px-5 py-2.5 rounded-lg text-white hover:bg-brand-darkgreen transition shadow-md"><i class="fa-solid fa-image mr-1"></i> Open Direct Image Link</a>
+                        </div>
                     </div>
-                </div>
-            `;
-            document.getElementById('view-modal').classList.remove('hidden');
+                </div>`;
+            const modal = document.getElementById('view-modal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            setTimeout(() => document.getElementById('modal-card').classList.remove('scale-95', 'opacity-0'), 10);
         }
 
         async function viewVolunteer(id) {
             const r = window.volsData.find(x => x.id === id);
             if(!r) return;
+            document.getElementById('modal-title').textContent = "Application Review";
             
-            document.getElementById('modal-title').textContent = "Volunteer Application";
             let specifics = '';
             if(r.application_type === 'regular') {
-                specifics = `<p class="text-xs mt-2 text-brand-green">Skills: ${r.skills_offered?r.skills_offered.join(', '):'None'}</p>
-                             <p class="text-xs mt-1 text-amber-500 font-bold">BG Check Consented: ${r.background_check_consent ? 'Yes' : 'No'}</p>`;
+                specifics = `
+                    <p class="text-xs font-bold text-brand-slate mb-2">Offered Core Skills:</p>
+                    <div class="flex flex-wrap gap-2 mb-4">${(r.skills_offered||[]).map(s=>`<span class="px-2 py-1 bg-white border border-gray-200 rounded text-[10px] font-bold text-brand-green uppercase tracking-wider">${s}</span>`).join('')}</div>
+                    <div class="flex items-center gap-2 p-3 ${r.background_check_consent ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'} border rounded-xl text-xs font-bold">
+                        <i class="fa-solid ${r.background_check_consent ? 'fa-check' : 'fa-xmark'}"></i> Background Check Consented
+                    </div>`;
             } else {
-                specifics = `<p class="text-xs mt-2 font-bold">Applying for: ${r.volunteer_roles ? r.volunteer_roles.title : 'Custom'}</p>
-                             <p class="text-xs mt-1 text-brand-green">Available to start: ${new Date(r.available_to_start).toLocaleDateString()}</p>
-                             <a href="${r.resume_link}" target="_blank" class="inline-block mt-3 text-xs font-bold bg-slate-800 border border-slate-700 px-3 py-1 rounded text-white">View Resume</a>`;
+                specifics = `
+                    <p class="text-sm font-black text-brand-slate mb-1">Target Position: ${r.volunteer_roles ? r.volunteer_roles.title : 'Custom'}</p>
+                    <p class="text-xs font-bold text-gray-500 mb-4">Earliest Start Date: <span class="text-brand-green">${new Date(r.available_to_start).toLocaleDateString()}</span></p>
+                    <a href="${r.resume_link}" target="_blank" class="inline-block text-xs font-black uppercase tracking-widest bg-brand-slate px-5 py-2.5 rounded-lg text-white hover:bg-gray-800 transition shadow-md"><i class="fa-solid fa-file-pdf mr-1"></i> Access Resume File</a>`;
             }
 
             document.getElementById('modal-content').innerHTML = `
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4">
-                    <p class="text-[10px] text-slate-500 uppercase font-bold">Applicant Info</p>
-                    <p class="font-bold text-white mt-1">${r.full_name}</p>
-                    <p class="text-xs font-mono text-slate-400 mt-1">${r.email_address} | ${r.phone_number}</p>
-                    <p class="text-xs text-slate-400 mt-2">Schedule: ${r.availability_schedule}</p>
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 mb-6">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest border-b border-gray-200 pb-2 mb-3">Applicant Identifiers</p>
+                    <p class="font-black text-brand-slate text-xl">${r.full_name}</p>
+                    <p class="text-xs font-mono font-bold text-gray-600 mt-2"><i class="fa-solid fa-envelope w-4 text-gray-400"></i> ${r.email_address}</p>
+                    <p class="text-xs font-mono font-bold text-gray-600 mt-1"><i class="fa-solid fa-phone w-4 text-gray-400"></i> ${r.phone_number}</p>
+                    <div class="mt-4 p-4 bg-white border border-gray-100 rounded-xl">
+                        <p class="text-[10px] uppercase font-bold text-gray-400 mb-1 tracking-wider">Availability Schedule</p>
+                        <p class="text-sm font-medium text-gray-700">${r.availability_schedule}</p>
+                    </div>
                 </div>
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-                    <p class="text-[10px] text-slate-500 uppercase font-bold">Application Specifics</p>
+                <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest border-b border-gray-200 pb-2 mb-3">Application Specifics</p>
                     ${specifics}
-                </div>
-            `;
-            document.getElementById('view-modal').classList.remove('hidden');
+                </div>`;
+            const modal = document.getElementById('view-modal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            setTimeout(() => document.getElementById('modal-card').classList.remove('scale-95', 'opacity-0'), 10);
         }
 
-        // Form Posts
         async function postInventory(e) {
             e.preventDefault();
+            const btn = document.getElementById('listing-submit-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Writing...'; btn.disabled = true;
+
+            const allergens = Array.from(document.querySelectorAll('#admin-allergen-selectors input[type="checkbox"]:checked')).map(cb => cb.value);
+            if(allergens.length === 0) {
+                alert("Please check at least one Allergen Matrix box.");
+                btn.innerHTML = 'Post to Directory'; btn.disabled = false;
+                return;
+            }
+
             const payload = {
                 title: document.getElementById('inv_title').value,
                 food_category: document.getElementById('inv_cat').value,
@@ -422,13 +615,30 @@
                 storage_requirements: document.getElementById('inv_storage').value,
                 available_from: new Date(document.getElementById('inv_from').value).toISOString(),
                 available_to: new Date(document.getElementById('inv_to').value).toISOString(),
-                allergen_disclosures: document.getElementById('inv_allergens').value.split(',').map(s=>s.trim()),
+                allergen_disclosures: allergens,
                 is_available: true
             };
             const {error} = await supabaseClient.from('food_listings').insert([payload]);
-            if(!error) { alert("Inventory Posted."); document.getElementById('frm-inventory').reset(); loadAllData(); }
-            else alert(error.message);
+            if(!error) { 
+                document.getElementById('listing-form-feedback').textContent = "Inventory allocation posted live!";
+                document.getElementById('listing-form-feedback').classList.remove('hidden');
+                document.getElementById('frm-inventory').reset(); loadAllData(); 
+            } else alert(error.message);
+            
+            btn.innerHTML = 'Post to Directory'; btn.disabled = false;
+            setTimeout(()=>document.getElementById('listing-form-feedback').classList.add('hidden'), 4000);
         }
+
+        function handleAdminNoneAllergenExclusivity(noneCheckbox) {
+            if(noneCheckbox.checked) {
+                document.querySelectorAll('#admin-allergen-selectors input[type="checkbox"]').forEach(cb => {
+                    if(cb.value !== 'None') cb.checked = false;
+                });
+            }
+        }
+        document.querySelectorAll('#admin-allergen-selectors input[type="checkbox"]').forEach(cb => {
+            if(cb.value !== 'None') { cb.addEventListener('change', () => { if(cb.checked) document.querySelector('#admin-allergen-selectors input[value="None"]').checked = false; }); }
+        });
 
         async function postNews(e) {
             e.preventDefault();
@@ -443,7 +653,7 @@
                 published_at: new Date().toISOString()
             };
             const {error} = await supabaseClient.from('news_articles').insert([payload]);
-            if(!error) { alert("News Published."); document.getElementById('frm-news').reset(); }
+            if(!error) { alert("News Published Live."); document.getElementById('frm-news').reset(); }
             else alert(error.message);
         }
 
@@ -454,8 +664,9 @@
             const fb = document.getElementById('role-feedback');
             
             const {error} = await supabaseClient.from('client_profiles').update({role: role}).eq('email', email);
-            if(error) { fb.className = "text-xs font-bold mt-2 text-center text-red-500"; fb.textContent = error.message; }
-            else { fb.className = "text-xs font-bold mt-2 text-center text-brand-green"; fb.textContent = `User role updated to ${role}.`; }
+            fb.classList.remove('hidden');
+            if(error) { fb.className = "text-xs font-bold mt-4 text-center text-red-500"; fb.textContent = error.message; }
+            else { fb.className = "text-xs font-bold mt-4 text-center text-brand-green"; fb.textContent = `User role updated successfully to ${role}.`; }
         }
 
         async function updateProfile(e) {
@@ -467,6 +678,7 @@
             };
             const {error} = await supabaseClient.from('client_profiles').update(payload).eq('id', currentUser.id);
             if(!error) {
+                document.getElementById('admin-display-name').textContent = `${payload.first_name} ${payload.last_name}`;
                 document.getElementById('prof-feedback').classList.remove('hidden');
                 setTimeout(()=>document.getElementById('prof-feedback').classList.add('hidden'), 3000);
             }
