@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Operations Dashboard | FoodShare Seychelles</title>
+    
+    <link rel="icon" href="https://i.ibb.co/Kz2K7727/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { green: '#16a34a', darkgreen: '#15803d', slate: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .fade-out { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+        
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+        input, textarea, button, select { -webkit-user-select: auto; -moz-user-select: auto; -ms-user-select: auto; user-select: auto; }
+        
+        .chat-bubble-sent { background-color: #16a34a; color: white; border-bottom-right-radius: 2px; }
+        .chat-bubble-received { background-color: #f1f5f9; color: #334155; border-bottom-left-radius: 2px; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800 antialiased overflow-hidden flex flex-col h-screen" id="body" oncontextmenu="return false;">
+
+    <div id="loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-green mb-4"></div>
+            <p class="text-gray-500 font-bold tracking-widest uppercase text-xs">Authenticating Staff Node</p>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-gray-100 flex-shrink-0 shadow-sm z-40 relative px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-24 items-center">
+            <div class="flex-shrink-0 flex items-center gap-3">
+                <img src="https://i.ibb.co/Kz2K7727/logo.png" alt="FoodShare Logo" class="w-12 h-12 object-contain drop-shadow-sm pointer-events-none">
+                <div class="text-2xl font-black text-brand-slate tracking-tight">
+                    FoodShare <span class="text-brand-green font-bold">Seychelles</span>
+                    <span class="ml-3 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-xs tracking-widest uppercase align-middle hidden sm:inline-block">Staff Internal</span>
+                </div>
+            </div>
+            <button onclick="handleLogout()" class="px-6 py-3 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">
+                Secure Sign Out
+            </button>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex overflow-hidden">
+        
+        <aside class="w-64 bg-brand-slate text-white flex flex-col justify-between p-4 flex-shrink-0 border-r border-gray-800 overflow-y-auto">
+            <div class="space-y-6 pt-4">
+                
+                <div class="px-4 border-b border-gray-800 pb-5">
+                    <p class="font-black text-xl text-white truncate" id="staff-display-name">Loading...</p>
+                    <span class="text-[10px] uppercase font-bold text-brand-green tracking-widest block mt-0.5">ID: <span id="staff-uuid-short">...</span></span>
+                </div>
+
+                <nav class="space-y-1" id="staff-nav">
+                    <button onclick="switchStaffTab('overview')" id="tab-btn-overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</button>
+                    <button onclick="switchStaffTab('logistics')" id="tab-btn-logistics" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-truck-fast w-5 text-center"></i> Field Logistics</button>
+                    <button onclick="switchStaffTab('tasks')" id="tab-btn-tasks" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-list-check w-5 text-center"></i> My Tasks</button>
+                    <button onclick="switchStaffTab('hours')" id="tab-btn-hours" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-clock w-5 text-center"></i> Time Log</button>
+                    <button onclick="switchStaffTab('chat')" id="tab-btn-chat" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-messages w-5 text-center"></i> Team Chat</button>
+                    <button onclick="switchStaffTab('hub')" id="tab-btn-hub" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-bullhorn w-5 text-center"></i> HQ Hub</button>
+                    <div class="h-px bg-gray-800 my-2 mx-4"></div>
+                    <button onclick="switchStaffTab('profile')" id="tab-btn-profile" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition"><i class="fa-solid fa-user-gear w-5 text-center"></i> Profile Settings</button>
+                </nav>
+            </div>
+        </aside>
+
+        <main class="flex-1 bg-gray-50 overflow-y-auto p-6 md:p-10" id="main-viewport">
+            
+            <div id="view-overview" class="staff-panel block space-y-8">
+                <div>
+                    <h1 class="text-3xl font-black text-brand-slate tracking-tight mb-1">Operational Command</h1>
+                    <p class="text-sm text-gray-500 font-medium">Your daily snapshot of field logistics, personal hours, and pending tasks.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4"><span class="text-xs font-bold text-gray-400 uppercase">Pending Logistics</span><i class="fa-solid fa-truck text-brand-green"></i></div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-logistics">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4"><span class="text-xs font-bold text-gray-400 uppercase">My Open Tasks</span><i class="fa-solid fa-list-check text-brand-green"></i></div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-tasks">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4"><span class="text-xs font-bold text-gray-400 uppercase">Total Hours Logged</span><i class="fa-solid fa-clock text-brand-green"></i></div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-hours">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4"><span class="text-xs font-bold text-gray-400 uppercase">Unread Messages</span><i class="fa-solid fa-message text-brand-green"></i></div>
+                        <p class="text-4xl font-black text-brand-slate" id="met-messages">0</p>
+                    </div>
+                </div>
+
+                <div id="latest-announcement-box" class="hidden bg-blue-50 border border-blue-200 rounded-2xl p-6">
+                    <div class="flex items-start gap-4">
+                        <i class="fa-solid fa-bullhorn text-blue-600 text-2xl mt-1"></i>
+                        <div>
+                            <span class="text-[10px] font-black uppercase text-blue-500 tracking-widest mb-1 block">Latest HQ Broadcast</span>
+                            <h3 class="font-black text-blue-900 text-lg" id="ann-title">Loading...</h3>
+                            <p class="text-sm font-medium text-blue-800 mt-1" id="ann-desc">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-logistics" class="staff-panel hidden space-y-6">
+                <div>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Field Logistics Dashboard</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Manage active surplus pickups and client deliveries in one unified view.</p>
+                </div>
+                <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[900px]">
+                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Mission Type</th><th class="p-4">Target Name/Entity</th><th class="p-4">Location</th><th class="p-4 text-right pr-6">Status Adjustment</th></tr></thead>
+                            <tbody id="tbl-logistics" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-tasks" class="staff-panel hidden space-y-6">
+                <div class="flex justify-between items-end border-b border-gray-200 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-brand-slate tracking-tight">Personal Tasks & Projects</h2>
+                        <p class="text-sm text-gray-500 font-medium mt-0.5">Manage your internal to-do list and track long-term projects.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 bg-white p-6 rounded-3xl border border-gray-200 shadow-sm h-fit">
+                        <h3 class="font-black text-brand-slate mb-4">Add New Item</h3>
+                        <form id="frm-task" onsubmit="postTask(event)" class="space-y-4">
+                            <input type="text" id="tsk_title" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="Task Title">
+                            <textarea id="tsk_desc" rows="2" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm resize-none" placeholder="Description (Optional)"></textarea>
+                            <select id="tsk_type" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer"><option value="todo">To-Do Task</option><option value="project">Long-Term Project</option></select>
+                            <button type="submit" class="w-full py-3 bg-brand-slate text-white text-xs font-black uppercase rounded-xl transition hover:bg-gray-800">Add to List</button>
+                        </form>
+                    </div>
+                    <div class="lg:col-span-2 space-y-4" id="task-list-container">
+                        </div>
+                </div>
+            </div>
+
+            <div id="view-hours" class="staff-panel hidden space-y-6">
+                <div>
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Hours of Service</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Log your volunteer and operational hours for the administration.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm h-fit">
+                        <form id="frm-hours" onsubmit="postHours(event)" class="space-y-4">
+                            <input type="date" id="hr_date" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm">
+                            <input type="number" step="0.5" id="hr_amount" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="Hours Worked (e.g. 4.5)">
+                            <input type="text" id="hr_notes" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="Short description of duties">
+                            <button type="submit" class="w-full py-3 bg-brand-green hover:bg-brand-darkgreen text-white text-xs font-black uppercase rounded-xl transition shadow-sm">Submit Hours</button>
+                        </form>
+                    </div>
+                    <div class="md:col-span-2 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-gray-50 border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"><th class="p-4 pl-6">Date</th><th class="p-4">Hours</th><th class="p-4">Notes</th></tr></thead>
+                            <tbody id="tbl-hours" class="text-sm divide-y divide-gray-100 font-medium text-gray-600"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-chat" class="staff-panel hidden h-[calc(100vh-140px)] flex-col md:flex-row gap-6">
+                <div class="w-full md:w-1/3 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-1/3 md:h-full">
+                    <div class="p-4 bg-gray-50 border-b border-gray-100"><h3 class="font-black text-brand-slate text-sm">Staff Directory</h3></div>
+                    <div class="overflow-y-auto flex-1 p-2 space-y-1" id="chat-user-list">
+                        </div>
+                </div>
+                
+                <div class="w-full md:w-2/3 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-2/3 md:h-full relative">
+                    
+                    <div id="chat-header" class="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                        <p class="font-black text-brand-slate text-sm" id="active-chat-name">Select a contact to start chatting</p>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase" id="active-chat-role"></span>
+                    </div>
+
+                    <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+                        </div>
+
+                    <form id="frm-chat" onsubmit="sendMessage(event)" class="p-3 border-t border-gray-100 bg-white flex gap-2">
+                        <input type="hidden" id="chat_receiver_id">
+                        <input type="text" id="chat_input" disabled class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-brand-green" placeholder="Type a message..." autocomplete="off">
+                        <button type="submit" id="chat_send_btn" disabled class="w-12 h-10 bg-brand-green text-white rounded-xl flex items-center justify-center hover:bg-brand-darkgreen disabled:opacity-50 transition"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                    
+                    <div id="chat-unselected-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+                        <i class="fa-solid fa-comments text-5xl text-gray-200 mb-4"></i>
+                        <p class="font-bold text-gray-400">Select a team member from the directory.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-hub" class="staff-panel hidden space-y-6">
+                <div class="flex justify-between items-end border-b border-gray-200 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-brand-slate tracking-tight">HQ Hub</h2>
+                        <p class="text-sm text-gray-500 font-medium mt-0.5">Internal announcements and operational calendar events.</p>
+                    </div>
+                    <button onclick="document.getElementById('hub-form-container').classList.toggle('hidden')" class="px-4 py-2 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-wider rounded-lg transition shadow-sm">Post Update</button>
+                </div>
+
+                <div id="hub-form-container" class="hidden bg-white p-6 rounded-3xl border border-gray-200 shadow-sm mb-6">
+                    <form id="frm-hub" onsubmit="postEvent(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="ev_title" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm" placeholder="Headline / Event Title">
+                            <select id="ev_type" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer"><option value="announcement">Announcement</option><option value="event">Calendar Event</option></select>
+                        </div>
+                        <textarea id="ev_desc" rows="3" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm resize-none" placeholder="Details..."></textarea>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Event Date (If applicable)</label>
+                                <input type="datetime-local" id="ev_date" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Priority Level</label>
+                                <select id="ev_priority" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer"><option value="normal">Normal</option><option value="high">High Priority</option><option value="low">Low Priority</option></select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-brand-green hover:bg-brand-darkgreen text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Publish to Team</button>
+                    </form>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="hub-grid">
+                    </div>
+            </div>
+
+            <div id="view-profile" class="staff-panel hidden max-w-2xl space-y-6">
+                <div class="border-b border-gray-200 pb-4 mb-6">
+                    <h2 class="text-2xl font-black text-brand-slate tracking-tight">Profile Settings</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-0.5">Manage your dispatch credentials and direct contact nodes.</p>
+                </div>
+                <form id="frm-profile" onsubmit="updateProfile(event)" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-sm space-y-5">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">First Name</label>
+                            <input type="text" id="prof_first" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">Last Name</label>
+                            <input type="text" id="prof_last" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/50 text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Staff Email (Immutable)</label>
+                        <input type="email" id="prof_email" readonly class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-gray-400 font-bold text-sm cursor-not-allowed">
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 text-right">
+                        <p id="prof-feedback" class="text-xs font-bold text-brand-green hidden mb-2">Saved</p>
+                        <button type="submit" class="px-8 py-3.5 bg-brand-slate hover:bg-gray-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">Sync ID</button>
+                    </div>
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        const SUPABASE_URL = 'https://vwngymlkjyamueyjdico.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmd5bWxranlhbXVleWpkaWNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMDY5MTIsImV4cCI6MjA5NDU4MjkxMn0.Lhb7bYTDC-aRnNhdXInMgt6WkMTHGCV64q5TfYI-zXM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let activeChatUserId = null;
+        let messageSubscription = null;
+
+        const eRow = (cols, txt) => `<tr><td colspan="${cols}" class="p-8 text-center text-gray-400 font-medium italic">${txt}</td></tr>`;
+
+        function switchStaffTab(tid) {
+            document.querySelectorAll('.staff-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById('view-' + tid).classList.remove('hidden');
+            if(tid === 'chat') { document.getElementById('view-chat').classList.add('flex'); }
+            document.querySelectorAll('.nav-btn').forEach(b => b.className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition");
+            document.getElementById('tab-btn-' + tid).className = "nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-green text-white transition";
+        }
+
+        async function init() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) return window.location.href = '/login/';
+                currentUser = session.user;
+
+                const { data: prof } = await supabaseClient.from('client_profiles').select('*').eq('id', currentUser.id).single();
+                if (!prof || (prof.role !== 'staff' && prof.role !== 'admin')) return window.location.href = '/login/';
+                
+                document.getElementById('staff-display-name').textContent = `${prof.first_name || ''} ${prof.last_name || ''}`.trim() || 'Logistics Staff';
+                document.getElementById('staff-uuid-short').textContent = currentUser.id.split('-')[0].toUpperCase();
+                
+                document.getElementById('prof_first').value = prof.first_name || '';
+                document.getElementById('prof_last').value = prof.last_name || '';
+                document.getElementById('prof_email').value = prof.email;
+
+                await loadAllData();
+            } catch (err) { window.location.href = '/login/'; }
+            finally { 
+                const loader = document.getElementById('loader');
+                loader.classList.add('fade-out');
+                setTimeout(() => { loader.style.display = 'none'; document.getElementById('body').classList.remove('overflow-hidden'); }, 500);
+            }
+        }
+
+        async function handleLogout() { await supabaseClient.auth.signOut(); window.location.href = '/login/'; }
+
+        async function loadAllData() {
+            // Concurrent Fetch
+            const [dons, reqs, tasks, hours, events, users, msgs] = await Promise.all([
+                supabaseClient.from('food_donations').select('*').in('status', ['approved', 'completed']).order('updated_at', {ascending: false}),
+                supabaseClient.from('food_requests').select('*, food_listings(title)').in('status', ['approved', 'out_for_delivery', 'ready_for_pickup', 'completed']).order('updated_at', {ascending: false}),
+                supabaseClient.from('staff_tasks').select('*').eq('staff_id', currentUser.id).order('created_at', {ascending: false}),
+                supabaseClient.from('staff_hours').select('*').eq('staff_id', currentUser.id).order('log_date', {ascending: false}),
+                supabaseClient.from('internal_events').select('*, client_profiles(first_name, last_name)').order('created_at', {ascending: false}),
+                supabaseClient.from('client_profiles').select('id, first_name, last_name, role').in('role', ['staff', 'admin']),
+                supabaseClient.from('internal_messages').select('*').or(`receiver_id.eq.${currentUser.id},sender_id.eq.${currentUser.id}`)
+            ]);
+
+            // --- METRICS ---
+            const activeLogs = (dons.data||[]).filter(d => d.status === 'approved').length + (reqs.data||[]).filter(c => c.status !== 'completed').length;
+            document.getElementById('met-logistics').textContent = activeLogs;
+            document.getElementById('met-tasks').textContent = (tasks.data||[]).filter(t => t.status !== 'completed').length;
+            
+            const totalHours = (hours.data||[]).reduce((sum, h) => sum + parseFloat(h.hours_worked), 0);
+            document.getElementById('met-hours').textContent = totalHours.toFixed(1);
+
+            const unread = (msgs.data||[]).filter(m => m.receiver_id === currentUser.id && !m.is_read).length;
+            document.getElementById('met-messages').textContent = unread;
+
+            // --- LOGISTICS (Combined Pickups & Deliveries) ---
+            const tLog = document.getElementById('tbl-logistics');
+            let logsHTML = '';
+            if(dons.data) dons.data.filter(d=>d.status==='approved').forEach(d => {
+                logsHTML += `
+                <tr class="border-b border-gray-100 hover:bg-gray-50/50">
+                    <td class="p-4 pl-6"><span class="px-2 py-1 bg-amber-50 text-amber-700 text-[10px] uppercase font-bold rounded">Surplus Pickup</span></td>
+                    <td class="p-4 font-bold text-brand-slate text-sm">${d.contact_name}</td>
+                    <td class="p-4 text-xs font-medium text-gray-500 max-w-xs truncate">${d.pickup_address || 'HQ Drop-off'}</td>
+                    <td class="p-4 text-right pr-6"><select onchange="updateRecord('food_donations', '${d.id}', this.value)" class="text-[10px] uppercase font-bold px-2 py-1 border rounded bg-white"><option value="approved">Pending</option><option value="completed">Complete</option></select></td>
+                </tr>`;
+            });
+            if(reqs.data) reqs.data.filter(r=>r.status!=='completed').forEach(r => {
+                logsHTML += `
+                <tr class="border-b border-gray-100 hover:bg-gray-50/50">
+                    <td class="p-4 pl-6"><span class="px-2 py-1 bg-blue-50 text-blue-700 text-[10px] uppercase font-bold rounded">Client Delivery</span></td>
+                    <td class="p-4 font-bold text-brand-slate text-sm">${r.full_name}</td>
+                    <td class="p-4 text-xs font-medium text-gray-500 max-w-xs truncate">${r.physical_address}</td>
+                    <td class="p-4 text-right pr-6"><select onchange="updateRecord('food_requests', '${r.id}', this.value)" class="text-[10px] uppercase font-bold px-2 py-1 border rounded bg-white"><option value="approved" ${r.status==='approved'?'selected':''}>Prep</option><option value="out_for_delivery" ${r.status==='out_for_delivery'?'selected':''}>En Route</option><option value="completed">Delivered</option></select></td>
+                </tr>`;
+            });
+            tLog.innerHTML = logsHTML || eRow(4, "No active logistics operations pending.");
+
+            // --- TASKS ---
+            const tCon = document.getElementById('task-list-container');
+            if(tasks.data && tasks.data.length > 0) {
+                tCon.innerHTML = tasks.data.map(t => `
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 flex items-center justify-between shadow-sm ${t.status === 'completed' ? 'opacity-60' : ''}">
+                    <div>
+                        <span class="text-[9px] uppercase font-bold tracking-widest ${t.task_type==='project'?'text-indigo-500':'text-brand-green'} block mb-1">${t.task_type}</span>
+                        <p class="font-bold text-brand-slate ${t.status === 'completed' ? 'line-through' : ''}">${t.title}</p>
+                        ${t.description ? `<p class="text-xs text-gray-500 mt-1">${t.description}</p>` : ''}
+                    </div>
+                    <div>
+                        <select onchange="updateRecord('staff_tasks', '${t.id}', this.value)" class="text-[10px] font-bold uppercase border border-gray-200 rounded px-2 py-1 bg-gray-50 focus:outline-none">
+                            <option value="pending" ${t.status==='pending'?'selected':''}>Pending</option>
+                            <option value="in_progress" ${t.status==='in_progress'?'selected':''}>Active</option>
+                            <option value="completed" ${t.status==='completed'?'selected':''}>Done</option>
+                        </select>
+                    </div>
+                </div>`).join('');
+            } else tCon.innerHTML = `<p class="text-sm text-gray-400 italic text-center p-8 border border-dashed border-gray-200 rounded-3xl">No tasks on your board.</p>`;
+
+            // --- HOURS ---
+            const hTbl = document.getElementById('tbl-hours');
+            if(hours.data && hours.data.length > 0) {
+                hTbl.innerHTML = hours.data.map(h => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="p-4 pl-6 font-mono text-xs text-gray-500">${h.log_date}</td>
+                    <td class="p-4 font-black text-brand-slate">${h.hours_worked}</td>
+                    <td class="p-4 text-xs font-medium text-gray-500">${h.notes || '-'}</td>
+                </tr>`).join('');
+            } else hTbl.innerHTML = eRow(3, "No hours logged yet.");
+
+            // --- HUB / EVENTS ---
+            const hubGrid = document.getElementById('hub-grid');
+            if(events.data && events.data.length > 0) {
+                // Set top announcement on overview dashboard
+                const topAnn = events.data.find(e => e.record_type === 'announcement' && e.priority === 'high') || events.data[0];
+                document.getElementById('latest-announcement-box').classList.remove('hidden');
+                document.getElementById('ann-title').textContent = topAnn.title;
+                document.getElementById('ann-desc').textContent = topAnn.description;
+
+                hubGrid.innerHTML = events.data.map(e => `
+                <div class="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full ${e.priority==='high'?'bg-red-500':e.priority==='low'?'bg-gray-300':'bg-brand-green'}"></div>
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-[10px] font-black uppercase tracking-widest ${e.record_type==='event'?'text-indigo-600 bg-indigo-50':'text-gray-500 bg-gray-100'} px-2 py-1 rounded">${e.record_type}</span>
+                        <span class="text-[10px] text-gray-400 font-mono">${new Date(e.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <h3 class="font-black text-brand-slate text-lg mb-2">${e.title}</h3>
+                    <p class="text-sm text-gray-600 mb-4">${e.description}</p>
+                    ${e.event_date ? `<p class="text-xs font-bold text-brand-green bg-green-50 border border-green-100 p-2 rounded-lg inline-block"><i class="fa-regular fa-calendar mr-1"></i> Date: ${new Date(e.event_date).toLocaleString()}</p>` : ''}
+                </div>`).join('');
+            } else {
+                hubGrid.innerHTML = `<div class="col-span-full p-8 text-center text-gray-400 font-medium italic border border-dashed border-gray-200 rounded-3xl">HQ Hub is clear.</div>`;
+            }
+
+            // --- CHAT USERS DIRECTORY ---
+            if(users.data) {
+                const chatList = document.getElementById('chat-user-list');
+                chatList.innerHTML = users.data.filter(u => u.id !== currentUser.id).map(u => `
+                <button onclick="openChat('${u.id}', '${u.first_name} ${u.last_name}', '${u.role}')" class="w-full text-left p-3 rounded-xl hover:bg-gray-100 transition flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-brand-slate text-white flex items-center justify-center text-xs font-black">${(u.first_name||'U')[0]}</div>
+                    <div>
+                        <p class="font-bold text-brand-slate text-sm leading-tight">${u.first_name} ${u.last_name}</p>
+                        <p class="text-[10px] uppercase font-bold text-brand-green tracking-wider">${u.role}</p>
+                    </div>
+                </button>`).join('');
+            }
+        }
+
+        async function updateRecord(table, id, status) {
+            await supabaseClient.from(table).update({status: status}).eq('id', id);
+            loadAllData();
+        }
+
+        async function postTask(e) {
+            e.preventDefault();
+            await supabaseClient.from('staff_tasks').insert([{
+                staff_id: currentUser.id,
+                title: document.getElementById('tsk_title').value,
+                description: document.getElementById('tsk_desc').value,
+                task_type: document.getElementById('tsk_type').value
+            }]);
+            document.getElementById('frm-task').reset();
+            loadAllData();
+        }
+
+        async function postHours(e) {
+            e.preventDefault();
+            await supabaseClient.from('staff_hours').insert([{
+                staff_id: currentUser.id,
+                log_date: document.getElementById('hr_date').value,
+                hours_worked: document.getElementById('hr_amount').value,
+                notes: document.getElementById('hr_notes').value
+            }]);
+            document.getElementById('frm-hours').reset();
+            loadAllData();
+        }
+
+        async function postEvent(e) {
+            e.preventDefault();
+            await supabaseClient.from('internal_events').insert([{
+                author_id: currentUser.id,
+                title: document.getElementById('ev_title').value,
+                description: document.getElementById('ev_desc').value,
+                record_type: document.getElementById('ev_type').value,
+                priority: document.getElementById('ev_priority').value,
+                event_date: document.getElementById('ev_date').value || null
+            }]);
+            document.getElementById('frm-hub').reset();
+            document.getElementById('hub-form-container').classList.add('hidden');
+            loadAllData();
+        }
+
+        // --- CHAT LOGIC ---
+        function openChat(id, name, role) {
+            activeChatUserId = id;
+            document.getElementById('chat-unselected-overlay').classList.add('hidden');
+            document.getElementById('active-chat-name').textContent = name;
+            document.getElementById('active-chat-role').textContent = role;
+            document.getElementById('chat_receiver_id').value = id;
+            
+            document.getElementById('chat_input').disabled = false;
+            document.getElementById('chat_send_btn').disabled = false;
+
+            fetchMessages();
+
+            // Subscribe to real-time updates for chat
+            if(messageSubscription) supabaseClient.removeChannel(messageSubscription);
+            messageSubscription = supabaseClient.channel('custom-all-channel')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'internal_messages' }, payload => {
+                    if((payload.new.sender_id === currentUser.id && payload.new.receiver_id === activeChatUserId) || 
+                       (payload.new.sender_id === activeChatUserId && payload.new.receiver_id === currentUser.id)) {
+                        fetchMessages();
+                    }
+                }).subscribe();
+        }
+
+        async function fetchMessages() {
+            if(!activeChatUserId) return;
+            const { data } = await supabaseClient.from('internal_messages')
+                .select('*')
+                .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${activeChatUserId}),and(sender_id.eq.${activeChatUserId},receiver_id.eq.${currentUser.id})`)
+                .order('created_at', { ascending: true });
+            
+            const box = document.getElementById('chat-messages-container');
+            if(data && data.length > 0) {
+                box.innerHTML = data.map(m => {
+                    const isMe = m.sender_id === currentUser.id;
+                    return `
+                    <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
+                        <div class="max-w-[70%] p-3 text-sm shadow-sm ${isMe ? 'chat-bubble-sent rounded-l-2xl rounded-tr-2xl' : 'chat-bubble-received rounded-r-2xl rounded-tl-2xl'}">
+                            ${m.message_text}
+                            <span class="block text-[8px] opacity-70 mt-1 text-right">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                // Mark received as read
+                const unread = data.filter(m => m.receiver_id === currentUser.id && !m.is_read).map(m => m.id);
+                if(unread.length > 0) {
+                    // Update silently
+                    supabaseClient.from('internal_messages').update({is_read: true}).in('id', unread).then(()=>loadAllData());
+                }
+            } else {
+                box.innerHTML = `<p class="text-xs text-center text-gray-400 mt-4">Start of conversation</p>`;
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat_input');
+            const text = input.value.trim();
+            if(!text || !activeChatUserId) return;
+            
+            input.value = '';
+            await supabaseClient.from('internal_messages').insert([{
+                sender_id: currentUser.id,
+                receiver_id: activeChatUserId,
+                message_text: text
+            }]);
+            fetchMessages();
+        }
+
+        async function updateProfile(e) {
+            e.preventDefault();
+            const payload = {
+                first_name: document.getElementById('prof_first').value,
+                last_name: document.getElementById('prof_last').value,
+            };
+            const {error} = await supabaseClient.from('client_profiles').update(payload).eq('id', currentUser.id);
+            if(!error) {
+                document.getElementById('staff-display-name').textContent = `${payload.first_name} ${payload.last_name}`;
+                document.getElementById('prof-feedback').classList.remove('hidden');
+                setTimeout(()=>document.getElementById('prof-feedback').classList.add('hidden'), 3000);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
